@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { ImageUploader } from "./ImageUploader";
-import { DetectionResult, DetectionResultData } from "./DetectionResult";
+import { DetectionResult } from "./DetectionResult";
+import type { DetectionResultData } from "./DetectionResult";
 import { Loader2, ScanSearch } from "lucide-react";
 
 export function GlassCrackDetection() {
@@ -32,9 +33,11 @@ export function GlassCrackDetection() {
     setIsDetecting(true);
     
     // 模拟 API 调用
+    // TODO: 待添加后端逻辑
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // 模拟检测结果
+    // TODO: 待添加读取结果
     const mockResults: DetectionResultData[] = [
       {
         status: "success",
