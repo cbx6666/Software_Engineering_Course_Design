@@ -180,17 +180,6 @@ export function HomePage({ onNavigate }: HomePageProps) {
             />
           ))}
         </div>
-
-        {/* Footer Info */}
-        <div className="mt-16 text-center">
-          <div className="inline-block bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-8 py-6">
-            <p className="text-slate-400">
-              已完成检测：<span className="text-cyan-400 mx-2">12,458</span>次 | 
-              系统准确率：<span className="text-cyan-400 mx-2">98.7%</span> | 
-              在线用户：<span className="text-cyan-400 mx-2">156</span>人
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
