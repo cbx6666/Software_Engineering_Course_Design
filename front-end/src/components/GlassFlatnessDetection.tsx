@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { ImageUploader } from "./ImageUploader";
-import { DetectionResult, DetectionResultData } from "./DetectionResult";
+import { DetectionResult } from "./DetectionResult";
+import type { DetectionResultData } from "./DetectionResult";
 import { Loader2, Ruler } from "lucide-react";
 
 export function GlassFlatnessDetection() {
