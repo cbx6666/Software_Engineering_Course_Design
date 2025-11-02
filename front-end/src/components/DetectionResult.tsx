@@ -2,6 +2,7 @@ import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { AlertCircle, CheckCircle, Info } from "lucide-react";
 
+// 检测结果定义在此处
 export interface DetectionResultData {
   status: "success" | "warning" | "error";
   title: string;
