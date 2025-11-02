@@ -6,78 +6,30 @@ import { DetectionResult } from "./DetectionResult";
 import type { DetectionResultData } from "./DetectionResult";
 import { Loader2, ScanSearch } from "lucide-react";
 
+import { useImageUpload } from "../utils/imageOperation";
+
+
 export function GlassCrackDetection() {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isDetecting, setIsDetecting] = useState(false);
   const [result, setResult] = useState<DetectionResultData | null>(null);
-
-  // 选择图片
-  const handleImageSelect = (file: File, url: string) => {
-    setImageFile(file);
-    setPreviewUrl(url);
-    setResult(null);
-  };
-
-  // 删除图片
-  const handleImageRemove = () => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setImageFile(null);
-    setPreviewUrl(null);
-    setResult(null);
-  };
+  const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
+    useImageUpload("xxx"); // TODO: 待添加后端接口
 
   // 调用后端逻辑
   const handleDetect = async () => {
     if (!imageFile) return;
 
-    setIsDetecting(true);
-    
-    // 模拟 API 调用
-    // TODO: 待添加后端逻辑
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // 模拟检测结果
-    // TODO: 待添加读取结果
-    const mockResults: DetectionResultData[] = [
-      {
-        status: "success",
-        title: "检测完成",
-        description: "未检测到玻璃破裂，玻璃完好无损。",
-        details: [
-          { label: "置信度", value: "98.5%" },
-          { label: "检测区域", value: "全覆盖" },
-          { label: "处理时间", value: "1.2秒" }
-        ]
-      },
-      {
+    try {
+      const result = await uploadImage();
+      setResult(result);
+    } catch (err) {
+      console.error("检测失败:", err);
+      setResult({
         status: "error",
-        title: "检测到破裂",
-        description: "玻璃存在明显裂纹，建议立即更换以确保安全。",
-        details: [
-          { label: "裂纹数量", value: "3处" },
-          { label: "裂纹长度", value: "15-25cm" },
-          { label: "危险等级", value: "高" },
-          { label: "置信度", value: "95.2%" }
-        ]
-      },
-      {
-        status: "warning",
-        title: "疑似轻微损伤",
-        description: "检测到可能的细微裂纹或划痕，建议进一步检查。",
-        details: [
-          { label: "可疑区域", value: "2处" },
-          { label: "置信度", value: "72.8%" },
-          { label: "建议", value: "人工复核" }
-        ]
-      }
-    ];
-
-    const randomResult = mockResults[Math.floor(Math.random() * mockResults.length)];
-    setResult(randomResult);
-    setIsDetecting(false);
+        title: "上传失败",
+        description: "图片上传或检测过程出现错误，请稍后再试。",
+        details: [],
+      });
+    };
   };
 
   return (
@@ -100,10 +52,10 @@ export function GlassCrackDetection() {
             <div>
               <h3 className="text-white mb-4">上传图片</h3>
               <ImageUploader
-                onImageSelect={handleImageSelect}
-                onImageRemove={handleImageRemove}
+                onImageSelect={selectImage}
+                onImageRemove={removeImage}
                 previewUrl={previewUrl}
-                disabled={isDetecting}
+                disabled={isUploading}
               />
             </div>
 
@@ -134,11 +86,11 @@ export function GlassCrackDetection() {
                   </div>
                   <Button
                     onClick={handleDetect}
-                    disabled={!imageFile || isDetecting}
+                    disabled={!imageFile || isUploading}
                     className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-cyan-500/30"
                     size="lg"
                   >
-                    {isDetecting ? (
+                    {isUploading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         AI检测中...

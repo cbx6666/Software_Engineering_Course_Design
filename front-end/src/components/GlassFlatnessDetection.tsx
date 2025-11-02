@@ -6,80 +6,29 @@ import { DetectionResult } from "./DetectionResult";
 import type { DetectionResultData } from "./DetectionResult";
 import { Loader2, Ruler } from "lucide-react";
 
+import { useImageUpload } from "../utils/imageOperation";
+
 export function GlassFlatnessDetection() {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [isDetecting, setIsDetecting] = useState(false);
   const [result, setResult] = useState<DetectionResultData | null>(null);
-
-  // 选择图片
-  const handleImageSelect = (file: File, url: string) => {
-    setImageFile(file);
-    setPreviewUrl(url);
-    setResult(null);
-  };
-
-  // 删除图片
-  const handleImageRemove = () => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setImageFile(null);
-    setPreviewUrl(null);
-    setResult(null);
-  };
+  const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
+    useImageUpload("xxx"); // TODO: 待添加后端接口
 
   // 调用后端逻辑
   const handleDetect = async () => {
     if (!imageFile) return;
 
-    setIsDetecting(true);
-    
-    // 模拟 API 调用
-    // TODO: 待添加后端逻辑
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    // 模拟检测结果
-    // TODO: 待添加读取结果
-    const mockResults: DetectionResultData[] = [
-      {
-        status: "success",
-        title: "平整度良好",
-        description: "玻璃幕墙平整度符合标准要求，表面平整无明显凸起或凹陷。",
-        details: [
-          { label: "平整度偏差", value: "±0.8mm" },
-          { label: "标准要求", value: "±3mm" },
-          { label: "检测点数", value: "25个" },
-          { label: "合格率", value: "100%" }
-        ]
-      },
-      {
+    try {
+      const result = await uploadImage();
+      setResult(result);
+    } catch (err) {
+      console.error("检测失败:", err);
+      setResult({
         status: "error",
-        title: "平整度不合格",
-        description: "检测到明显的平整度问题，部分区域偏差超出标准范围。",
-        details: [
-          { label: "最大偏差", value: "±5.2mm" },
-          { label: "标准要求", value: "±3mm" },
-          { label: "不合格区域", value: "3处" },
-          { label: "合格率", value: "68%" }
-        ]
-      },
-      {
-        status: "warning",
-        title: "平整度临界",
-        description: "部分区域平整度接近标准上限，建议关注并进行定期检测。",
-        details: [
-          { label: "平整度偏差", value: "±2.8mm" },
-          { label: "标准要求", value: "±3mm" },
-          { label: "临界区域", value: "2处" },
-          { label: "合格率", value: "92%" }
-        ]
-      }
-    ];
-
-    const randomResult = mockResults[Math.floor(Math.random() * mockResults.length)];
-    setResult(randomResult);
-    setIsDetecting(false);
+        title: "上传失败",
+        description: "图片上传或检测过程出现错误，请稍后再试。",
+        details: [],
+      });
+    };
   };
 
   return (
@@ -102,10 +51,10 @@ export function GlassFlatnessDetection() {
             <div>
               <h3 className="text-white mb-4">上传图片</h3>
               <ImageUploader
-                onImageSelect={handleImageSelect}
-                onImageRemove={handleImageRemove}
+                onImageSelect={selectImage}
+                onImageRemove={removeImage}
                 previewUrl={previewUrl}
-                disabled={isDetecting}
+                disabled={isUploading}
               />
             </div>
 
@@ -136,11 +85,11 @@ export function GlassFlatnessDetection() {
                   </div>
                   <Button
                     onClick={handleDetect}
-                    disabled={!imageFile || isDetecting}
+                    disabled={!imageFile || isUploading}
                     className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 shadow-lg shadow-blue-500/30"
                     size="lg"
                   >
-                    {isDetecting ? (
+                    {isUploading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         AI分析中...
