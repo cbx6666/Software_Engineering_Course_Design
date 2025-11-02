@@ -12,12 +12,14 @@ export function GlassCrackDetection() {
   const [isDetecting, setIsDetecting] = useState(false);
   const [result, setResult] = useState<DetectionResultData | null>(null);
 
+  // 选择图片
   const handleImageSelect = (file: File, url: string) => {
     setImageFile(file);
     setPreviewUrl(url);
     setResult(null);
   };
 
+  // 删除图片
   const handleImageRemove = () => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
@@ -27,6 +29,7 @@ export function GlassCrackDetection() {
     setResult(null);
   };
 
+  // 调用后端逻辑
   const handleDetect = async () => {
     if (!imageFile) return;
 

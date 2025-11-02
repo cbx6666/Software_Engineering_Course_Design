@@ -12,12 +12,14 @@ export function GlassFlatnessDetection() {
   const [isDetecting, setIsDetecting] = useState(false);
   const [result, setResult] = useState<DetectionResultData | null>(null);
 
+  // 选择图片
   const handleImageSelect = (file: File, url: string) => {
     setImageFile(file);
     setPreviewUrl(url);
     setResult(null);
   };
 
+  // 删除图片
   const handleImageRemove = () => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
@@ -27,15 +29,18 @@ export function GlassFlatnessDetection() {
     setResult(null);
   };
 
+  // 调用后端逻辑
   const handleDetect = async () => {
     if (!imageFile) return;
 
     setIsDetecting(true);
     
     // 模拟 API 调用
+    // TODO: 待添加后端逻辑
     await new Promise(resolve => setTimeout(resolve, 2000));
 
     // 模拟检测结果
+    // TODO: 待添加读取结果
     const mockResults: DetectionResultData[] = [
       {
         status: "success",
