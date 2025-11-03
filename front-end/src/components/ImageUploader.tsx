@@ -1,123 +1,63 @@
-import { useState, useRef } from "react";
-import { Button } from "./ui/button";
-import { Card } from "./ui/card";
-import { Upload, X, Image as ImageIcon } from "lucide-react";
+// src/utils/imageOperation.ts
+import { useState } from "react";
+import type { DetectionResultData } from "../components/DetectionResult";
+import axios from "axios";
 
-interface ImageUploaderProps {
-  onImageSelect: (file: File, previewUrl: string) => void;
-  onImageRemove: () => void;
-  previewUrl: string | null;
-  disabled?: boolean;
-}
+export function useImageUpload(apiUrl: string) {
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-export function ImageUploader({
-  onImageSelect,
-  onImageRemove,
-  previewUrl,
-  disabled = false
-}: ImageUploaderProps) {
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileSelect = (file: File) => {
-    if (file && file.type.startsWith("image/")) {
-      const url = URL.createObjectURL(file);
-      onImageSelect(file, url);
-    }
+  // 选择图片
+  const selectImage = (file: File) => {
+    setImageFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileSelect(file);
-    }
+  // 移除图片
+  const removeImage = () => {
+    setImageFile(null);
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    setPreviewUrl(null);
   };
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!disabled) {
-      setIsDragging(true);
-    }
-  };
+  // 上传图片到后端
+  const uploadImage = async (): Promise<DetectionResultData> => {
+    if (!imageFile) throw new Error("没有选择图片");
 
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+    setIsUploading(true);
 
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (!disabled) {
-      const file = e.dataTransfer.files?.[0];
-      if (file) {
-        handleFileSelect(file);
+    try {
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      const response = await axios.post<DetectionResultData>(apiUrl, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      return response.data;
+    } catch (err: any) {
+      // 可以根据 Axios 错误对象详细处理
+      if (err.response) {
+        throw new Error(`上传失败, HTTPS ${err.response.status}`);
+      } else if (err.request) {
+        throw new Error("上传失败，未收到服务器响应");
+      } else {
+        throw new Error("上传失败：" + err.message);
       }
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const handleRemove = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
-    onImageRemove();
+  return {
+    imageFile,
+    previewUrl,
+    isUploading,
+    selectImage,
+    removeImage,
+    uploadImage,
   };
-
-  return (
-    <Card className="p-6 bg-slate-900/30 backdrop-blur-md border-white/10">
-      {!previewUrl ? (
-        <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${
-            isDragging
-              ? "border-cyan-400 bg-cyan-500/10"
-              : "border-white/20 hover:border-cyan-400/50 hover:bg-white/5"
-          } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => !disabled && fileInputRef.current?.click()}
-        >
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 backdrop-blur-sm flex items-center justify-center border border-cyan-500/30">
-              <Upload className="w-8 h-8 text-cyan-400" />
-            </div>
-            <div>
-              <p className="text-white mb-1">
-                点击上传或拖拽图片到此处
-              </p>
-              <p className="text-slate-400">
-                支持 JPG、PNG、WEBP 格式
-              </p>
-            </div>
-          </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            className="hidden"
-            disabled={disabled}
-          />
-        </div>
-      ) : (
-        <div className="relative group">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          <img
-            src={previewUrl}
-            alt="Preview"
-            className="w-full h-auto rounded-lg relative z-10"
-          />
-          <Button
-            variant="destructive"
-            size="icon"
-            className="absolute top-2 right-2 z-20 shadow-lg"
-            onClick={handleRemove}
-            disabled={disabled}
-          >
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
-      )}
-    </Card>
-  );
 }

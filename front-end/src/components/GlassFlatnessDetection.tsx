@@ -11,7 +11,7 @@ import { useImageUpload } from "../utils/imageOperation";
 export function GlassFlatnessDetection() {
   const [result, setResult] = useState<DetectionResultData | null>(null);
   const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
-    useImageUpload("xxx"); // TODO: 待添加后端接口
+    useImageUpload("https://your-domain.com/api/detect/glass-flatness"); // TODO: 待添加服务器域名
 
   // 调用后端逻辑
   const handleDetect = async () => {
