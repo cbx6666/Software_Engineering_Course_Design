@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { ImageUploader } from "./ImageUploader";
+import { ImageUploader } from "../utils/ImageUploader";
 import { DetectionResult } from "./DetectionResult";
 import type { DetectionResultData } from "./DetectionResult";
 import { Loader2, Ruler } from "lucide-react";
