@@ -3,18 +3,28 @@ package com.wing.glassdetect.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wing.glassdetect.model.DetectionResult;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
-import java.io.*;
-import java.nio.file.*;
-import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.Map;
 
 @Service
 public class GlassCrackService {
 
-    public DetectionResult detect(MultipartFile imageFile) {
-        Path tempFile = null;
+    private final RestTemplate restTemplate = new RestTemplate();
 
+    public DetectionResult detect(MultipartFile imageFile, String url) {
         try {
             // 保存图片到临时目录(放在项目根目录下 /imageUploaded)
             Path tempDir = Paths.get(System.getProperty("user.dir"), "imageUploaded");
@@ -22,41 +32,26 @@ public class GlassCrackService {
                 Files.createDirectories(tempDir);
             }
 
-            tempFile = tempDir.resolve("upload-" + System.currentTimeMillis() + ".jpg");
+            Path tempFile = tempDir.resolve("upload-" + System.currentTimeMillis() + ".jpg");
             Files.copy(imageFile.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
 
-            // 构造 Python 命令
-            String pythonExe = "python3";
-            // TODO: 待修改算法路径
-            String scriptPath = Paths.get(
-                    System.getProperty("user.dir"),
-                    "../glass-algorithm/algorithm/glass_crack_detect.py"
-            ).toAbsolutePath().normalize().toString();
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", new FileSystemResource(tempFile.toFile()));
+            body.add("glass_id", "GLASS-001");
 
-            ProcessBuilder builder = new ProcessBuilder(
-                    pythonExe,
-                    scriptPath,
-                    tempFile.toString()
-            );
-            builder.redirectErrorStream(true); // 合并标准输出和错误输出
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-            // 启动算法进程
-            Process process = builder.start();
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-            // 读取算法输出
-            String output;
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-                output = reader.lines().collect(Collectors.joining());
-            }
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
 
-            int exitCode = process.waitFor();
-            if (exitCode != 0) {
-                return new DetectionResult("error", "裂纹检测失败", "Python 进程返回错误码：" + exitCode, null);
-            }
+            // 删除临时文件
+            Files.deleteIfExists(tempFile);
 
-            // 尝试解析 JSON 输出
-            ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(output, DetectionResult.class);
+            // 解析 FastAPI 返回的 JSON
+            Map<String, Object> resultMap = response.getBody();
+            return new ObjectMapper().convertValue(resultMap, DetectionResult.class);
 
         } catch (Exception e) {
             return new DetectionResult(
@@ -65,13 +60,6 @@ public class GlassCrackService {
                     "算法运行异常：" + e.getMessage(),
                     null
             );
-        } finally {
-            // 删除临时文件
-            if (tempFile != null) {
-                try {
-                    Files.deleteIfExists(tempFile);
-                } catch (IOException ignored) {}
-            }
         }
     }
 }

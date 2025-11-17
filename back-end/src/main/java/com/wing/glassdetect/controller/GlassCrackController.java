@@ -16,6 +16,8 @@ public class GlassCrackController {
 
     @PostMapping
     public DetectionResult detectGlassCrack(@RequestParam("image") MultipartFile image) {
-        return glassCrackService.detect(image);
+        String url = "http://localhost:8000/api/detect/glass-crack";
+
+        return glassCrackService.detect(image, url);
     }
 }
