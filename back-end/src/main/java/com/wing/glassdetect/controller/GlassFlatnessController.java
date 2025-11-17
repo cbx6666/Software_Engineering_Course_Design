@@ -16,6 +16,8 @@ public class GlassFlatnessController {
 
     @PostMapping
     public DetectionResult detectGlassFlatness(@RequestParam("image") MultipartFile image) {
-        return glassFlatnessService.detect(image);
+        String url = "http://localhost:8000/api/detect/glass-flatness";
+
+        return glassFlatnessService.detect(image, url);
     }
 }
