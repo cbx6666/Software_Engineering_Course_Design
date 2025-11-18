@@ -39,7 +39,7 @@ export function useImageUpload(backendUrl: string) {
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("file", imageFile);
+    formData.append("image", imageFile);
 
     try {
       const response = await axios.post(backendUrl, formData, {
