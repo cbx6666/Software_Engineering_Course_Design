@@ -28,5 +28,6 @@ $ mvn spring-boot:run
 ```bash
 $ cd algorithm
 $ pip install -r requirements.txt
+$ python -m uvicorn main:app --reload
 ```
 
