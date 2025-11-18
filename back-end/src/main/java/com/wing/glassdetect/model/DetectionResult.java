@@ -8,6 +8,9 @@ public class DetectionResult {
     private String description;
     private List<Detail> details;
 
+    public DetectionResult() {
+    }
+
     public DetectionResult(String status, String title, String description, List<Detail> details) {
         this.status = status;
         this.title = title;
