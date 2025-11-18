@@ -6,8 +6,18 @@ crack_service = GlassCrackService()
 
 @router.post("/glass-crack")
 async def detect_glass_crack(image: UploadFile = File(...)):
-    result = await crack_service.detect_crack(image)
-    return result
+    try:
+        image_content = await image.read()
+        result = await crack_service.detect_crack(image_content)
+        return result
+    
+    except Exception:
+        return {
+            "status": "error", 
+            "title": "图片转换为数据流失败",
+            "description": None,
+            "details": None
+        }
 
 # @router.post("/glass-flatness")
 # async def detect_glass_flatness(image: UploadFile = File(...)):
