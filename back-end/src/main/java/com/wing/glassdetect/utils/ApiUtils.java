@@ -22,7 +22,7 @@ public class ApiUtils {
         try {
             // 构建请求体
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("file", new FileSystemResource(tempFile.toFile()));
+            body.add("image", new FileSystemResource(tempFile.toFile()));
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);

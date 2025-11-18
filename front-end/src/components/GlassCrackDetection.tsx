@@ -11,8 +11,11 @@ import { useImageUpload } from "../utils/imageOperation";
 
 export function GlassCrackDetection() {
   const [result, setResult] = useState<DetectionResultData | null>(null);
+
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
-    useImageUpload("https://your-domain.com/api/detect/glass-crack"); // TODO: 待添加服务器域名
+    useImageUpload(`${backendUrl}/api/detect/glass-crack`); // TODO: 待添加服务器域名
 
   // 调用后端逻辑
   const handleDetect = async () => {
