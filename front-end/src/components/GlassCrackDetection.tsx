@@ -15,7 +15,7 @@ export function GlassCrackDetection() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
-    useImageUpload(`${backendUrl}/api/detect/glass-crack`); // TODO: 待添加服务器域名
+    useImageUpload(`${backendUrl}/api/detect/glass-crack`);
 
   // 调用后端逻辑
   const handleDetect = async () => {
@@ -25,7 +25,6 @@ export function GlassCrackDetection() {
       const result = await uploadImage();
       setResult(result);
     } catch (err) {
-      console.error("检测失败:", err);
       setResult({
         status: "error",
         title: "上传失败",
