@@ -1,4 +1,5 @@
 import os
+import uuid
 import cv2
 from .preprocessor import Preprocessor
 from .feature_extractor import FeatureExtractor
@@ -30,6 +31,9 @@ class GlassBreakageAlgorithm:
                 # 处理Base64格式（后端传入）
                 base64_str = image_input.split(",")[1]
                 image = self.preprocessor.base64_to_image(base64_str)
+
+                # Base64 上传图片时生成唯一文件名
+                img_name = f"{uuid.uuid4().hex}.png"
             else:
                 # 处理本地路径（测试用）
                 image = cv2.imread(image_input)
