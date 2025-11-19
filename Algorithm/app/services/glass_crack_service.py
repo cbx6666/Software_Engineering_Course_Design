@@ -1,4 +1,5 @@
 import base64
+import imghdr
 from typing import Union
 from algorithms.crack_detection.breakage_algorithm import GlassBreakageAlgorithm
 
@@ -11,7 +12,10 @@ class GlassCrackService:
     def detect_crack(self, image_input: Union[str, bytes]) -> dict:
         # 如果是 bytes（例如上传文件的 content），先转 Base64
         if isinstance(image_input, bytes):
-            image_input = base64.b64encode(image_input).decode('utf-8')
-            image_input = f"data:image/jpeg;base64,{image_input}"
+            # 动态检测图片类型
+            ext = imghdr.what(None, h = image_input)  # 返回 'png', 'jpeg', 'gif' 等
+
+            image_base64 = base64.b64encode(image_input).decode('utf-8')
+            image_input = f"data:image/{ext};base64,{image_base64}"
         
         return self.crack_algo.run(image_input)

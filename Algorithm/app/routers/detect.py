@@ -8,7 +8,7 @@ crack_service = GlassCrackService()
 async def detect_glass_crack(image: UploadFile = File(...)):
     try:
         image_content = await image.read()
-        result = await crack_service.detect_crack(image_content)
+        result = crack_service.detect_crack(image_content)
         return result
     
     except Exception:
