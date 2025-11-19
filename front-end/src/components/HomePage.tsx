@@ -2,10 +2,8 @@ import { Card } from "./ui/card";
 import { 
   ScanSearch, 
   Ruler, 
-  Shield, 
   Sparkles, 
   Building2,
-  Camera,
   ChevronRight
 } from "lucide-react";
 
@@ -93,15 +91,6 @@ export function HomePage({ onNavigate }: HomePageProps) {
       onClick: () => onNavigate("flatness")
     },
     {
-      id: "quality",
-      icon: <Shield className="w-8 h-8" />,
-      title: "质量综合评估",
-      description: "全方位评估玻璃质量，包括透光率、色差、气泡等多维度指标分析",
-      gradient: "from-indigo-500/40 via-purple-500/40 to-pink-500/40",
-      iconBg: "from-indigo-500 to-purple-600",
-      comingSoon: true
-    },
-    {
       id: "defect",
       icon: <Sparkles className="w-8 h-8" />,
       title: "表面缺陷检测",
@@ -110,24 +99,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
       iconBg: "from-purple-500 to-pink-600",
       comingSoon: true
     },
-    {
-      id: "installation",
-      icon: <Building2 className="w-8 h-8" />,
-      title: "安装规范检测",
-      description: "检测玻璃安装是否符合规范要求，包括间隙、密封、固定点等关键参数",
-      gradient: "from-pink-500/40 via-rose-500/40 to-red-500/40",
-      iconBg: "from-pink-500 to-rose-600",
-      comingSoon: true
-    },
-    {
-      id: "realtime",
-      icon: <Camera className="w-8 h-8" />,
-      title: "实时监控分析",
-      description: "连接摄像设备进行实时监控，即时发现并预警玻璃异常状况",
-      gradient: "from-rose-500/40 via-orange-500/40 to-amber-500/40",
-      iconBg: "from-rose-500 to-orange-600",
-      comingSoon: true
-    }
+
   ];
 
   return (
