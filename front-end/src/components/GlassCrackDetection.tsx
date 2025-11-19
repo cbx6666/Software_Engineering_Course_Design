@@ -34,6 +34,12 @@ export function GlassCrackDetection() {
     };
   };
 
+  // 移除图片时，同时清空检测结果
+  const handleRemoveImage = () => {
+    removeImage();    // 清空上传图片
+    setResult(null);  // 清空检测结果
+  };
+
   return (
     <div className="min-h-screen p-8 md:p-12">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -55,7 +61,7 @@ export function GlassCrackDetection() {
               <h3 className="text-white mb-4">上传图片</h3>
               <ImageUploader
                 onImageSelect={selectImage}
-                onImageRemove={removeImage}
+                onImageRemove={handleRemoveImage}
                 previewUrl={previewUrl}
                 disabled={isUploading}
               />
