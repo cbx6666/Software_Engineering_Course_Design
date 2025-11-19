@@ -15,7 +15,7 @@ export function GlassCrackDetection() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
-    useImageUpload(`${backendUrl}/api/detect/glass-crack`); // TODO: 待添加服务器域名
+    useImageUpload(`${backendUrl}/api/detect/glass-crack`);
 
   // 调用后端逻辑
   const handleDetect = async () => {
@@ -25,7 +25,6 @@ export function GlassCrackDetection() {
       const result = await uploadImage();
       setResult(result);
     } catch (err) {
-      console.error("检测失败:", err);
       setResult({
         status: "error",
         title: "上传失败",
@@ -33,6 +32,12 @@ export function GlassCrackDetection() {
         details: [],
       });
     };
+  };
+
+  // 移除图片时，同时清空检测结果
+  const handleRemoveImage = () => {
+    removeImage();    // 清空上传图片
+    setResult(null);  // 清空检测结果
   };
 
   return (
@@ -56,7 +61,7 @@ export function GlassCrackDetection() {
               <h3 className="text-white mb-4">上传图片</h3>
               <ImageUploader
                 onImageSelect={selectImage}
-                onImageRemove={removeImage}
+                onImageRemove={handleRemoveImage}
                 previewUrl={previewUrl}
                 disabled={isUploading}
               />
