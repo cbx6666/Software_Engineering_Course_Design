@@ -33,7 +33,7 @@ def save_ply(points_xyz, filename):
     verts = np.array([tuple(p) for p in points_xyz], dtype=[('x','f4'),('y','f4'),('z','f4')])
     element = PlyElement.describe(verts, 'vertex')
     PlyData([element]).write(filename)
-    print(f"✅ 已输出PLY文件: {filename}")
+    print(f"已输出PLY文件: {filename}")
 
 def export_csv(points, dists, filename):
     df = pd.DataFrame({
@@ -43,7 +43,7 @@ def export_csv(points, dists, filename):
         'Dist_to_plane_m': dists
     })
     df.to_csv(filename, index=False)
-    print(f"✅ 已输出CSV文件: {filename}")
+    print(f"已输出CSV文件: {filename}")
 
 def visualize_pointcloud(
         xyz_sparse,

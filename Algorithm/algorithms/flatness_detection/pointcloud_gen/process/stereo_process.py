@@ -117,7 +117,7 @@ def process_stereo_matches(
                 else:
                     dense_depth = None  # 没有有效稠密点
             except Exception as e:
-                print("⚠️ 稠密化生成深度图失败：", e)
+                print("稠密化生成深度图失败：", e)
                 dense_depth = None
 
         # 调用可视化（可接受 dense_depth 为 None）
@@ -129,8 +129,8 @@ def process_stereo_matches(
                 save_path=save_fig_path
             )
             if save_fig_path:
-                print(f"✅ 可视化已保存至: {save_fig_path}")
+                print(f"可视化已保存至: {save_fig_path}")
         except Exception as e:
-            print("⚠️ 可视化函数执行失败：", e)
+            print("可视化函数执行失败：", e)
 
     return result
