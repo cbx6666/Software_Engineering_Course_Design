@@ -59,6 +59,16 @@ class FlatnessService:
             "details": details,
         }
 
+    def _build_failure_result(self, title: str, message: str, details: str | None = None) -> Dict:
+        return {
+            "status": "error",
+            "title": title,
+            "description": message,
+            "details": [
+                {"label": "错误详情", "value": (details or message)[:2000]},
+            ],
+        }
+
     async def run_flatness(
         self,
         left_env: UploadFile,
@@ -77,12 +87,18 @@ class FlatnessService:
 
         try:
             self.pipeline.main()
+        except HTTPException:
+            raise
         except Exception as exc:
-            raise HTTPException(status_code=500, detail=f"平整度流程执行失败: {exc}") from exc
+            return self._build_failure_result("平整度流程执行失败", str(exc), repr(exc))
 
         metrics_path = self.pipeline.POINTCLOUD_DIR / "result" / "flatness_metrics.json"
         if not metrics_path.exists():
-            raise HTTPException(status_code=500, detail="未生成平整度指标文件")
+            return self._build_failure_result("未生成平整度指标文件", "请检查角点检测与平整度重建日志。")
 
-        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        try:
+            metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        except Exception as exc:
+            return self._build_failure_result("平整度结果解析失败", str(exc))
+
         return self._build_response(metrics)
