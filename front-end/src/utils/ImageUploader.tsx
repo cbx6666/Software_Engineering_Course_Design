@@ -95,6 +95,13 @@ export function ImageUploader({
     if (file) handleFileSelect(file);
   };
 
+  const slotTips = [
+    "请上传左侧环境图",
+    "请上传左侧投影图",
+    "请上传右侧环境图",
+    "请上传右侧投影图"
+  ];
+
   return (
     <Card className="p-6 bg-slate-900/30 backdrop-blur-md border-white/10 relative">
       {/* 上传槽位预览 */}
@@ -144,10 +151,17 @@ export function ImageUploader({
         />
       </div>
 
+
       {/* 槽位索引 */}
       {maxCount > 1 && (
-        <div className="text-white mt-2 text-sm text-center">
-          {currentIndex + 1}/{maxCount}
+        <div>
+          <p className="text-red-400 text-sm mt-2">
+            {files[currentIndex] ? "" : slotTips[currentIndex]}
+          </p>
+
+          <div className="text-white mt-2 text-sm text-center">
+            {currentIndex + 1}/{maxCount}
+          </div>
         </div>
       )}
 
