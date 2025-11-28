@@ -1,6 +1,6 @@
 import json
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Literal
 
 from fastapi import HTTPException, UploadFile
 
@@ -10,7 +10,7 @@ ACCEPTED_EXTS = {".jpg", ".jpeg", ".png", ".bmp"}
 
 
 class FlatnessService:
-    """封装平整度流程：保存输入、调用管道、返回指标。"""
+    """封装平整度流程：保存输入、调用管道、返回前端所需结构。"""
 
     def __init__(self):
         self.pipeline = pipeline_runner
@@ -28,14 +28,45 @@ class FlatnessService:
         dest.write_bytes(data)
         return dest
 
+    def _build_response(self, metrics: Dict[str, float]) -> Dict:
+        flat_range = metrics.get("flatness_range_mm", 0.0)
+        if flat_range <= 3.0:
+            status: Literal["success", "warning", "error"] = "success"
+            title = "平整度正常"
+            description = "测得的平整度范围处于优良阈值内。"
+        elif flat_range <= 5.0:
+            status = "warning"
+            title = "平整度存在轻微偏差"
+            description = "平整度超过优良阈值，建议进一步复核。"
+        else:
+            status = "error"
+            title = "平整度超出安全范围"
+            description = "检测到较大平整度偏差，请安排检修。"
+
+        details = [
+            {"label": "平整度范围 (mm)", "value": f"{flat_range:.2f}"},
+            {"label": "RMS 偏差 (mm)", "value": f"{metrics.get('flatness_rms_mm', 0.0):.2f}"},
+            {"label": "平均偏差 (mm)", "value": f"{metrics.get('flatness_mean_mm', 0.0):.2f}"},
+            {"label": "标准差 (mm)", "value": f"{metrics.get('flatness_std_mm', 0.0):.2f}"},
+            {"label": "最大偏差 (mm)", "value": f"{metrics.get('max_mm', 0.0):.2f}"},
+            {"label": "最小偏差 (mm)", "value": f"{metrics.get('min_mm', 0.0):.2f}"},
+        ]
+
+        return {
+            "status": status,
+            "title": title,
+            "description": description,
+            "details": details,
+        }
+
     async def run_flatness(
         self,
         left_env: UploadFile,
         left_mix: UploadFile,
         right_env: UploadFile,
         right_mix: UploadFile,
-    ) -> Optional[Dict[str, float]]:
-        """保存四张输入图并执行完整平整度管道，返回指标。"""
+    ) -> Dict:
+        """保存四张输入图并执行完整平整度管道，返回 DetectionResultData 结构。"""
         self.pipeline.ensure_dir(self.pipeline.PIPELINE_DATA)
         self.pipeline.clear_directory(self.pipeline.PIPELINE_DATA)
 
@@ -50,6 +81,8 @@ class FlatnessService:
             raise HTTPException(status_code=500, detail=f"平整度流程执行失败: {exc}") from exc
 
         metrics_path = self.pipeline.POINTCLOUD_DIR / "result" / "flatness_metrics.json"
-        if metrics_path.exists():
-            return json.loads(metrics_path.read_text(encoding="utf-8"))
-        return None
+        if not metrics_path.exists():
+            raise HTTPException(status_code=500, detail="未生成平整度指标文件")
+
+        metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
+        return self._build_response(metrics)
