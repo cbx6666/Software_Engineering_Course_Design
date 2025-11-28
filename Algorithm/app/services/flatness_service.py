@@ -78,13 +78,7 @@ class FlatnessService:
         try:
             self.pipeline.main()
         except Exception as exc:
-            log_tail = ""
-            try:
-                log_tail = self.pipeline.PIPELINE_LOG.read_text(encoding="utf-8")[-2000:]
-            except Exception:
-                log_tail = "无法读取 pipeline.log"
-            detail = f"平整度流程执行失败: {exc}\n---- 日志尾部 ----\n{log_tail}"
-            raise HTTPException(status_code=500, detail=detail) from exc
+            raise HTTPException(status_code=500, detail=f"平整度流程执行失败: {exc}") from exc
 
         metrics_path = self.pipeline.POINTCLOUD_DIR / "result" / "flatness_metrics.json"
         if not metrics_path.exists():
