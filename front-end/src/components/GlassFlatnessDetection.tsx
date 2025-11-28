@@ -9,7 +9,7 @@ import axios from "axios";
 
 export function GlassFlatnessDetection() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const maxCount = 5; // 可以上传的最大图片数量
+  const maxCount = 4; // 可以上传的最大图片数量
 
   const [files, setFiles] = useState<(File | null)[]>(Array(maxCount).fill(null));
   const [previewUrls, setPreviewUrls] = useState<(string | null)[]>(Array(maxCount).fill(null));
