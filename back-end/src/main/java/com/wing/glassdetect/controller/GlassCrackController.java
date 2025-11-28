@@ -18,9 +18,9 @@ public class GlassCrackController {
     private String algorithmUrl;
 
     @PostMapping
-    public DetectionResult detectGlassCrack(@RequestParam("image") MultipartFile image) {
+    public DetectionResult detectGlassCrack(@RequestParam("images") MultipartFile[] images) {
         String url =  algorithmUrl + "/api/detect/glass-crack";
 
-        return glassCrackService.detect(image, url);
+        return glassCrackService.detect(images, url);
     }
 }

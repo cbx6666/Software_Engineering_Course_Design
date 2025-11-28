@@ -18,11 +18,13 @@ public class ApiUtils {
     /**
      * 通用方法：发送 MultipartFile 到 FastAPI，并返回 DetectionResult
      */
-    public static DetectionResult postImage(Path tempFile, String url) {
+    public static DetectionResult postImage(Path[] tempFiles, String url) {
         try {
             // 构建请求体
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            body.add("image", new FileSystemResource(tempFile.toFile()));
+            for (Path file : tempFiles) {
+                body.add("images", new FileSystemResource(file.toFile()));
+            }
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
