@@ -8,7 +8,7 @@ PIPELINE_DATA = PIPELINE_ROOT / "data"                 # 输入 env/mix 图放�
 PIPELINE_ARTIFACTS = PIPELINE_ROOT / "artifacts"       # 存放中间灰度图、掩膜备份
 
 # 三个子算法所在目录
-ALGO_ROOT = PIPELINE_ROOT.parent                      # algorithms/
+ALGO_ROOT = PIPELINE_ROOT.parent                       
 PROJECTOR_DIR = ALGO_ROOT / "projector_reflection_diff"
 STEREO_DIR = ALGO_ROOT / "Stereo_corner_matching"
 FLATNESS_DIR = ALGO_ROOT / "flatness_detection"
