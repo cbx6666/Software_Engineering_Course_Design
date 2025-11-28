@@ -12,11 +12,11 @@ import java.nio.file.Path;
 @Service
 public class GlassFlatnessService {
 
-    public DetectionResult detect(MultipartFile[] imageFiles, String url) {
+    public DetectionResult detect(MultipartFile[] imageFiles, String[] fieldNames, String url) {
         Path[] tempFiles = null;
         try {
             tempFiles = FileUtils.saveTempFile(imageFiles);
-            return ApiUtils.postImage(tempFiles, url);
+            return ApiUtils.postImageWithFieldNames(tempFiles, fieldNames, url);
         } catch (IOException e) {
             return new DetectionResult("error", "上传图片失败", e.getMessage(), null);
         } finally {
