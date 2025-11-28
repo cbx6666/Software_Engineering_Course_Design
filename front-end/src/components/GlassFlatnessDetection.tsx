@@ -10,6 +10,7 @@ import axios from "axios";
 export function GlassFlatnessDetection() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const maxCount = 4; // 可以上传的最大图片数量
+  const fieldNames = ["left_env", "left_mix", "right_env", "right_mix"] as const;
 
   const [files, setFiles] = useState<(File | null)[]>(Array(maxCount).fill(null));
   const [previewUrls, setPreviewUrls] = useState<(string | null)[]>(Array(maxCount).fill(null));
@@ -25,16 +26,19 @@ export function GlassFlatnessDetection() {
 
   // 调用后端逻辑
   const handleDetect = async () => {
-    const selectedFiles = files.filter(f => f !== null) as File[];
-    if (selectedFiles.length === 0) return;
+    if (files.some((f) => f === null)) return;
 
     setIsUploading(true);
     try {
       const formData = new FormData();
-      selectedFiles.forEach(f => formData.append("images", f));
+      fieldNames.forEach((field, idx) => {
+        const file = files[idx];
+        if (file) {
+          formData.append(field, file);
+        }
+      });
 
       const response = await axios.post(`${backendUrl}/api/detect/glass-flatness`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
         withCredentials: true,
       });
 
