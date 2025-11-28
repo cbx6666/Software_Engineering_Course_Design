@@ -24,8 +24,9 @@ public class GlassFlatnessController {
                                                @RequestParam("right_mix") MultipartFile rightMix) {
 
         MultipartFile[] images = new MultipartFile[]{leftEnv, leftMix, rightEnv, rightMix};
+        String[] fieldNames = {"left_env", "left_mix", "right_env", "right_mix"};
         String url = algorithmUrl + "/api/detect/glass-flatness";
 
-        return glassFlatnessService.detect(images, url);
+        return glassFlatnessService.detect(images, fieldNames, url);
     }
 }

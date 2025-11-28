@@ -47,4 +47,34 @@ public class ApiUtils {
             );
         }
     }
+
+    public static DetectionResult postImageWithFieldNames(Path[] tempFiles, String[] fieldNames, String url) {
+        try {
+            // 构建请求体
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            for (int i = 0; i < tempFiles.length; i++) {
+                body.add(fieldNames[i], new FileSystemResource(tempFiles[i].toFile()));
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // 发送请求
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
+
+            // 解析返回结果
+            Map<String, Object> resultMap = response.getBody();
+            return new ObjectMapper().convertValue(resultMap, DetectionResult.class);
+
+        } catch (Exception e) {
+            return new DetectionResult(
+                    "error",
+                    "检测失败",
+                    "算法运行异常：" + e.getMessage(),
+                    null
+            );
+        }
+    }
 }
