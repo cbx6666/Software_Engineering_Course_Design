@@ -11,8 +11,7 @@ PIPELINE_ARTIFACTS = PIPELINE_ROOT / "artifacts"       # 存放中间灰度图�
 ALGO_ROOT = PIPELINE_ROOT.parent                       
 PROJECTOR_DIR = ALGO_ROOT / "projector_reflection_diff"
 STEREO_DIR = ALGO_ROOT / "Stereo_corner_matching"
-FLATNESS_DIR = ALGO_ROOT / "flatness_detection"
-POINTCLOUD_DIR = FLATNESS_DIR / "pointcloud_gen"
+POINTCLOUD_DIR = ALGO_ROOT / "pointcloud_gen"
 
 
 def ensure_dir(path: Path) -> Path:
