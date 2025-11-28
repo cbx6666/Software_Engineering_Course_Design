@@ -18,7 +18,12 @@ public class GlassFlatnessController {
     private String algorithmUrl;
 
     @PostMapping
-    public DetectionResult detectGlassFlatness(@RequestParam("images") MultipartFile[] images) {
+    public DetectionResult detectGlassFlatness(@RequestParam("left_env") MultipartFile leftEnv,
+                                               @RequestParam("left_mix") MultipartFile leftMix,
+                                               @RequestParam("right_env") MultipartFile rightEnv,
+                                               @RequestParam("right_mix") MultipartFile rightMix) {
+
+        MultipartFile[] images = new MultipartFile[]{leftEnv, leftMix, rightEnv, rightMix};
         String url = algorithmUrl + "/api/detect/glass-flatness";
 
         return glassFlatnessService.detect(images, url);
