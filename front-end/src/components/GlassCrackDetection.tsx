@@ -5,39 +5,43 @@ import { ImageUploader } from "../utils/ImageUploader";
 import { DetectionResult } from "./DetectionResult";
 import type { DetectionResultData } from "./DetectionResult";
 import { Loader2, ScanSearch } from "lucide-react";
-
-import { useImageUpload } from "../utils/imageOperation";
-
+import axios from "axios";
 
 export function GlassCrackDetection() {
+  const [files, setFiles] = useState<(File | null)[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<(string | null)[]>([]);
   const [result, setResult] = useState<DetectionResultData | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0); // 当前聚焦槽位
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const maxCount = 1; // 最大上传图片数，可根据需求调整
 
-  const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
-    useImageUpload(`${backendUrl}/api/detect/glass-crack`);
-
-  // 调用后端逻辑
+  /** 调用后端逻辑，上传所有图片并返回统一结果 */
   const handleDetect = async () => {
-    if (!imageFile) return;
+    const uploadFiles = files.filter((f) => f !== null) as File[];
+    if (uploadFiles.length === 0) return;
 
+    setIsUploading(true);
     try {
-      const result = await uploadImage();
-      setResult(result);
-    } catch (err) {
+      const formData = new FormData();
+      uploadFiles.forEach((file) => formData.append("images", file)); // 后端接收 images[]
+      const response = await axios.post(`${backendUrl}/api/detect/glass-crack`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+
+      setResult(response.data); // 统一检测结果
+    } catch (err: any) {
       setResult({
         status: "error",
         title: "上传失败",
         description: "图片上传或检测过程出现错误，请稍后再试。",
         details: [],
       });
-    };
-  };
-
-  // 移除图片时，同时清空检测结果
-  const handleRemoveImage = () => {
-    removeImage();    // 清空上传图片
-    setResult(null);  // 清空检测结果
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -57,16 +61,27 @@ export function GlassCrackDetection() {
         {/* Main Card */}
         <Card className="border-0 bg-white/10 backdrop-blur-xl p-8 shadow-2xl">
           <div className="grid md:grid-cols-2 gap-8">
+            {/* 图片上传区 */}
             <div>
               <h3 className="text-white mb-4">上传图片</h3>
               <ImageUploader
-                onImageSelect={selectImage}
-                onImageRemove={handleRemoveImage}
-                previewUrl={previewUrl}
+                maxCount={maxCount}
+                currentIndex={currentIndex}
+                files={files}
+                previewUrls={previewUrls}
                 disabled={isUploading}
+                onImagesChange={(newFiles, newPreviews) => {
+                  setFiles(newFiles);
+                  setPreviewUrls(newPreviews);
+                  setResult(null); // 删除或上传时清空检测结果
+                  // 聚焦第一个空槽位
+                  const firstEmptyIndex = newFiles.findIndex((f) => f === null);
+                  setCurrentIndex(firstEmptyIndex >= 0 ? firstEmptyIndex : 0);
+                }}
               />
             </div>
 
+            {/* 操作面板 */}
             <div>
               <h3 className="text-white mb-4">操作面板</h3>
               <Card className="p-6 bg-slate-900/50 backdrop-blur-md border-white/10">
@@ -92,9 +107,16 @@ export function GlassCrackDetection() {
                       </li>
                     </ul>
                   </div>
+
+                  {files.filter(f => f !== null).length < maxCount && (
+                    <p className="text-red-400 text-sm mt-2">
+                      请上传 {maxCount} 张图片后才能开始检测
+                    </p>
+                  )}
+
                   <Button
                     onClick={handleDetect}
-                    disabled={!imageFile || isUploading}
+                    disabled={files.filter((f) => f !== null).length != maxCount || isUploading}
                     className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-cyan-500/30"
                     size="lg"
                   >
@@ -116,6 +138,7 @@ export function GlassCrackDetection() {
           </div>
         </Card>
 
+        {/* 检测结果 */}
         {result && (
           <div>
             <h3 className="text-white mb-4">检测结果</h3>

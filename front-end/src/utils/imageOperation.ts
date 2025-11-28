@@ -4,36 +4,37 @@ import axios from "axios";
 import type { DetectionResultData } from "../components/DetectionResult";
 
 export function useImageUpload(backendUrl: string) {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
 
   // 选择图片
-  const selectImage = (file: File) => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl); // 释放之前 URL
-    }
-    setImageFile(file);
-    setPreviewUrl(URL.createObjectURL(file));
+  const selectImages = (files: File[]) => {
+    previewUrls.forEach(url => URL.revokeObjectURL(url));
+
+    const urls = files.map(file => URL.createObjectURL(file));
+    setImageFiles(files);
+    setPreviewUrls(urls);
   };
 
   // 删除图片
-  const removeImage = () => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    setImageFile(null);
-    setPreviewUrl(null);
+  const removeImage = (index: number) => {
+    URL.revokeObjectURL(previewUrls[index]);
+    const newFiles = imageFiles.filter((_, i) => i !== index);
+    const newUrls = previewUrls.filter((_, i) => i !== index);
+
+    setImageFiles(newFiles);
+    setPreviewUrls(newUrls);
   };
 
   // 上传图片到后端
   const uploadImage = async (): Promise<DetectionResultData> => {
-    if (!imageFile) throw new Error("没有选择图片");
+    if (imageFiles.length === 0) throw new Error("没有选择图片");
 
     setIsUploading(true);
 
     const formData = new FormData();
-    formData.append("image", imageFile);
+    imageFiles.forEach(file => formData.append("images", file));
 
     try {
       const response = await axios.post(backendUrl, formData, {
@@ -51,10 +52,10 @@ export function useImageUpload(backendUrl: string) {
   };
 
   return {
-    imageFile,
-    previewUrl,
+    imageFiles,
+    previewUrls,
     isUploading,
-    selectImage,
+    selectImages,
     removeImage,
     uploadImage,
   };
