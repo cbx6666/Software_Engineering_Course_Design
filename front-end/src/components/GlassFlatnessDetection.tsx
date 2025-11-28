@@ -5,24 +5,40 @@ import { ImageUploader } from "../utils/ImageUploader";
 import { DetectionResult } from "./DetectionResult";
 import type { DetectionResultData } from "./DetectionResult";
 import { Loader2, Ruler } from "lucide-react";
-
-import { useImageUpload } from "../utils/imageOperation";
+import axios from "axios";
 
 export function GlassFlatnessDetection() {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const maxCount = 4; // 可以上传的最大图片数量
+
+  const [files, setFiles] = useState<(File | null)[]>(Array(maxCount).fill(null));
+  const [previewUrls, setPreviewUrls] = useState<(string | null)[]>(Array(maxCount).fill(null));
+  const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<DetectionResultData | null>(null);
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
-  const { imageFile, previewUrl, isUploading, selectImage, removeImage, uploadImage } =
-    useImageUpload(`${backendUrl}/api/detect/glass-flatness`);
+  // 图片变化回调
+  const handleImagesChange = (newFiles: (File | null)[], newPreviews: (string | null)[]) => {
+    setFiles(newFiles);
+    setPreviewUrls(newPreviews);
+    setResult(null); // 每次修改图片都清空检测结果
+  };
 
   // 调用后端逻辑
   const handleDetect = async () => {
-    if (!imageFile) return;
+    const selectedFiles = files.filter(f => f !== null) as File[];
+    if (selectedFiles.length === 0) return;
 
+    setIsUploading(true);
     try {
-      const result = await uploadImage();
-      setResult(result);
+      const formData = new FormData();
+      selectedFiles.forEach(f => formData.append("images", f));
+
+      const response = await axios.post(`${backendUrl}/api/detect/glass-flatness`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        withCredentials: true,
+      });
+
+      setResult(response.data); // 后端返回统一 DetectionResult
     } catch (err) {
       console.error("检测失败:", err);
       setResult({
@@ -31,7 +47,9 @@ export function GlassFlatnessDetection() {
         description: "图片上传或检测过程出现错误，请稍后再试。",
         details: [],
       });
-    };
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -54,10 +72,11 @@ export function GlassFlatnessDetection() {
             <div>
               <h3 className="text-white mb-4">上传图片</h3>
               <ImageUploader
-                onImageSelect={selectImage}
-                onImageRemove={removeImage}
-                previewUrl={previewUrl}
+                maxCount={maxCount}
+                files={files}
+                previewUrls={previewUrls}
                 disabled={isUploading}
+                onImagesChange={handleImagesChange}
               />
             </div>
 
@@ -86,9 +105,16 @@ export function GlassFlatnessDetection() {
                       </li>
                     </ul>
                   </div>
+
+                  {files.filter(f => f !== null).length < maxCount && (
+                    <p className="text-red-400 text-sm mt-2">
+                      请上传 {maxCount} 张图片后才能开始检测
+                    </p>
+                  )}
+
                   <Button
                     onClick={handleDetect}
-                    disabled={!imageFile || isUploading}
+                    disabled={files.filter((f) => f !== null).length != maxCount || isUploading}
                     className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 shadow-lg shadow-blue-500/30"
                     size="lg"
                   >

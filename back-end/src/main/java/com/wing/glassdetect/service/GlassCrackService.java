@@ -12,15 +12,19 @@ import java.nio.file.Path;
 @Service
 public class GlassCrackService {
 
-    public DetectionResult detect(MultipartFile imageFile, String url) {
-        Path tempFile = null;
+    public DetectionResult detect(MultipartFile[] imageFiles, String url) {
+        Path[] tempFiles = null;
         try {
-            tempFile = FileUtils.saveTempFile(imageFile);
-            return ApiUtils.postImage(tempFile, url);
+            tempFiles = FileUtils.saveTempFile(imageFiles);
+            return ApiUtils.postImage(tempFiles, url);
         } catch (IOException e) {
             return new DetectionResult("error", "上传图片失败", e.getMessage(), null);
         } finally {
-            FileUtils.deleteTempFile(tempFile);
+            if (tempFiles != null) {
+                for (Path p : tempFiles) {
+                    FileUtils.deleteTempFile(p);
+                }
+            }
         }
     }
 }
