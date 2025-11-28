@@ -63,9 +63,22 @@ def find_input(prefix: str) -> Path:
 
 
 def run_cmd(cmd: list[str], cwd: Path) -> None:
-    """执行子模块命令并打印上下文。"""
+    """执行子模块命令并在失败时抛出包含 stdout/stderr 的异常。"""
     print(f"[CMD] {' '.join(cmd)} (cwd={cwd})")
-    subprocess.run(cmd, cwd=cwd, check=True)
+    completed = subprocess.run(
+        cmd,
+        cwd=cwd,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if completed.returncode != 0:
+        stdout = completed.stdout.strip()
+        stderr = completed.stderr.strip()
+        details = "\n".join(part for part in (stdout, stderr) if part)
+        raise RuntimeError(
+            f"命令 {' '.join(cmd)} 在 {cwd} 失败 (exit {completed.returncode}).\n{details}"
+        )
 
 
 def stage_projector_inputs(camera: str) -> None:
