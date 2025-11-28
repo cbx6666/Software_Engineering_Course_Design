@@ -28,9 +28,4 @@ async def detect_glass_flatness(
     right_env: UploadFile = File(...),
     right_mix: UploadFile = File(...),
 ):
-    metrics = await flatness_service.run_flatness(left_env, left_mix, right_env, right_mix)
-    return {
-        "status": "success",
-        "message": "平整度流程执行完成",
-        "metrics": metrics,
-    }
+    return await flatness_service.run_flatness(left_env, left_mix, right_env, right_mix)
