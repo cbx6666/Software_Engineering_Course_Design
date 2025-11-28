@@ -1,13 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-// 返回类型
-export interface DetectionResultData {
-  status: "success" | "error" | "warning";
-  title: string;
-  description: string;
-  details: { label: string; value: string }[];
-}
+import type { DetectionResultData } from "../components/DetectionResult";
 
 export function useImageUpload(backendUrl: string) {
   const [imageFile, setImageFile] = useState<File | null>(null);
