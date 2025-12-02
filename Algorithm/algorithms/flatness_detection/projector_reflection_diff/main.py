@@ -406,21 +406,21 @@ def suppress_background_in_mask(r_proj_gray: np.ndarray, mask: np.ndarray, ksize
     """
     在棋盘格区域内，去掉缓慢变化的背景亮度，只保留细节纹理，让角点更突出。
     
-    使用“高斯高通滤波”，把图片分解成“低频（缓慢变化）”和“高频（细节纹理）”，然后去掉低频部分，只保留高频。
+    使用"高斯高通滤波"，把图片分解成"低频（缓慢变化）"和"高频（细节纹理）"，然后去掉低频部分，只保留高频。
     这样棋盘格的角点会更清晰，而背景反射会被抑制。棋盘格区域里除了投影图案，还有缓慢变化的背景反射（比如天空、建筑倒影）。
     这些背景会干扰角点检测。通过高通滤波，把缓慢变化的背景去掉，只保留棋盘格的快速变化（黑白交替），角点就会更明显。
     
     原理：
         1. 确保核大小为奇数（高斯模糊要求）
-        2. 用大核高斯模糊得到“低频分量”（缓慢变化的背景）
-        3. 用原图减去低频分量，得到“高频分量”（细节纹理，包括棋盘格）
+        2. 用大核高斯模糊得到"低频分量"（缓慢变化的背景）
+        3. 用原图减去低频分量，得到"高频分量"（细节纹理，包括棋盘格）
         4. 只在掩膜标记的区域内用高频分量替换原图，其他区域保持原样
         5. 把结果限制在 0-255 范围内
     
     参数：
         r_proj_gray: 纯投影反射的灰度图
         mask: 棋盘格掩膜（255=棋盘格区域，0=非棋盘格区域）
-        ksize: 高斯模糊的核大小，默认 51（必须是奇数）。越大，去掉的“低频”越多，
+        ksize: 高斯模糊的核大小，默认 51（必须是奇数）。越大，去掉的"低频"越多，
                但太大可能会影响角点附近的细节。
     
     返回：
@@ -443,6 +443,44 @@ def suppress_background_in_mask(r_proj_gray: np.ndarray, mask: np.ndarray, ksize
     
     # 限制像素值在 [0, 255] 范围内，并转换为 uint8
     return np.clip(out, 0, 255).astype(np.uint8)
+
+
+def enhance_chessboard_contrast(img: np.ndarray, mask: np.ndarray, 
+                                clip_limit: float = 2.5, tile_grid_size: Tuple[int, int] = (8, 8)) -> np.ndarray:
+    """
+    在棋盘格区域内增强对比度，使角点更突出。
+    
+    使用 CLAHE（对比度受限的自适应直方图均衡化）算法，在棋盘格区域内增强对比度，
+    使黑白交替的棋盘格图案更加清晰，便于后续的角点检测。
+    
+    原理：
+        1. 创建 CLAHE 对象，设置对比度限制和网格大小
+        2. 对整个图像应用 CLAHE（即使只增强掩膜区域，也需要处理全图以保持一致性）
+        3. 只在掩膜标记的区域内用增强后的图像替换原图，其他区域保持原样
+        4. 这样可以避免非棋盘格区域的过度增强，同时让棋盘格区域的对比度更明显
+    
+    参数：
+        img: 输入灰度图
+        mask: 棋盘格掩膜（255=棋盘格区域，0=非棋盘格区域）
+        clip_limit: CLAHE 的对比度限制，默认 2.5。值越大，对比度增强越强，但可能产生过度增强
+        tile_grid_size: CLAHE 的网格大小，默认 (8, 8)。将图像分成 8×8 的网格，对每个网格独立进行直方图均衡化
+    
+    返回：
+        处理后的灰度图。只在掩膜标记的区域内做了对比度增强，其他区域保持原样。
+    """
+    # 创建 CLAHE 对象
+    clahe = cv2.createCLAHE(clipLimit=clip_limit, tileGridSize=tile_grid_size)
+    
+    # 对整个图像应用 CLAHE
+    enhanced = clahe.apply(img)
+    
+    # 复制原图作为输出
+    out = img.copy()
+    
+    # 仅在掩膜标记的区域内用增强后的图像替换原图
+    out[mask > 0] = enhanced[mask > 0]
+    
+    return out
 
 
 def find_input_images(data_dir: str) -> Tuple[str, str]:
@@ -493,7 +531,8 @@ def main():
         7. 转灰度：转为灰度图便于后续处理
         8. 找出棋盘格区域：自动生成掩膜
         9. 背景抑制：在棋盘格区域内去掉缓慢变化的背景
-        10. 保存结果：result_detect.png（用于角点检测的灰度图）
+        10. 对比度增强：在棋盘格区域内使用 CLAHE 增强对比度，使角点更突出
+        11. 保存结果：result_detect.png（用于角点检测的灰度图）
     
     参数：
         无（所有参数通过函数调用时的默认值设置）
@@ -502,7 +541,7 @@ def main():
         无（结果保存到 result 目录）
     
     输出说明：
-        - result_detect.png：这是给算法用的，已经做了对齐、亮度匹配、相减和背景抑制，
+        - result_detect.png：这是给算法用的，已经做了对齐、亮度匹配、相减、背景抑制和对比度增强，
                             棋盘格的角点会更清晰，适合后续的角点检测和三维重建。
         - result_mask.png：自动生成的棋盘格掩膜，Stereo_corner_matching 会直接引用它来限制角点搜索区域。
     
@@ -573,11 +612,18 @@ def main():
     print("\n[步骤6] 背景抑制 -> suppress_background_in_mask")
     r_proj_hf = suppress_background_in_mask(r_proj_gray, chess_mask, ksize=51)
     print("  背景抑制完成 (ksize=51)")
+    
+    # ========== 步骤7：对比度增强 ==========
+    # 在棋盘格区域内使用 CLAHE 增强对比度，使角点更突出
+    # 使用较温和的参数，避免过度增强导致角点检测失败
+    print("\n[步骤7] 对比度增强 -> enhance_chessboard_contrast")
+    r_proj_enhanced = enhance_chessboard_contrast(r_proj_hf, chess_mask, clip_limit=2.0, tile_grid_size=(8, 8))
+    print("  对比度增强完成 (clip_limit=2.0, tile_grid=(8,8))")
 
     # ========== 保存输出结果 ==========
-    # 保存检测用灰度图：用于角点检测和三维重建
+    # 保存检测用灰度图：用于角点检测和三维重建（已做背景抑制和对比度增强）
     detect_out = os.path.join(out_dir, "result_detect.png")
-    safe_imwrite(detect_out, r_proj_hf)
+    safe_imwrite(detect_out, r_proj_enhanced)
     
     # 保存棋盘格掩膜：用于后续角点检测时限制搜索范围
     mask_out = os.path.join(out_dir, "result_mask.png")
