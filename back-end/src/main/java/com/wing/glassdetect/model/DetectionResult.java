@@ -7,6 +7,7 @@ public class DetectionResult {
     private String title;
     private String description;
     private List<Detail> details;
+    private String image;
 
     public DetectionResult() {
     }
@@ -16,6 +17,14 @@ public class DetectionResult {
         this.title = title;
         this.description = description;
         this.details = details;
+    }
+
+    public DetectionResult(String status, String title, String description, List<Detail> details, String image) {
+        this.status = status;
+        this.title = title;
+        this.description = description;
+        this.details = details;
+        this.image = image;
     }
 
     // Detail definition
@@ -82,4 +91,7 @@ public class DetectionResult {
         this.details = details;
     }
 
+    public String getImage(){
+        return image;
+    }
 }

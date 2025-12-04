@@ -6,6 +6,8 @@ from fastapi import HTTPException, UploadFile
 
 from algorithms.flatness_detection.flatness_pipeline import run_pipeline as pipeline_runner
 
+import base64
+
 ACCEPTED_EXTS = {".jpg", ".jpeg", ".png", ".bmp"}
 
 
@@ -100,5 +102,19 @@ class FlatnessService:
             metrics = json.loads(metrics_path.read_text(encoding="utf-8"))
         except Exception as exc:
             return self._build_failure_result("平整度结果解析失败", str(exc))
+    
+        response = self._build_response(metrics)
+    
+        # 在指定算法输出目录中寻找 pointcloud.png 并附加为 data URI
+        try:
+            alg_result_dir = Path(__file__).resolve().parents[2] / "algorithms" / "flatness_detection" / "pointcloud_gen" / "result"
+            candidate = alg_result_dir / "pointcloud.png"
+            if candidate.exists():
+                img_bytes = candidate.read_bytes()
+                b64 = base64.b64encode(img_bytes).decode("utf-8")
+                response["image"] = f"data:image/png;base64,{b64}"
+        except Exception:
+            # 附加失败不影响主流程
+            pass
 
-        return self._build_response(metrics)
+        return response

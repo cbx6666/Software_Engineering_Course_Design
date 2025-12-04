@@ -7,7 +7,7 @@ export interface DetectionResultData {
   status: "success" | "warning" | "error";
   title: string;
   description: string;
-  details?: Array<{ label: string; value: string }>;
+  details?: Array<{ label: string; value: string; image?: string }>;
 }
 
 interface DetectionResultProps {
@@ -60,14 +60,26 @@ export function DetectionResult({ result }: DetectionResultProps) {
             </Badge>
           </div>
           <p className="text-slate-300 mb-4">{result.description}</p>
-          
+
           {result.details && result.details.length > 0 && (
             <div className="space-y-2 bg-slate-900/30 rounded-lg p-4 backdrop-blur-sm">
               {result.details.map((detail, index) => (
                 <div key={index} className="flex justify-between items-center py-2 border-t border-white/10 first:border-t-0">
                   <span className="text-slate-400">{detail.label}</span>
                   <span className="text-white">{detail.value}</span>
+
+                  {/* 返回的图片 */}
+                  {detail.image && (
+                    <div className="mt-3">
+                      <img
+                        src={detail.image}
+                        alt={detail.label}
+                        className="max-w-full rounded-lg border border-white/10"
+                      />
+                    </div>
+                  )}
                 </div>
+
               ))}
             </div>
           )}
