@@ -23,7 +23,7 @@ public class ApiUtils {
             // 构建请求体
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
             for (Path file : tempFiles) {
-                body.add("images", new FileSystemResource(file.toFile()));
+                body.add("image", new FileSystemResource(file.toFile()));
             }
 
             HttpHeaders headers = new HttpHeaders();
