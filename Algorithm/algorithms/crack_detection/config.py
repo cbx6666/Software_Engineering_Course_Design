@@ -20,6 +20,15 @@ class Config:
     CANNY_SAVE_PATH = "./canny_edges/"  # 边缘图像输出文件夹
     # 批量测试配置
     TEST_IMAGE_DIR = "./test_images/"  # 测试图像文件夹路径
+
+    # 新增轮廓分析阈值
+    MIN_CONTOUR_AREA = 100  # 最小轮廓面积（过滤噪声）
+    SHAPE_FACTOR_THRESHOLD = 0.3  # 形状因子阈值
+    ASPECT_RATIO_LOW = 0.3  # 宽高比下限
+    ASPECT_RATIO_HIGH = 3   # 宽高比上限
+    SOLIDITY_LOW = 0.2      # 密实度下限
+    SOLIDITY_HIGH = 0.8     # 密实度上限
+
     # 注释YOLO模型路径（暂不使用）
     # YOLO_MODEL_PATH = "./models/yolov8_obb.pt"  # YOLOv8-obb模型（刘长儒2024）
 

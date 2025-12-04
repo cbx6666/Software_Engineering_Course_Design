@@ -50,7 +50,7 @@ class GlassBreakageAlgorithm:
             # 3. 特征提取
             edges, crack_ratio = self.extractor.extract_edge(processed_img)
 
-            # 关键改动1：保存Canny边缘图像（灰度图→彩色图，便于查看）
+            is_break = self.extractor.is_glass_break(edges)
             
             canny_save_path = os.path.join(Config.CANNY_SAVE_PATH, img_name)
             cv2.imwrite(canny_save_path, edges)  # 保存图像到output文件夹
@@ -63,7 +63,8 @@ class GlassBreakageAlgorithm:
             # 4. 整合特征（移除YOLO相关）
             features = {
                 "crack_ratio": crack_ratio,
-                "glcm": glcm_features
+                "glcm": glcm_features,
+                "is_break": is_break
                 # 注释YOLO特征（暂不使用）
                 # "yolo": yolo_detections
             }
