@@ -45,6 +45,7 @@ export function DetectionResult({ result }: DetectionResultProps) {
   };
 
   const config = getStatusConfig();
+  const resultDetails = result.details?.filter(d => d != null) || [];
 
   return (
     <Card className={`p-6 border ${config.borderColor} ${config.bgColor}`}>
@@ -61,14 +62,13 @@ export function DetectionResult({ result }: DetectionResultProps) {
           </div>
           <p className="text-slate-300 mb-4">{result.description}</p>
 
-          {result.details && result.details.length > 0 && (
+          {resultDetails.length > 0 && (
             <div className="space-y-2 bg-slate-900/30 rounded-lg p-4 backdrop-blur-sm">
-              {result.details.map((detail, index) => (
+              {resultDetails.map((detail, index) => (
                 <div key={index} className="flex justify-between items-center py-2 border-t border-white/10 first:border-t-0">
                   <span className="text-slate-400">{detail.label}</span>
                   <span className="text-white">{detail.value}</span>
 
-                  {/* 返回的图片 */}
                   {detail.image && (
                     <div className="mt-3">
                       <img
@@ -79,7 +79,6 @@ export function DetectionResult({ result }: DetectionResultProps) {
                     </div>
                   )}
                 </div>
-
               ))}
             </div>
           )}
