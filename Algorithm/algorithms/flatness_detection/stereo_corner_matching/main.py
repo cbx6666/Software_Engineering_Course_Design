@@ -532,9 +532,7 @@ def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[T
 
 def crop_image_by_mask(img: np.ndarray,
                        mask: np.ndarray,
-                       min_ratio: float = 0.12,
-                       padding: int = 50,
-                       chessboard_size: Optional[Tuple[int, int]] = None) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int], float]:
+                       padding: int = 50) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int], float]:
     """
     根据掩膜精确裁剪图像到棋盘格区域。
     
@@ -543,9 +541,7 @@ def crop_image_by_mask(img: np.ndarray,
     参数：
         img: 输入图像
         mask: 掩膜图像（棋盘格掩膜，白色区域表示棋盘格位置，内部有黑色矩形）
-        min_ratio: 掩膜覆盖比例阈值（已弃用，总是裁剪）
         padding: 裁剪边界的额外边距（像素）
-        chessboard_size: 棋盘格内角点数量 (行数, 列数)，已弃用
     
     返回：
         (裁剪后的图像, 裁剪后的掩膜, (x偏移, y偏移), 掩膜覆盖比例)
@@ -654,7 +650,7 @@ def main():
 
     print("\n裁剪左图...")
     img_left_det, mask_left_det, left_offset, left_ratio = crop_image_by_mask(
-        img_left, mask_left, min_ratio=0.12, padding=50, chessboard_size=chessboard_size)
+        img_left, mask_left, padding=50)
     
     # 保存裁剪后的左图掩码
     cropped_left_mask_path = os.path.join(out_dir, "cropped_left_mask.png")
@@ -663,7 +659,7 @@ def main():
 
     print("\n裁剪右图...")
     img_right_det, mask_right_det, right_offset, right_ratio = crop_image_by_mask(
-        img_right, mask_right, min_ratio=0.12, padding=50, chessboard_size=chessboard_size)
+        img_right, mask_right, padding=50)
     
     # 保存裁剪后的右图掩码
     cropped_right_mask_path = os.path.join(out_dir, "cropped_right_mask.png")
