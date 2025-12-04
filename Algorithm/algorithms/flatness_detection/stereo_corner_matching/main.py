@@ -37,55 +37,11 @@ from typing import Tuple, Optional
 
 import cv2
 import numpy as np
-import warnings
-
-try:
-    from scipy.signal import find_peaks
-except ImportError:
-    # 如果没有 scipy，使用简单的峰值检测
-    def find_peaks(data, distance=None, height=None):
-        """简单的峰值检测实现（如果没有 scipy）"""
-        peaks = []
-        for i in range(1, len(data) - 1):
-            if data[i] > data[i-1] and data[i] > data[i+1]:
-                if height is None or data[i] >= height:
-                    peaks.append(i)
-        # 简单的距离过滤
-        if distance and len(peaks) > 1:
-            filtered = [peaks[0]]
-            for p in peaks[1:]:
-                if p - filtered[-1] >= distance:
-                    filtered.append(p)
-            peaks = filtered
-        return np.array(peaks), {}
-
-try:
-    from sklearn.cluster import KMeans
-    SKLEARN_AVAILABLE = True
-except ImportError:
-    SKLEARN_AVAILABLE = False
-    print("  [警告] sklearn 未安装，将使用备选方法进行角点排序")
-
-os.environ['OPENCV_LOG_LEVEL'] = 'ERROR'
-warnings.filterwarnings('ignore', category=DeprecationWarning)
-
-import sys
-from io import StringIO
-
-class SuppressOpenCVWarnings:
-    """临时抑制 OpenCV 警告的上下文管理器"""
-    def __enter__(self):
-        self._stderr = sys.stderr
-        sys.stderr = StringIO()
-        return self
-    def __exit__(self, *args):
-        sys.stderr = self._stderr
 
 
 def read_image_grayscale(path: str) -> np.ndarray:
     """读取灰度图片。"""
-    with SuppressOpenCVWarnings():
-        img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     
     if img is None:
         raise FileNotFoundError(f"无法读取图像: {path}")
@@ -156,12 +112,11 @@ def find_chessboard_corners(img: np.ndarray, pattern_size: Tuple[int, int],
     ret = False
     corners: Optional[np.ndarray] = None
     
-    with SuppressOpenCVWarnings():
-        ret, corners = cv2.findChessboardCorners(
-            img_processed,
-            pattern_size,
-            flags=flags
-        )
+    ret, corners = cv2.findChessboardCorners(
+        img_processed,
+        pattern_size,
+        flags=flags
+    )
     
     if ret:
         print(f"  [提示] findChessboardCorners 检测成功，检测到 {len(corners)} 个角点。")
@@ -194,11 +149,6 @@ def find_chessboard_corners(img: np.ndarray, pattern_size: Tuple[int, int],
     if not ret:
         expected_count = pattern_size[0] * pattern_size[1]
         print(f"  [错误] 角点检测失败：未检测到任何角点（期望 {expected_count} 个）")
-        print(f"  [提示] 请检查：")
-        print(f"    - 棋盘格参数是否正确（当前: {pattern_size[0]}×{pattern_size[1]}）")
-        print(f"    - 图像中是否包含完整的棋盘格")
-        print(f"    - 掩膜区域是否覆盖了棋盘格")
-        print(f"    - 图像对比度是否足够")
         return None
     
     # 验证角点是否在掩膜区域内
@@ -252,64 +202,14 @@ def refine_corners(img: np.ndarray, corners: np.ndarray) -> np.ndarray:
     return refined
 
 
-def sort_corners_by_rows(corners: np.ndarray, pattern_size: Tuple[int, int]) -> np.ndarray:
-    """
-    按行排序角点：从上到下，从左到右。
-    
-    先根据 y 值和指定的列数，将角点分组为行，然后每行按 x 值递增排序。
-    
-    参数：
-        corners: 角点坐标数组，形状是 (N, 1, 2)
-        pattern_size: 棋盘格内角点数量，格式是 (行数, 列数)
-    
-    返回：
-        排序后的角点数组，形状与输入相同。第一个点是左上角。
-    """
-    pts = corners.reshape(-1, 2)  # (N, 2)
-    all_x = pts[:, 0]
-    all_y = pts[:, 1]
-    
-    num_rows, num_cols = pattern_size
-    
-    # 步骤1：先按 y 坐标排序，得到 y_sorted_indices
-    y_sorted_indices = np.argsort(all_y)
-    
-    # 步骤2：根据列数（num_cols），将点分组为行
-    # 每 num_cols 个点为一行
-    rows = []
-    for i in range(0, len(y_sorted_indices), num_cols):
-        row_indices = y_sorted_indices[i:i+num_cols]
-        rows.append(row_indices)
-    
-    # 步骤3：对每一行内的点按 x 坐标递增排序（从左到右）
-    sorted_indices = []
-    for row_indices in rows:
-        # 获取这一行的 x 坐标
-        row_x = all_x[row_indices]
-        # 按 x 坐标排序
-        row_sorted = [row_indices[i] for i in np.argsort(row_x)]
-        sorted_indices.extend(row_sorted)
-    
-    # 步骤4：将所有行按顺序连接起来
-    sorted_corners = corners[np.array(sorted_indices)]
-    return sorted_corners
-
-
 def sort_corners_to_grid(corners: np.ndarray, pattern_size: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
     """
-    将角点按行列分配到固定大小的网格中，处理缺失角点的情况（鲁棒棋盘角点栅格拟合）。
+    将角点按行列分配到固定大小的网格中，处理缺失角点的情况。
     
-    使用 K-Means 聚类方法：
-    1. 根据角点的 y 坐标聚类得到行（每行的 y 值集中在水平线上）
-    2. 对每一行内的角点，根据 x 坐标聚类得到列（每列的 x 值集中在垂直线上）
-    3. 按聚类中心排序得到真实的行列编号
-    4. 将角点分配到固定大小的网格中，缺失位置用 NaN 填充
-    
-    优势：
-    - 即使角点检测掉 20% 也能恢复正确网格
-    - 不依赖 y 值先排序（可以处理倾斜变形）
-    - 行列号自动校正（倾斜、旋转也没问题）
-    - 匹配左右图非常稳定（坐标序号一致）
+    使用统一的排序方法：
+    1. 按 y 坐标排序，将角点分组为行
+    2. 对每一行内的角点，按 x 坐标排序，分配到列
+    3. 将角点分配到固定大小的网格中，缺失位置用 NaN 填充
     
     参数：
         corners: 角点坐标数组，形状是 (N, 1, 2)
@@ -331,99 +231,14 @@ def sort_corners_to_grid(corners: np.ndarray, pattern_size: Tuple[int, int]) -> 
         valid_mask = np.zeros(total_expected, dtype=bool)
         return grid_corners, valid_mask
     
-    # 如果 sklearn 不可用，使用备选方法
-    if not SKLEARN_AVAILABLE:
-        return _sort_corners_to_grid_fallback(pts, pattern_size, corners)
-    
-    # 步骤1：按 y 坐标聚类得到行
-    try:
-        kmeans_y = KMeans(n_clusters=num_rows, n_init=10, random_state=42).fit(pts[:, 1].reshape(-1, 1))
-        row_centers = kmeans_y.cluster_centers_.flatten()
-        # 行中心从上到下排序
-        row_order = np.argsort(row_centers)
-    except Exception as e:
-        print(f"  [警告] K-Means 行聚类失败: {e}，使用备选方法")
-        return _sort_corners_to_grid_fallback(pts, pattern_size, corners)
-    
-    # 预创建网格 (num_rows x num_cols)，初始为 None
-    grid = [[None for _ in range(num_cols)] for _ in range(num_rows)]
-    
-    # 步骤2：每行内按 x 坐标聚类得到列
-    for real_row_idx, kmeans_row_label in enumerate(row_order):
-        # 取出属于该行的点
-        row_mask = kmeans_y.labels_ == kmeans_row_label
-        row_pts = pts[row_mask]
-        row_indices = np.where(row_mask)[0]
-        
-        if len(row_pts) == 0:
-            continue
-        
-        # 当本行检测点少于列数时，使用实际点数作为聚类数
-        col_clusters = min(num_cols, len(row_pts))
-        
-        try:
-            kmeans_x = KMeans(n_clusters=col_clusters, n_init=10, random_state=42).fit(row_pts[:, 0].reshape(-1, 1))
-            col_centers = kmeans_x.cluster_centers_.flatten()
-            col_order = np.argsort(col_centers)
-        except Exception as e:
-            # 如果列聚类失败，使用简单排序方法：直接按 x 坐标排序分配
-            x_sorted_indices = np.argsort(row_pts[:, 0])
-            for i, idx in enumerate(x_sorted_indices):
-                if i >= num_cols:
-                    break
-                pt_idx_in_corner_array = row_indices[idx]
-                corner_pt = corners[pt_idx_in_corner_array].copy()
-                grid[real_row_idx][i] = corner_pt
-            continue
-        
-        # 步骤3：把该行的每个点放进正确列号
-        for real_col_idx, kmeans_col_label in enumerate(col_order):
-            if real_col_idx >= num_cols:
-                break
-            
-            # 属于该列的点
-            col_mask = kmeans_x.labels_ == kmeans_col_label
-            col_pts_indices = np.where(col_mask)[0]
-            
-            if len(col_pts_indices) == 0:
-                continue
-            
-            # 如果某一聚类中有多个点，取最靠中心的一个
-            pt_idx_in_corner_array = row_indices[col_pts_indices[0]]
-            
-            # 转换为 (1, 2) 形状
-            corner_pt = corners[pt_idx_in_corner_array].copy()
-            grid[real_row_idx][real_col_idx] = corner_pt
-    
-    # 步骤4：输出为 (num_rows * num_cols, 1, 2) 数组，空位用 NaN
-    grid_corners = np.full((total_expected, 1, 2), np.nan, dtype=np.float32)
-    valid_mask = np.zeros(total_expected, dtype=bool)
-    
-    for r in range(num_rows):
-        for c in range(num_cols):
-            idx = r * num_cols + c
-            if grid[r][c] is not None:
-                grid_corners[idx] = grid[r][c]
-                valid_mask[idx] = True
-    
-    return grid_corners, valid_mask
-
-
-def _sort_corners_to_grid_fallback(pts: np.ndarray, pattern_size: Tuple[int, int], corners: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    备选方法：当 sklearn 不可用时使用简单的排序方法。
-    """
-    num_rows, num_cols = pattern_size
-    total_expected = num_rows * num_cols
-    
     all_x = pts[:, 0]
     all_y = pts[:, 1]
     
-    # 使用简单的分位数方法
+    # 创建固定大小的网格，初始为 NaN
     grid_corners = np.full((total_expected, 1, 2), np.nan, dtype=np.float32)
     valid_mask = np.zeros(total_expected, dtype=bool)
     
-    # 按 y 坐标分组为行
+    # 步骤1：按 y 坐标排序，将角点分组为行
     y_sorted_indices = np.argsort(all_y)
     row_groups = []
     for i in range(num_rows):
@@ -431,7 +246,7 @@ def _sort_corners_to_grid_fallback(pts: np.ndarray, pattern_size: Tuple[int, int
         end_idx = int((i + 1) * len(y_sorted_indices) / num_rows)
         row_groups.append(y_sorted_indices[start_idx:end_idx])
     
-    # 对每一行，按 x 坐标分组为列
+    # 步骤2：对每一行，按 x 坐标排序，分配到列
     for row_idx, row_indices in enumerate(row_groups):
         if len(row_indices) == 0:
             continue
@@ -439,6 +254,7 @@ def _sort_corners_to_grid_fallback(pts: np.ndarray, pattern_size: Tuple[int, int
         row_x = all_x[row_indices]
         x_sorted_indices = [row_indices[i] for i in np.argsort(row_x)]
         
+        # 将这一行的角点分配到列
         for col_idx in range(num_cols):
             start_idx = int(col_idx * len(x_sorted_indices) / num_cols)
             end_idx = int((col_idx + 1) * len(x_sorted_indices) / num_cols)
@@ -673,21 +489,32 @@ def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[T
         col_distance = max(w // 10, 5)  # 峰值之间的最小距离
         row_distance = max(h // 10, 5)
         
-        try:
-            col_peaks, _ = find_peaks(col_sum, distance=col_distance)
-            row_peaks, _ = find_peaks(row_sum, distance=row_distance)
-        except Exception:
-            # 如果 find_peaks 失败，使用简单方法
-            col_peaks = []
-            row_peaks = []
-            for i in range(1, len(col_sum) - 1):
-                if col_sum[i] > col_sum[i-1] and col_sum[i] > col_sum[i+1] and col_sum[i] > np.mean(col_sum):
-                    col_peaks.append(i)
-            for i in range(1, len(row_sum) - 1):
-                if row_sum[i] > row_sum[i-1] and row_sum[i] > row_sum[i+1] and row_sum[i] > np.mean(row_sum):
-                    row_peaks.append(i)
-            col_peaks = np.array(col_peaks)
-            row_peaks = np.array(row_peaks)
+        # 使用简单的峰值检测方法
+        col_peaks = []
+        row_peaks = []
+        for i in range(1, len(col_sum) - 1):
+            if col_sum[i] > col_sum[i-1] and col_sum[i] > col_sum[i+1] and col_sum[i] > np.mean(col_sum):
+                col_peaks.append(i)
+        for i in range(1, len(row_sum) - 1):
+            if row_sum[i] > row_sum[i-1] and row_sum[i] > row_sum[i+1] and row_sum[i] > np.mean(row_sum):
+                row_peaks.append(i)
+        
+        # 简单的距离过滤
+        if col_distance and len(col_peaks) > 1:
+            filtered = [col_peaks[0]]
+            for p in col_peaks[1:]:
+                if p - filtered[-1] >= col_distance:
+                    filtered.append(p)
+            col_peaks = filtered
+        if row_distance and len(row_peaks) > 1:
+            filtered = [row_peaks[0]]
+            for p in row_peaks[1:]:
+                if p - filtered[-1] >= row_distance:
+                    filtered.append(p)
+            row_peaks = filtered
+        
+        col_peaks = np.array(col_peaks)
+        row_peaks = np.array(row_peaks)
         
         # 棋盘格应该有至少 3-4 个峰值（对应多行/多列）
         if len(col_peaks) >= 3 and len(row_peaks) >= 3:
@@ -703,58 +530,6 @@ def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[T
     return None
 
 
-def find_chessboard_region_in_mask(mask: np.ndarray, 
-                                    chessboard_size: Tuple[int, int]) -> Optional[Tuple[int, int, int, int]]:
-    """
-    在掩码图中精确定位棋盘格区域。
-    
-    棋盘格掩码的特征：一个白色矩形区域，内部包含交错的黑色矩形（形成棋盘格图案）。
-    此函数通过直接在掩码图上检测棋盘格角点来精确定位棋盘格区域。
-    
-    参数：
-        mask: 掩码图像（棋盘格掩码，白色区域表示棋盘格位置，内部有黑色矩形）
-        chessboard_size: 棋盘格内角点数量 (行数, 列数)
-    
-    返回：
-        如果检测成功，返回 (x1, y1, x2, y2)，否则返回 None
-    """
-    if mask is None:
-        return None
-    
-    # 将掩码图转换为灰度图（如果还不是）
-    if len(mask.shape) == 3:
-        mask_gray = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-    else:
-        mask_gray = mask.copy()
-    
-    # 在掩码图上直接检测棋盘格角点
-    # 因为掩码图本身就是棋盘格图案（白色矩形内包含交错的黑色矩形）
-    try:
-        with SuppressOpenCVWarnings():
-            ret, corners = cv2.findChessboardCorners(
-                mask_gray,
-                chessboard_size,
-                flags=cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_NORMALIZE_IMAGE
-            )
-        
-        if ret and corners is not None and len(corners) > 0:
-            # 计算角点的外接矩形
-            corners_pts = corners.reshape(-1, 2)
-            x_coords = corners_pts[:, 0]
-            y_coords = corners_pts[:, 1]
-            
-            x1 = int(np.floor(x_coords.min()))
-            y1 = int(np.floor(y_coords.min()))
-            x2 = int(np.ceil(x_coords.max()))
-            y2 = int(np.ceil(y_coords.max()))
-            
-            return (x1, y1, x2, y2)
-    except Exception as e:
-        pass
-    
-    return None
-
-
 def crop_image_by_mask(img: np.ndarray,
                        mask: np.ndarray,
                        min_ratio: float = 0.12,
@@ -763,17 +538,14 @@ def crop_image_by_mask(img: np.ndarray,
     """
     根据掩膜精确裁剪图像到棋盘格区域。
     
-    使用鲁棒的棋盘格检测方法，从混杂的掩码图中准确识别棋盘格区域：
-    1. 优先使用结构形态 + 几何特征 + 内部模式验证的方法（detect_chessboard_mask）
-    2. 如果失败，尝试使用棋盘格角点检测（find_chessboard_region_in_mask）
-    3. 如果都失败，使用所有非零像素的外接矩形
+    使用结构形态 + 几何特征 + 内部模式验证的方法（detect_chessboard_mask）识别棋盘格区域。
     
     参数：
         img: 输入图像
         mask: 掩膜图像（棋盘格掩膜，白色区域表示棋盘格位置，内部有黑色矩形）
         min_ratio: 掩膜覆盖比例阈值（已弃用，总是裁剪）
         padding: 裁剪边界的额外边距（像素）
-        chessboard_size: 棋盘格内角点数量 (行数, 列数)，用于备选检测方法
+        chessboard_size: 棋盘格内角点数量 (行数, 列数)，已弃用
     
     返回：
         (裁剪后的图像, 裁剪后的掩膜, (x偏移, y偏移), 掩膜覆盖比例)
@@ -788,34 +560,16 @@ def crop_image_by_mask(img: np.ndarray,
 
     mask_filtered = (mask_binary * 255).astype(np.uint8)
     
-    # 方法1：优先使用结构形态 + 几何特征 + 内部模式验证（最鲁棒）
-    x1, y1, x2, y2 = None, None, None, None
-    detection_method = None
+    # 使用结构形态 + 几何特征 + 内部模式验证的方法
     bbox = detect_chessboard_mask(mask)
-    if bbox is not None:
-        x, y, w, h = bbox
-        x1, y1 = x, y
-        x2, y2 = x + w, y + h
-        detection_method = "结构特征检测"
+    if bbox is None:
+        print(f"  [警告] 无法检测到棋盘格区域，返回原图")
+        return img, mask_filtered, (0, 0), ratio
     
-    # 方法2：如果方法1失败，尝试使用棋盘格角点检测
-    if x1 is None and chessboard_size is not None:
-        bbox = find_chessboard_region_in_mask(mask, chessboard_size)
-        if bbox is not None:
-            x1, y1, x2, y2 = bbox
-            detection_method = "棋盘格角点检测"
-    
-    # 方法3：如果都失败，使用所有非零像素的外接矩形
-    if x1 is None:
-        ys, xs = np.where(mask_binary > 0)
-        if len(ys) == 0 or len(xs) == 0:
-            print(f"  [警告] 掩膜中无有效像素，无法裁剪")
-            return img, mask_filtered, (0, 0), ratio
-        x1 = int(xs.min())
-        y1 = int(ys.min())
-        x2 = int(xs.max()) + 1
-        y2 = int(ys.max()) + 1
-        detection_method = "掩膜外接矩形"
+    x, y, w, h = bbox
+    x1, y1 = x, y
+    x2, y2 = x + w, y + h
+    detection_method = "结构特征检测"
 
     # 添加 padding 并确保不越界
     y1_orig, y2_orig, x1_orig, x2_orig = y1, y2, x1, x2
