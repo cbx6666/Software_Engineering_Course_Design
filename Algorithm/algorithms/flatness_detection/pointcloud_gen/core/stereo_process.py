@@ -1,9 +1,15 @@
+"""
+立体视觉处理主函数
+
+处理立体匹配、深度恢复、点云生成和平整度计算。
+"""
 import numpy as np
-from utils.outliers import mad_mask
-from utils.plane_fit import fit_plane_least_squares, point_plane_signed_distance
-from utils.camera import depth_from_pixels, backproject_uv_to_xyz
-from utils.interp import densify_disparity
-from utils.io_utils import save_ply, export_csv, visualize_pointcloud
+
+from ..utils.outliers import mad_mask
+from ..utils.plane_fit import fit_plane_least_squares, point_plane_signed_distance
+from ..utils.camera import depth_from_pixels, backproject_uv_to_xyz
+from ..utils.interp import densify_disparity
+from ..utils.io_utils import save_ply, export_csv, visualize_pointcloud
 
 
 def process_stereo_matches(
@@ -134,3 +140,4 @@ def process_stereo_matches(
             print("可视化函数执行失败：", e)
 
     return result
+

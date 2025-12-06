@@ -1,0 +1,160 @@
+"""
+角点检测相关函数
+"""
+from typing import Tuple, Optional
+import cv2
+import numpy as np
+
+
+def enhance_chessboard_region(img: np.ndarray) -> np.ndarray:
+    """
+    增强棋盘格区域的对比度。
+    
+    使用 CLAHE（对比度受限的自适应直方图均衡化）算法增强图像对比度，
+    提高棋盘格角点的可见性，从而提高角点检测的成功率。
+    
+    参数：
+        img: 输入灰度图像
+    
+    返回：
+        增强后的灰度图像，与输入图像形状相同
+    
+    说明：
+        - clipLimit=2.0: 对比度限制参数，防止过度增强
+        - tileGridSize=(8, 8): 将图像分成 8×8 的网格，对每个网格独立进行直方图均衡化
+    """
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    enhanced = clahe.apply(img)
+    return enhanced
+
+
+def find_chessboard_corners(img: np.ndarray, pattern_size: Tuple[int, int], 
+                            allow_partial: bool = True, enhance: bool = False,
+                            mask: Optional[np.ndarray] = None) -> Optional[np.ndarray]:
+    """
+    检测棋盘格角点。
+    
+    使用 OpenCV 的 findChessboardCorners 方法检测棋盘格内角点。
+    支持部分棋盘格检测和掩膜限制。
+    
+    参数：
+        img: 输入灰度图像
+        pattern_size: 棋盘格内角点数量，格式是 (行数, 列数)
+        allow_partial: 是否允许部分棋盘格检测（图像中只显示部分棋盘格时）
+        enhance: 是否增强图像对比度（使用 CLAHE），默认 False
+        mask: 可选的掩膜图像，用于限制角点检测区域
+    
+    返回：
+        检测到的角点坐标数组，形状是 (N, 1, 2)，如果检测失败则返回 None
+    """
+    # 图像预处理
+    if enhance:
+        img_processed = enhance_chessboard_region(img)
+    else:
+        img_processed = img.copy()
+    
+    # 应用掩膜：限制角点检测只在掩膜区域内进行
+    if mask is not None:
+        if mask.shape != img_processed.shape:
+            mask = cv2.resize(mask, (img_processed.shape[1], img_processed.shape[0]))
+        img_processed = cv2.bitwise_and(img_processed, mask)
+    
+    # 优先使用 findChessboardCorners 检测角点
+    flags = cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_NORMALIZE_IMAGE
+    if allow_partial:
+        partial_flag = getattr(cv2, "CALIB_CB_PARTIAL_OK", 0)
+        if partial_flag:
+            flags += partial_flag
+    
+    ret = False
+    corners: Optional[np.ndarray] = None
+    
+    ret, corners = cv2.findChessboardCorners(
+        img_processed,
+        pattern_size,
+        flags=flags
+    )
+    
+    if ret:
+        print(f"  [提示] findChessboardCorners 检测成功，检测到 {len(corners)} 个角点。")
+    else:
+        # 如果常规方法失败，尝试使用 findChessboardCornersSB（如果可用）
+        if hasattr(cv2, "findChessboardCornersSB"):
+            try:
+                sb_flags = cv2.CALIB_CB_NORMALIZE_IMAGE
+                sb_result = cv2.findChessboardCornersSB(
+                    img_processed,
+                    pattern_size,
+                    flags=sb_flags
+                )
+                if isinstance(sb_result, tuple):
+                    sb_ret, sb_corners = sb_result
+                else:
+                    sb_ret, sb_corners = True, sb_result
+                
+                if sb_ret and sb_corners is not None:
+                    sb_corners = np.asarray(sb_corners, dtype=np.float32)
+                    if sb_corners.ndim == 2:
+                        sb_corners = sb_corners.reshape(-1, 1, 2)
+                    if sb_corners.shape[0] == pattern_size[0] * pattern_size[1]:
+                        corners = sb_corners
+                        ret = True
+                        print(f"  [提示] findChessboardCorners 失败，使用 findChessboardCornersSB 成功检测到 {len(corners)} 个角点。")
+            except Exception:
+                pass
+    
+    if not ret:
+        expected_count = pattern_size[0] * pattern_size[1]
+        print(f"  [错误] 角点检测失败：未检测到任何角点（期望 {expected_count} 个）")
+        return None
+    
+    # 验证角点是否在掩膜区域内
+    if mask is not None:
+        corners_pts = corners.reshape(-1, 2).astype(np.int32)
+        valid_mask = np.zeros(len(corners_pts), dtype=bool)
+        for i, pt in enumerate(corners_pts):
+            y, x = int(pt[1]), int(pt[0])
+            if 0 <= y < mask.shape[0] and 0 <= x < mask.shape[1]:
+                if mask[y, x] > 0:
+                    valid_mask[i] = True
+        
+        valid_count = valid_mask.sum()
+        expected_count = pattern_size[0] * pattern_size[1]
+        min_required = int(expected_count * 0.3)
+        
+        if valid_count < min_required:
+            print(f"  [错误] 掩膜验证失败：检测到 {len(corners_pts)} 个角点，"
+                  f"但只有 {valid_count} 个在掩膜区域内（需要至少 {min_required} 个）")
+            return None
+        
+        corners = corners[valid_mask]
+        if len(corners) < expected_count:
+            print(f"  [提示] 检测到 {len(corners)} 个有效角点（期望 {expected_count} 个）")
+    
+    return corners
+
+
+def refine_corners(img: np.ndarray, corners: np.ndarray) -> np.ndarray:
+    """
+    亚像素精化角点位置。
+    
+    使用 cornerSubPix 函数将角点位置从整数像素精化到亚像素级（0.1像素精度），
+    基于局部灰度梯度优化，提高角点定位精度。
+    
+    参数：
+        img: 灰度图像（numpy 数组）
+        corners: 初始角点坐标，形状是 (N, 1, 2)
+    
+    返回：
+        精化后的角点坐标，形状与输入相同。
+    """
+    # 设置亚像素精化的搜索窗口和终止条件
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+    winSize = (11, 11)  # 搜索窗口大小
+    zeroZone = (-1, -1)  # 死区大小（不使用）
+    
+    # 执行亚像素精化
+    refined = cv2.cornerSubPix(img, corners, winSize, zeroZone, criteria)
+    
+    return refined
+
