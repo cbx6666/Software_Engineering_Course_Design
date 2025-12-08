@@ -228,6 +228,8 @@ def main():
     print(f"图像尺寸: {image_shape}")
     
     # 处理立体匹配，生成点云和平整度指标
+    # 直接保存为 flatness.png，避免生成重复的 pointcloud.png
+    flatness_vis_path = os.path.join(result_dir, "flatness.png")
     result = process_stereo_matches(
         uv_left,
         uv_right,
@@ -241,7 +243,7 @@ def main():
         export_ply_path=None,
         export_csv_path=None,
         visualize=True,
-        save_fig_path=os.path.join(result_dir, "pointcloud.png")
+        save_fig_path=flatness_vis_path  # 直接保存为 flatness.png
     )
     
     # 保存平整度指标
@@ -255,18 +257,10 @@ def main():
     
     # ========== 步骤5：不平整度可视化 ==========
     print("\n[步骤5] 不平整度可视化")
-    
-    # 使用 pointcloud 可视化结果作为平整度可视化
-    flatness_vis_path = os.path.join(result_dir, "flatness.png")
-    
-    # 如果已经生成了 pointcloud.png，复制它作为 flatness.png
-    pointcloud_path = os.path.join(result_dir, "pointcloud.png")
-    if os.path.exists(pointcloud_path):
-        import shutil
-        shutil.copy(pointcloud_path, flatness_vis_path)
+    if os.path.exists(flatness_vis_path):
         print(f"不平整度可视化已保存: {flatness_vis_path}")
     else:
-        print(f"警告: 未找到点云可视化文件 {pointcloud_path}")
+        print(f"警告: 未找到平整度可视化文件 {flatness_vis_path}")
     
     print("\n=== 处理完成 ===")
     print(f"所有结果已保存到: {result_dir}")
