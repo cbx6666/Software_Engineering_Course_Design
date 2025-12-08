@@ -67,70 +67,81 @@ def find_chessboard_corners(img: np.ndarray, pattern_size: Tuple[int, int],
             flags += partial_flag
     
     ret = False
-    corners: Optional[np.ndarray] = None
-    
-    ret, corners = cv2.findChessboardCorners(
-        img_processed,
-        pattern_size,
-        flags=flags
-    )
-    
-    if ret:
-        print(f"  [提示] findChessboardCorners 检测成功，检测到 {len(corners)} 个角点。")
-    else:
-        # 如果常规方法失败，尝试使用 findChessboardCornersSB（如果可用）
-        if hasattr(cv2, "findChessboardCornersSB"):
+    corners = None
+
+    # 多尺度尝试，提高 SB 成功率
+    scales = [1.0, 1.25, 1.5, 0.8]
+
+    # 多 flag 尝试（SB 对 flags 极度敏感）
+    sb_flag_list = [
+        cv2.CALIB_CB_NORMALIZE_IMAGE,
+        cv2.CALIB_CB_EXHAUSTIVE | cv2.CALIB_CB_NORMALIZE_IMAGE,
+        cv2.CALIB_CB_ACCURACY | cv2.CALIB_CB_NORMALIZE_IMAGE,
+    ]
+
+    # 尝试所有组合
+    for scale in scales:
+        if scale == 1.0:
+            img_scaled = img_processed
+        else:
+            img_scaled = cv2.resize(
+                img_processed,
+                None,
+                fx=scale,
+                fy=scale,
+                interpolation=cv2.INTER_LINEAR
+            )
+
+        for sb_flags in sb_flag_list:
+
             try:
-                sb_flags = cv2.CALIB_CB_NORMALIZE_IMAGE
                 sb_result = cv2.findChessboardCornersSB(
-                    img_processed,
+                    img_scaled,
                     pattern_size,
                     flags=sb_flags
                 )
-                if isinstance(sb_result, tuple):
-                    sb_ret, sb_corners = sb_result
-                else:
-                    sb_ret, sb_corners = True, sb_result
-                
-                if sb_ret and sb_corners is not None:
-                    sb_corners = np.asarray(sb_corners, dtype=np.float32)
-                    if sb_corners.ndim == 2:
-                        sb_corners = sb_corners.reshape(-1, 1, 2)
-                    if sb_corners.shape[0] == pattern_size[0] * pattern_size[1]:
-                        corners = sb_corners
-                        ret = True
-                        print(f"  [提示] findChessboardCorners 失败，使用 findChessboardCornersSB 成功检测到 {len(corners)} 个角点。")
             except Exception:
-                pass
-    
+                continue
+
+            # SB 返回值格式兼容
+            if isinstance(sb_result, tuple):
+                sb_ret, sb_corr = sb_result
+            else:
+                sb_ret, sb_corr = True, sb_result
+
+            if sb_ret and sb_corr is not None:
+                sb_corr = np.asarray(sb_corr, dtype=np.float32)
+                if sb_corr.ndim == 2:
+                    sb_corr = sb_corr.reshape(-1, 1, 2)
+
+                # 检查数量是否匹配
+                detected_count = sb_corr.shape[0]
+                expected_count = pattern_size[0] * pattern_size[1]
+                
+                # 允许部分检测：如果 allow_partial=True，接受至少 50% 的角点
+                min_required = expected_count if not allow_partial else max(3, int(expected_count * 0.5))
+                
+                if detected_count >= min_required:
+                    # 恢复坐标
+                    if scale != 1.0:
+                        sb_corr /= scale
+
+                    corners = sb_corr
+                    ret = True
+                    print(
+                        f"  [提示] SB 检测成功（scale={scale}, flags={sb_flags}），检测到 {detected_count} 个角点（期望 {expected_count} 个）。"
+                    )
+                    break  # 终止 flags
+
+        if ret:
+            break  # 终止 scale
+
     if not ret:
         expected_count = pattern_size[0] * pattern_size[1]
-        print(f"  [错误] 角点检测失败：未检测到任何角点（期望 {expected_count} 个）")
+        print(f"  [错误] SB 角点检测失败（期望 {expected_count} 个）")
         return None
     
-    # 验证角点是否在掩膜区域内
-    if mask is not None:
-        corners_pts = corners.reshape(-1, 2).astype(np.int32)
-        valid_mask = np.zeros(len(corners_pts), dtype=bool)
-        for i, pt in enumerate(corners_pts):
-            y, x = int(pt[1]), int(pt[0])
-            if 0 <= y < mask.shape[0] and 0 <= x < mask.shape[1]:
-                if mask[y, x] > 0:
-                    valid_mask[i] = True
-        
-        valid_count = valid_mask.sum()
-        expected_count = pattern_size[0] * pattern_size[1]
-        min_required = int(expected_count * 0.3)
-        
-        if valid_count < min_required:
-            print(f"  [错误] 掩膜验证失败：检测到 {len(corners_pts)} 个角点，"
-                  f"但只有 {valid_count} 个在掩膜区域内（需要至少 {min_required} 个）")
-            return None
-        
-        corners = corners[valid_mask]
-        if len(corners) < expected_count:
-            print(f"  [提示] 检测到 {len(corners)} 个有效角点（期望 {expected_count} 个）")
-    
+    # 返回检测到的角点
     return corners
 
 

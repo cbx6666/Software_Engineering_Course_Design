@@ -45,23 +45,41 @@ class FlatnessService:
         return dest
 
     def _build_response(self, metrics: Dict[str, float]) -> Dict:
+        # 使用 RMS 作为主要判断标准（更稳健，考虑所有点）
+        # RMS 是工业上常用的平整度评估指标，能反映整体偏差分布
+        flat_rms = metrics.get("flatness_rms_mm", 0.0)
+        
+        # 辅助判断：95%分位数（忽略5%极端值，更稳健）
+        flat_p95 = metrics.get("p95_mm", 0.0)
+        
+        # 参考指标：范围（用于了解极端情况，但不作为主要判断）
         flat_range = metrics.get("flatness_range_mm", 0.0)
-        if flat_range <= 6.0:
+        
+        # 主要使用 RMS 判断，同时检查是否有极端值（p95 远大于 RMS）
+        # 阈值设置（可根据实际工程标准调整）
+        # 如果 p95 远大于 RMS，说明存在局部极端偏差，需要额外关注
+        has_extreme_values = flat_p95 > flat_rms * 2.5
+        
+        if flat_rms <= 10.0:
             status: Literal["success", "warning", "error"] = "success"
             title = "平整度正常"
-            description = "测得的平整度范围处于优良阈值内。"
-        elif flat_range <= 12.0:
+            if has_extreme_values:
+                description = f"RMS偏差 {flat_rms:.2f} mm 正常，但存在局部极端偏差（95%分位数 {flat_p95:.2f} mm），建议检查局部区域。"
+            else:
+                description = f"RMS偏差 {flat_rms:.2f} mm，95%分位数 {flat_p95:.2f} mm，处于优良阈值内。"
+        elif flat_rms <= 15.0:
             status = "warning"
             title = "平整度存在轻微偏差"
-            description = "平整度超过优良阈值，建议进一步复核。"
+            description = f"RMS偏差 {flat_rms:.2f} mm，95%分位数 {flat_p95:.2f} mm，超过优良阈值，建议进一步复核。"
         else:
             status = "error"
             title = "平整度超出安全范围"
-            description = "检测到较大平整度偏差，请安排检修。"
+            description = f"RMS偏差 {flat_rms:.2f} mm，95%分位数 {flat_p95:.2f} mm，检测到较大平整度偏差，请安排检修。"
 
         details = [
-            {"label": "平整度范围 (mm)", "value": f"{flat_range:.2f}"},
-            {"label": "RMS 偏差 (mm)", "value": f"{metrics.get('flatness_rms_mm', 0.0):.2f}"},
+            {"label": "RMS 偏差 (mm) [主要指标]", "value": f"{flat_rms:.2f}"},
+            {"label": "95%分位数 (mm) [稳健指标]", "value": f"{flat_p95:.2f}"},
+            {"label": "平整度范围 (mm) [参考]", "value": f"{flat_range:.2f}"},
             {"label": "平均偏差 (mm)", "value": f"{metrics.get('flatness_mean_mm', 0.0):.2f}"},
             {"label": "标准差 (mm)", "value": f"{metrics.get('flatness_std_mm', 0.0):.2f}"},
             {"label": "最大偏差 (mm)", "value": f"{metrics.get('max_mm', 0.0):.2f}"},
@@ -123,11 +141,11 @@ class FlatnessService:
     
         response = self._build_response(metrics)
     
-        # 在结果目录中寻找 pointcloud.png 并附加为 data URI
+        # 在结果目录中寻找 flatness.png 并附加为 data URI
         try:
-            pointcloud_path = self.result_dir / "pointcloud.png"
-            if pointcloud_path.exists():
-                img_bytes = pointcloud_path.read_bytes()
+            flatness_image_path = self.result_dir / "flatness.png"
+            if flatness_image_path.exists():
+                img_bytes = flatness_image_path.read_bytes()
                 b64 = base64.b64encode(img_bytes).decode("utf-8")
                 response["image"] = f"data:image/png;base64,{b64}"
         except Exception:

@@ -43,8 +43,7 @@ public class ApiUtils {
                     "error",
                     "检测失败",
                     "算法运行异常：" + e.getMessage(),
-                    null
-            );
+                    null);
         }
     }
 
@@ -73,8 +72,7 @@ public class ApiUtils {
                     "error",
                     "检测失败",
                     "算法运行异常：" + e.getMessage(),
-                    null
-            );
+                    null);
         }
     }
 }

@@ -46,9 +46,6 @@ def export_csv(points, dists, filename):
     print(f"已输出CSV文件: {filename}")
 
 
-# ============================================================
-#  点云平面拟合 + 投影到法线方向坐标系
-# ============================================================
 def project_to_plane_normal(points):
     """
     输入：N×3 稀疏点云
@@ -160,10 +157,27 @@ def visualize_pointcloud(
     fig.colorbar(sc3, ax=ax3, shrink=0.5)
 
     # ===== 添加等高线 =====
-    # 生成规则网格
+    # 计算范围，添加边距以确保包含所有边缘点
+    x_min, x_max = np.min(projected_pts[:,0]), np.max(projected_pts[:,0])
+    y_min, y_max = np.min(projected_pts[:,1]), np.max(projected_pts[:,1])
+    
+    # 计算范围大小
+    x_range = x_max - x_min
+    y_range = y_max - y_min
+    
+    # 添加 10% 的边距，确保边缘点被包含
+    padding_x = x_range * 0.1 if x_range > 0 else 0.01
+    padding_y = y_range * 0.1 if y_range > 0 else 0.01
+    
+    x_min_padded = x_min - padding_x
+    x_max_padded = x_max + padding_x
+    y_min_padded = y_min - padding_y
+    y_max_padded = y_max + padding_y
+    
+    # 生成规则网格（使用带边距的范围）
     grid_x, grid_y = np.meshgrid(
-        np.linspace(np.min(projected_pts[:,0]), np.max(projected_pts[:,0]), 200),
-        np.linspace(np.min(projected_pts[:,1]), np.max(projected_pts[:,1]), 200)
+        np.linspace(x_min_padded, x_max_padded, 200),
+        np.linspace(y_min_padded, y_max_padded, 200)
     )
 
     # 用 griddata 基于散点插值得到 Z' 网格
@@ -191,6 +205,10 @@ def visualize_pointcloud(
     ax3.set_xlabel("X'")
     ax3.set_ylabel("Y'")
     ax3.set_aspect("equal", "box")
+    
+    # 设置坐标轴范围，确保显示所有点（包括边距）
+    ax3.set_xlim(x_min_padded, x_max_padded)
+    ax3.set_ylim(y_min_padded, y_max_padded)
 
 
     plt.tight_layout()
