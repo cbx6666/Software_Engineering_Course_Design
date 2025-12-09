@@ -228,7 +228,6 @@ def main():
     print(f"图像尺寸: {image_shape}")
     
     # 处理立体匹配，生成点云和平整度指标
-    # 直接保存为 flatness.png，避免生成重复的 pointcloud.png
     flatness_vis_path = os.path.join(result_dir, "flatness.png")
     result = process_stereo_matches(
         uv_left,
@@ -243,7 +242,7 @@ def main():
         export_ply_path=None,
         export_csv_path=None,
         visualize=True,
-        save_fig_path=flatness_vis_path  # 直接保存为 flatness.png
+        save_fig_path=flatness_vis_path  
     )
     
     # 保存平整度指标
@@ -254,6 +253,28 @@ def main():
     
     print(f"平整度指标已保存: {metrics_path}")
     print("平整度指标:", result["flatness_metrics"])
+    
+    # 保存稀疏点云数据用于前端 3D 展示
+    pointcloud_data_path = os.path.join(result_dir, "pointcloud_data.json")
+    
+    # 准备点云数据
+    def _to_list(x):
+        return x.tolist() if hasattr(x, "tolist") else list(x)
+
+    pc_data = {
+        "points": _to_list(result["pts_sparse"]),            # 稀疏点坐标（米）
+        "dists": _to_list(result["dists_sparse"]),           # 到平面的距离（米）
+        "plane": _to_list(result["plane_coeffs"]),           # 平面参数 [a,b,c] (来自拟合)
+        "normal": _to_list(result["normal"]),                # 法向量
+        # 追加投影坐标，便于前端与 Python 可视化完全一致
+        "projected_points": _to_list(result.get("projected_pts", [])),
+        "projected_dists": _to_list(result.get("projected_z", [])),  # 与颜色对应的 z'
+    }
+    
+    with open(pointcloud_data_path, 'w', encoding='utf-8') as f:
+        json.dump(pc_data, f, ensure_ascii=False)
+    
+    print(f"3D点云数据已保存: {pointcloud_data_path}")
     
     # ========== 步骤5：不平整度可视化 ==========
     print("\n[步骤5] 不平整度可视化")

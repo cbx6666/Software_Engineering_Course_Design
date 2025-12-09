@@ -140,6 +140,15 @@ class FlatnessService:
             return self._build_failure_result("平整度结果解析失败", str(exc))
     
         response = self._build_response(metrics)
+
+        # 读取并附加 3D 点云数据（包含投影点）
+        pc_data_path = self.result_dir / "pointcloud_data.json"
+        if pc_data_path.exists():
+            try:
+                pc_data = json.loads(pc_data_path.read_text(encoding="utf-8"))
+                response["pointcloud"] = pc_data
+            except Exception as e:
+                print(f"读取点云数据失败: {e}")
     
         # 在结果目录中寻找 flatness.png 并附加为 data URI
         try:
