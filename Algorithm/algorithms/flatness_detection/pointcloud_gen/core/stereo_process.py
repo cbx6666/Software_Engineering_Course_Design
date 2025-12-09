@@ -9,7 +9,7 @@ from ..utils.outliers import mad_mask
 from ..utils.plane_fit import fit_plane_least_squares, point_plane_signed_distance
 from ..utils.camera import depth_from_pixels, backproject_uv_to_xyz
 from ..utils.interp import densify_disparity
-from ..utils.io_utils import save_ply, export_csv, visualize_pointcloud
+from ..utils.io_utils import save_ply, export_csv, visualize_pointcloud, project_to_plane_normal
 
 
 def process_stereo_matches(
@@ -47,6 +47,10 @@ def process_stereo_matches(
     plane, normal = fit_plane_least_squares(pts_for_fit)
     dists_sparse = point_plane_signed_distance(pts_sparse, plane)
 
+    # ------- 平面坐标系投影（用于前后端一致的可视化） -------
+    projected_pts, _ = project_to_plane_normal(pts_sparse)
+    z_proj = projected_pts[:, 2]
+
     result = {
         "pts_sparse": pts_sparse,
         "dists_sparse": dists_sparse,
@@ -54,6 +58,8 @@ def process_stereo_matches(
         "normal": normal,
         "pts_dense": None,
         "dists_dense": None,
+        "projected_pts": projected_pts,
+        "projected_z": z_proj,
         "flatness_metrics": {}
     }
 
