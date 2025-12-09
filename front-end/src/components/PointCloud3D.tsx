@@ -7,6 +7,11 @@ import type { ReactThreeFiber } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 
+/**
+ * 后端传入的点云数据结构。
+ * - points/dists 单位为米，组件内部会统一转换为毫米或视觉缩放。
+ * - projected_* 存在时，表示已在后端做过平面投影与距离计算。
+ */
 interface PointCloudData {
   points: number[][]; // N×3 array [x, y, z] (meters)
   dists: number[];    // N array, distance to plane (meters)
@@ -16,10 +21,15 @@ interface PointCloudData {
   projected_dists?: number[];
 }
 
+/** 组件输入：仅需传入一帧点云数据即可渲染。 */
 interface PointCloud3DProps {
   data: PointCloudData;
 }
 
+/**
+ * 渲染点云点位。传入的 points/dists 已完成缩放与平移。
+ * 使用 HSL（蓝->红）编码距离，便于肉眼区分高度偏差。
+ */
 function Points({ points, dists }: { points: number[][]; dists: number[] }) {
   const positions = useMemo(() => new Float32Array(points.flat()), [points]);
   const colors = useMemo(() => {
@@ -55,6 +65,10 @@ function Points({ points, dists }: { points: number[][]; dists: number[] }) {
   );
 }
 
+/**
+ * 在三维空间绘制三面参考网格（XY / YZ / XZ），帮助用户感知方位与尺度。
+ * 默认放置在正半轴区域，size 依据点云范围自适应。
+ */
 function CornerGuide({ size }: { size: number }) {
   const divs = 10;
   const half = size / 2;
@@ -87,6 +101,7 @@ function CornerGuide({ size }: { size: number }) {
   );
 }
 
+// 绘制坐标轴与末端标签
 function AxisArrows({ size }: { size: number }) {
   // 坐标轴从 (0,0,0) 开始，长度与平面一致
   const inset = 0;
@@ -112,6 +127,7 @@ function AxisArrows({ size }: { size: number }) {
   );
 }
 
+/** 使用 drei Html 在 3D 中叠加 2D 文本标签。 */
 function HtmlLabel({ position, text, color }: { position: THREE.Vector3; text: string; color: string }) {
   return (
     <Html
@@ -130,32 +146,24 @@ function HtmlLabel({ position, text, color }: { position: THREE.Vector3; text: s
   );
 }
 
+// 交互提示 + 重置按钮
 function ControlsPanel({ onReset }: { onReset: () => void }) {
   return (
     <div
-      className="absolute top-2 left-2 z-50 flex flex-col gap-2 pointer-events-auto"
+      className="absolute top-2 left-6 z-50 flex flex-col gap-2 pointer-events-auto"
       style={{ pointerEvents: "auto" }}
     >
-      <div
-        className="text-xs px-3 py-2 rounded-md shadow-lg"
-        style={{
-          background: "#f5f5f5", // 近乎白色，避免深色
-          border: "1px solid #d4d4d8",
-          color: "#0f172a",
-        }}
-      >
-        <div className="font-semibold">操作提示</div>
-        <div className="mt-1" style={{ color: "#1f2937" }}>左键：旋转</div>
-        <div style={{ color: "#1f2937" }}>滚轮：缩放</div>
-      </div>
       <button
         onClick={onReset}
         type="button"
-        className="text-xs px-3 py-2 rounded-md shadow"
+        className="px-4 py-2 text-xs font-medium rounded-lg hover:bg-white/10 transition-colors"
         style={{
-          background: "#f8fafc",
-          border: "1px solid #cbd5e1",
-          color: "#0f172a",
+          background: "transparent",
+          border: "1px solid rgba(255, 255, 255, 0.6)",
+          color: "#ffffff",
+          fontFamily: "Microsoft YaHei",
+          fontWeight: 400,
+          fontSize: 15,
         }}
       >
         重置视角
@@ -164,6 +172,7 @@ function ControlsPanel({ onReset }: { onReset: () => void }) {
   );
 }
 
+// 只负责渲染（光源 + 点云 + 基准网格 + 坐标轴），不做坐标变换
 function SceneContent({
   points,
   dists,
@@ -187,18 +196,30 @@ function SceneContent({
   );
 }
 
+/**
+ * 点云 3D 视图主组件。
+ * - 兼容「原始点云 + 平面参数」和「后端投影结果」两种输入。
+ * - 自动把坐标转换到毫米、放大 Z 差异并移到正半轴，便于观察。
+ * - 提供 OrbitControls 旋转/缩放与一键重置视角。
+ */
 export function PointCloud3D({ data }: PointCloud3DProps) {
   // 单位：毫米 (mm)
   // X/Y 轴：1 unit = 1 mm
   // Z 轴：根据实际高度差自适应放大，确保视觉上更明显
   const xyScale = 1000.0;
 
+  // useMemo 返回：
+  // [0] 已缩放/平移后的点坐标
+  // [1] 缩放后的距离值（用于颜色）
+  // [2] 原始对齐后的包围盒
+  // [3] 基准网格尺寸
   const [transformedPoints, transformedDists, bbox, guideSize] = useMemo(() => {
     // 如果有后端投影结果，直接使用（与 Python 可视化一致）
     const useProjected = Array.isArray(data.projected_points) && Array.isArray(data.projected_dists);
 
     // 1) 如果有投影结果：使用投影坐标作为 points，projected_dists 作为颜色
-    // 2) 否则：按原逻辑旋转、平移
+    //    不再前端旋转，只做缩放/平移到正半轴
+    // 2) 否则：按原逻辑旋转、缩放、平移
     if (useProjected) {
       const projPts = data.projected_points as number[][];
       const projDists = data.projected_dists as number[];
@@ -217,7 +238,7 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
 
       // 自适应 Z 放大
       const zRangeRaw = Math.max(maxZ - minZ, 1e-9);
-      const desiredVisualRange = 4000;
+      const desiredVisualRange = 4000; // 让高度差在视觉上更明显
       const zScale = Math.min(40000, Math.max(5000, desiredVisualRange / zRangeRaw));
 
       // 缩放 & 平移到正半轴
@@ -242,6 +263,7 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
         return [xVal, yVal, zVal] as [number, number, number];
       });
 
+      // 距离同样按 zScale 缩放，保持颜色映射一致
       const scaledDists = projDists.map(d => d * zScale);
 
       const sizeX = newMaxX - newMinX;
@@ -257,14 +279,13 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
       ] as const;
     }
 
-    // -------- 以下为原有分支（无后端投影时的旋转方案） --------
     // 1. 计算拟合平面的旋转四元数，使其法线对齐 Z 轴
     const [a, b, c0] = data.plane;
     const normal = new THREE.Vector3(a, b, -1).normalize();
     const up = new THREE.Vector3(0, 0, 1);
     const quat = new THREE.Quaternion().setFromUnitVectors(normal, up);
 
-    // 2. 计算平面在旋转后的 Z 高度偏移
+    // 2. 计算平面在旋转后的 Z 高度偏移，用于后续把平面抬到 z=0
     const p0 = new THREE.Vector3(0, 0, c0).applyQuaternion(quat);
     const offsetZ = p0.z;
 
@@ -353,12 +374,13 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
   }, [data.points, data.dists, data.plane]);
 
   // 相机设置（初始视角朝向正半轴）
-  // 先整体平移，使所有坐标为正（含一定 padding）
+  // 再次平移：确保包围盒都在正半轴，方便 OrbitControls 初始 target 计算
   const padding = 25;
   const shiftX = (bbox.minX < 0 ? -bbox.minX : 0) + padding;
   const shiftY = (bbox.minY < 0 ? -bbox.minY : 0) + padding;
   const shiftZ = (bbox.minZ < 0 ? -bbox.minZ : 0);
 
+  // 在最终绘制前再次平移，确保所有坐标为正，方便 OrbitControls 居中
   const shiftedPoints = transformedPoints.map(([x, y, z]) => [x + shiftX, y + shiftY, z + shiftZ]);
 
   const bboxShift = {
@@ -376,6 +398,7 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
   const cx = (bboxShift.maxX + bboxShift.minX) / 2;
   const cy = (bboxShift.maxY + bboxShift.minY) / 2;
   const cz = (bboxShift.maxZ + bboxShift.minZ) / 2;
+  // 根据包围盒尺寸选择初始相机距离，保持所有内容入镜
   const camDist = Math.max(
     bboxShift.maxX - bboxShift.minX,
     bboxShift.maxY - bboxShift.minY,
@@ -387,6 +410,7 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
 
   const controlsRef = useRef<any>(null);
 
+  // 交互重置：回到初始 target 与相机位置
   const handleReset = () => {
     if (controlsRef.current) {
       controlsRef.current.target.set(...initialTarget);

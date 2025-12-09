@@ -228,7 +228,6 @@ def main():
     print(f"图像尺寸: {image_shape}")
     
     # 处理立体匹配，生成点云和平整度指标
-    # 直接保存为 flatness.png，避免生成重复的 pointcloud.png
     flatness_vis_path = os.path.join(result_dir, "flatness.png")
     result = process_stereo_matches(
         uv_left,
@@ -243,7 +242,7 @@ def main():
         export_ply_path=None,
         export_csv_path=None,
         visualize=True,
-        save_fig_path=flatness_vis_path  # 直接保存为 flatness.png
+        save_fig_path=flatness_vis_path  
     )
     
     # 保存平整度指标
@@ -267,7 +266,7 @@ def main():
         "dists": _to_list(result["dists_sparse"]),           # 到平面的距离（米）
         "plane": _to_list(result["plane_coeffs"]),           # 平面参数 [a,b,c] (来自拟合)
         "normal": _to_list(result["normal"]),                # 法向量
-        # 追加投影坐标，便于前端与 Python 可视化完全一致
+        # 追加投影坐标，便于前端与 Python 可视化一致
         "projected_points": _to_list(result.get("projected_pts", [])),
         "projected_dists": _to_list(result.get("projected_z", [])),  # 与颜色对应的 z'
     }
