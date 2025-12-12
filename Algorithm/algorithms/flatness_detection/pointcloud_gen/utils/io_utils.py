@@ -3,6 +3,7 @@ from plyfile import PlyData, PlyElement
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from matplotlib.font_manager import FontProperties, findfont
 import json
 import os
 
@@ -35,6 +36,7 @@ def save_ply(points_xyz, filename):
     element = PlyElement.describe(verts, 'vertex')
     PlyData([element]).write(filename)
     print(f"已输出PLY文件: {filename}")
+    
 
 def export_csv(points, dists, filename):
     df = pd.DataFrame({
@@ -45,6 +47,60 @@ def export_csv(points, dists, filename):
     })
     df.to_csv(filename, index=False)
     print(f"已输出CSV文件: {filename}")
+
+
+def setup_chinese_font():
+    """
+    配置 matplotlib 中文字体支持。
+    自动检测系统可用的中文字体，如果找不到则使用英文标签。
+    
+    返回: (font_prop, use_chinese)
+        font_prop: FontProperties 对象（如果找到中文字体）或 None
+        use_chinese: 是否可以使用中文
+    """
+    # 常见的中文字体列表（按优先级排序）
+    chinese_fonts = [
+        'SimHei',           # 黑体（Windows）
+        'Microsoft YaHei',  # 微软雅黑（Windows）
+        'WenQuanYi Micro Hei',  # 文泉驿微米黑（Linux）
+        'WenQuanYi Zen Hei',    # 文泉驿正黑（Linux）
+        'Noto Sans CJK SC',     # Noto 字体（Linux/通用）
+        'Source Han Sans CN',   # 思源黑体（Linux/通用）
+        'STHeiti',          # 华文黑体（macOS）
+        'Arial Unicode MS', # Arial Unicode（跨平台，但可能不完整）
+    ]
+    
+    # 尝试查找可用的中文字体
+    for font_name in chinese_fonts:
+        try:
+            font_path = findfont(FontProperties(family=font_name))
+            # 检查是否真的找到了字体（不是默认字体）
+            if font_name.lower() in font_path.lower() or 'default' not in font_path.lower():
+                mpl.rcParams['font.sans-serif'] = [font_name] + mpl.rcParams['font.sans-serif']
+                mpl.rcParams['axes.unicode_minus'] = False
+                print(f"已设置中文字体: {font_name} (路径: {font_path})")
+                return FontProperties(fname=font_path), True
+        except Exception:
+            continue
+    
+    # 如果所有字体都找不到，尝试使用系统默认字体并测试中文显示
+    try:
+        # 尝试直接设置字体列表，让 matplotlib 自动选择
+        mpl.rcParams['font.sans-serif'] = chinese_fonts + mpl.rcParams['font.sans-serif']
+        mpl.rcParams['axes.unicode_minus'] = False
+        
+        # 测试是否能显示中文（简单测试）
+        test_fig = plt.figure(figsize=(1, 1))
+        test_ax = test_fig.add_subplot(111)
+        test_ax.text(0.5, 0.5, '测试', fontsize=12)
+        test_fig.canvas.draw()
+        plt.close(test_fig)
+        
+        print("使用系统默认字体配置（可能不支持中文）")
+        return None, False
+    except Exception as e:
+        print(f"字体配置失败，将使用英文标签: {e}")
+        return None, False
 
 
 def project_to_plane_normal(points):
@@ -99,12 +155,31 @@ def visualize_pointcloud(
     注意：project_to_plane_normal 功能保留，用于计算第二个图的投影坐标和 Z' 值
     """
 
-    # 解决中文标题/标签显示问题（优先黑体或微软雅黑）
-    try:
-        mpl.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei']
-        mpl.rcParams['axes.unicode_minus'] = False
-    except Exception:
-        pass
+    # 配置中文字体支持
+    font_prop, use_chinese = setup_chinese_font()
+    
+    # 根据是否支持中文选择标签文本
+    if use_chinese:
+        title_main = "玻璃平整度点云可视化"
+        title_3d = "原始 3D 稀疏点云（颜色 = Z，高度单位：米）"
+        title_proj = "投影平面散点 + 等高线（Z' 单位：米）"
+        label_z = "Z (m)"
+        label_z_prime = "Z' (m)"
+        label_x = "X (m)"
+        label_y = "Y (m)"
+        label_x_prime = "X' (m)"
+        label_y_prime = "Y' (m)"
+    else:
+        # 使用英文标签作为备用方案
+        title_main = "Glass Flatness Point Cloud Visualization"
+        title_3d = "Original 3D Sparse Point Cloud (Color = Z, Unit: m)"
+        title_proj = "Projected Plane Scatter + Contour (Z' Unit: m)"
+        label_z = "Z (m)"
+        label_z_prime = "Z' (m)"
+        label_x = "X (m)"
+        label_y = "Y (m)"
+        label_x_prime = "X' (m)"
+        label_y_prime = "Y' (m)"
 
     # ======== 平面拟合 + 投影 ========
     projected_pts, plane_normal = project_to_plane_normal(xyz_sparse)
@@ -115,7 +190,10 @@ def visualize_pointcloud(
     z = xyz_sparse[:, 2]
 
     fig = plt.figure(figsize=(13, 6))
-    fig.suptitle("玻璃平整度点云可视化", fontsize=14)
+    if font_prop:
+        fig.suptitle(title_main, fontsize=14, fontproperties=font_prop)
+    else:
+        fig.suptitle(title_main, fontsize=14)
 
 
     # =====================================================
@@ -124,11 +202,14 @@ def visualize_pointcloud(
     ax1 = fig.add_subplot(1, 2, 1, projection='3d')
     sc1 = ax1.scatter(x, y, z, s=10, c=z, cmap=cmap)
     cbar1 = fig.colorbar(sc1, ax=ax1, shrink=0.5)
-    cbar1.set_label("Z (m)")
-    ax1.set_title("原始 3D 稀疏点云（颜色 = Z，高度单位：米）")
-    ax1.set_xlabel("X (m)")
-    ax1.set_ylabel("Y (m)")
-    ax1.set_zlabel("Z (m)")
+    cbar1.set_label(label_z)
+    if font_prop:
+        ax1.set_title(title_3d, fontproperties=font_prop)
+    else:
+        ax1.set_title(title_3d)
+    ax1.set_xlabel(label_x)
+    ax1.set_ylabel(label_y)
+    ax1.set_zlabel(label_z)
     ax1.view_init(elev=35, azim=35)
 
 
@@ -146,7 +227,7 @@ def visualize_pointcloud(
         cmap=cmap
     )
     cbar2 = fig.colorbar(sc2, ax=ax2, shrink=0.5)
-    cbar2.set_label("Z' (m)")
+    cbar2.set_label(label_z_prime)
 
     # ===== 添加等高线 =====
     # 计算范围，添加边距以确保包含所有边缘点
@@ -193,9 +274,12 @@ def visualize_pointcloud(
     # 添加等高线文本标签
     ax2.clabel(cs, inline=True, fontsize=8, fmt="%.4f")
 
-    ax2.set_title("投影平面散点 + 等高线（Z' 单位：米）")
-    ax2.set_xlabel("X' (m)")
-    ax2.set_ylabel("Y' (m)")
+    if font_prop:
+        ax2.set_title(title_proj, fontproperties=font_prop)
+    else:
+        ax2.set_title(title_proj)
+    ax2.set_xlabel(label_x_prime)
+    ax2.set_ylabel(label_y_prime)
     ax2.set_aspect("equal", "box")
     
     # 设置坐标轴范围，确保显示所有点（包括边距）

@@ -11,10 +11,8 @@
 import os
 import sys
 import glob
-from pathlib import Path
-
 import numpy as np
-import cv2
+from pathlib import Path
 
 # 将算法模块路径添加到 sys.path，以便使用标准导入
 _base_dir = Path(__file__).parent
@@ -220,9 +218,9 @@ def main():
     # TODO: 根据真实相机标定填写这些参数
     image_shape = (left_chessboard.shape[0], left_chessboard.shape[1])  # (高度, 宽度)
     K = np.array([[800, 0, image_shape[1]/2], 
-                   [0, 800, image_shape[0]/2], 
-                   [0, 0, 1]], dtype=float)
-    baseline = 0.11  # 基线距离（米）
+                  [0, 800, image_shape[0]/2], 
+                  [0, 0, 1]], dtype=float)
+    baseline = 0.4  # 基线距离（米）
     
     print(f"相机参数: K={K.tolist()}, baseline={baseline}m")
     print(f"图像尺寸: {image_shape}")
@@ -254,27 +252,28 @@ def main():
     print(f"平整度指标已保存: {metrics_path}")
     print("平整度指标:", result["flatness_metrics"])
     
-    # 保存稀疏点云数据用于前端 3D 展示
+    # 保存点云数据用于前端 3D 展示（统一使用投影数据）
     pointcloud_data_path = os.path.join(result_dir, "pointcloud_data.json")
     
     # 准备点云数据
     def _to_list(x):
         return x.tolist() if hasattr(x, "tolist") else list(x)
 
+    # 确保投影数据存在
+    if "projected_pts" not in result or "projected_z" not in result:
+        raise RuntimeError("缺少投影数据：projected_pts 和 projected_z 必须存在")
+    
+    # 统一使用投影数据，只保留必需字段
     pc_data = {
-        "points": _to_list(result["pts_sparse"]),            # 稀疏点坐标（米）
-        "dists": _to_list(result["dists_sparse"]),           # 到平面的距离（米）
-        "plane": _to_list(result["plane_coeffs"]),           # 平面参数 [a,b,c] (来自拟合)
-        "normal": _to_list(result["normal"]),                # 法向量
-        # 追加投影坐标，便于前端与 Python 可视化完全一致
-        "projected_points": _to_list(result.get("projected_pts", [])),
-        "projected_dists": _to_list(result.get("projected_z", [])),  # 与颜色对应的 z'
+        "projected_points": _to_list(result["projected_pts"]),  # 投影后的点坐标 (meters)
+        "projected_dists": _to_list(result["projected_z"]),      # 投影后的 Z' 值，用于颜色映射 (meters)
     }
     
     with open(pointcloud_data_path, 'w', encoding='utf-8') as f:
         json.dump(pc_data, f, ensure_ascii=False)
     
     print(f"3D点云数据已保存: {pointcloud_data_path}")
+    print(f"  投影点数: {len(pc_data['projected_points'])}")
     
     # ========== 步骤5：不平整度可视化 ==========
     print("\n[步骤5] 不平整度可视化")

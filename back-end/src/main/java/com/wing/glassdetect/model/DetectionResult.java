@@ -58,48 +58,18 @@ public class DetectionResult {
         }
     }
 
-    // PointCloudData definition
+    /**
+     * 点云数据结构
+     * 
+     * 必需字段：
+     * - projected_points: 投影后的点坐标 (N×3 array, 单位：米)
+     * - projected_dists: 投影后的 Z' 值，用于颜色映射 (N array, 单位：米)
+     */
     public static class PointCloudData {
-        private List<List<Double>> points;
-        private List<Double> dists;
-        private List<Double> plane;
-        private List<Double> normal;
-        private List<List<Double>> projected_points;
-        private List<Double> projected_dists;
+        private List<List<Double>> projected_points;  // 投影后的点坐标 (必需)
+        private List<Double> projected_dists;          // 投影后的 Z' 值 (必需)
 
         public PointCloudData() {
-        }
-
-        public List<List<Double>> getPoints() {
-            return points;
-        }
-
-        public void setPoints(List<List<Double>> points) {
-            this.points = points;
-        }
-
-        public List<Double> getDists() {
-            return dists;
-        }
-
-        public void setDists(List<Double> dists) {
-            this.dists = dists;
-        }
-
-        public List<Double> getPlane() {
-            return plane;
-        }
-
-        public void setPlane(List<Double> plane) {
-            this.plane = plane;
-        }
-
-        public List<Double> getNormal() {
-            return normal;
-        }
-
-        public void setNormal(List<Double> normal) {
-            this.normal = normal;
         }
 
         public List<List<Double>> getProjected_points() {
