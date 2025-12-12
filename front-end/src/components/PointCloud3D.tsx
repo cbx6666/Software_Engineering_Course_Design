@@ -238,14 +238,14 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
 
     // 自适应 Z 放大
     const zRangeRaw = Math.max(maxZ - minZ, 1e-9);
-    const desiredVisualRange = 3000; 
-    const zScale = Math.min(20000, Math.max(4000, desiredVisualRange / zRangeRaw)); 
+    const desiredVisualRange = 3000;
+    const zScale = Math.min(20000, Math.max(4000, desiredVisualRange / zRangeRaw));
 
     // 缩放 & 平移到正半轴
     const padding = 20;
     const shiftX = (minX < 0 ? -minX : 0) + padding;
     const shiftY = (minY < 0 ? -minY : 0) + padding;
-    const shiftZ = (minZ < 0 ? -minZ : 0) + 50;
+    const shiftZ = (minZ < 0 ? -minZ : 0) + 200; // 增大此值可提高整体高度
 
     let newMinX = Infinity, newMinY = Infinity, newMinZ = Infinity;
     let newMaxX = -Infinity, newMaxY = -Infinity, newMaxZ = -Infinity;
@@ -285,7 +285,7 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
   const padding = 25;
   const shiftX = (bbox.minX < 0 ? -bbox.minX : 0) + padding;
   const shiftY = (bbox.minY < 0 ? -bbox.minY : 0) + padding;
-  const shiftZ = (bbox.minZ < 0 ? -bbox.minZ : 0);
+  const shiftZ = (bbox.minZ < 0 ? -bbox.minZ : 0) + 250;
 
   // 在最终绘制前再次平移，确保所有坐标为正，方便 OrbitControls 居中
   const shiftedPoints = transformedPoints.map(([x, y, z]) => [x + shiftX, y + shiftY, z + shiftZ]);

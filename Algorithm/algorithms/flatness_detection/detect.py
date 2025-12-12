@@ -220,7 +220,7 @@ def main():
     K = np.array([[800, 0, image_shape[1]/2], 
                   [0, 800, image_shape[0]/2], 
                   [0, 0, 1]], dtype=float)
-    baseline = 0.25  # 基线距离（米）
+    baseline = 0.1  # 基线距离（米）
     
     print(f"相机参数: K={K.tolist()}, baseline={baseline}m")
     print(f"图像尺寸: {image_shape}")
