@@ -238,8 +238,8 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
 
     // 自适应 Z 放大
     const zRangeRaw = Math.max(maxZ - minZ, 1e-9);
-    const desiredVisualRange = 2000; 
-    const zScale = Math.min(20000, Math.max(2500, desiredVisualRange / zRangeRaw)); 
+    const desiredVisualRange = 3000; 
+    const zScale = Math.min(20000, Math.max(4000, desiredVisualRange / zRangeRaw)); 
 
     // 缩放 & 平移到正半轴
     const padding = 20;
