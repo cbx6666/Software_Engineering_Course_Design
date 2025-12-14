@@ -3,22 +3,27 @@ package com.wing.glassdetect.service;
 import com.wing.glassdetect.model.DetectionResult;
 import com.wing.glassdetect.utils.ApiUtils;
 import com.wing.glassdetect.utils.FileUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class GlassFlatnessService {
 
-    public DetectionResult detect(MultipartFile[] imageFiles, String[] fieldNames, String url) {
+    @Async
+    public CompletableFuture<DetectionResult> detect(MultipartFile[] imageFiles, String[] fieldNames, String url) {
         Path[] tempFiles = null;
         try {
             tempFiles = FileUtils.saveTempFile(imageFiles);
-            return ApiUtils.postImageWithFieldNames(tempFiles, fieldNames, url);
+            DetectionResult result = ApiUtils.postImageWithFieldNames(tempFiles, fieldNames, url);
+            return CompletableFuture.completedFuture(result);
         } catch (IOException e) {
-            return new DetectionResult("error", "上传图片失败", e.getMessage(), null);
+            DetectionResult errorResult = new DetectionResult("error", "上传图片失败", e.getMessage(), null);
+            return CompletableFuture.completedFuture(errorResult);
         } finally {
             if (tempFiles != null) {
                 for (Path p : tempFiles) {

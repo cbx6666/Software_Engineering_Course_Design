@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequestMapping("/api/detect/glass-crack")
 public class GlassCrackController {
@@ -18,7 +20,7 @@ public class GlassCrackController {
     private String algorithmUrl;
 
     @PostMapping
-    public DetectionResult detectGlassCrack(@RequestParam("images") MultipartFile[] images) {
+    public CompletableFuture<DetectionResult> detectGlassCrack(@RequestParam("images") MultipartFile[] images) {
         String url =  algorithmUrl + "/api/detect/glass-crack";
 
         return glassCrackService.detect(images, url);
