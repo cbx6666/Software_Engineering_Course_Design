@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.concurrent.CompletableFuture;
+
 @RestController
 @RequestMapping("/api/detect/glass-flatness")
 public class GlassFlatnessController {
@@ -18,10 +20,10 @@ public class GlassFlatnessController {
     private String algorithmUrl;
 
     @PostMapping
-    public DetectionResult detectGlassFlatness(@RequestParam("left_env") MultipartFile leftEnv,
-                                               @RequestParam("left_mix") MultipartFile leftMix,
-                                               @RequestParam("right_env") MultipartFile rightEnv,
-                                               @RequestParam("right_mix") MultipartFile rightMix) {
+    public CompletableFuture<DetectionResult> detectGlassFlatness(@RequestParam("left_env") MultipartFile leftEnv,
+                                                                  @RequestParam("left_mix") MultipartFile leftMix,
+                                                                  @RequestParam("right_env") MultipartFile rightEnv,
+                                                                  @RequestParam("right_mix") MultipartFile rightMix) {
 
         MultipartFile[] images = new MultipartFile[]{leftEnv, leftMix, rightEnv, rightMix};
         String[] fieldNames = {"left_env", "left_mix", "right_env", "right_mix"};
