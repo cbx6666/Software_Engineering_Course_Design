@@ -52,7 +52,7 @@ function Points({ points, dists }: { points: number[][]; dists: number[] }) {
           args={[colors, 3]}
         />
       </bufferGeometry>
-      <pointsMaterial vertexColors size={2} sizeAttenuation={false} />
+      <pointsMaterial vertexColors size={5} sizeAttenuation={false} />
     </points>
   );
 }
