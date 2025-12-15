@@ -1,1 +1,20 @@
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist/
+build/
+
+# 临时文件和用户上传的数据（不应提交到版本控制）
+algorithms/**/data/
+algorithms/**/result/
+temp/
+tmp/
+*.tmp
+
+# 系统临时目录（如果意外创建在项目目录下）
+glass_detection/

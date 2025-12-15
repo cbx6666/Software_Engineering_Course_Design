@@ -7,16 +7,10 @@ import type { ReactThreeFiber } from "@react-three/fiber";
 import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 
-/**
- * 后端传入的点云数据结构。
- * 
- * 必需字段：
- * - projected_points: 投影后的点坐标 (N×3 array, 单位：米)
- * - projected_dists: 投影后的 Z' 值，用于颜色映射 (N array, 单位：米)
- */
-export interface PointCloudData {
-  projected_points: number[][]; // 投影后的点坐标 (meters)
-  projected_dists: number[];    // 投影后的 Z' 值，用于颜色映射 (meters)
+/** 后端传入的点云数据结构（只接受投影数据）。 */
+interface PointCloudData {
+  projected_points: number[][]; // meters
+  projected_dists: number[];    // meters
 }
 
 /** 组件输入：仅需传入一帧点云数据即可渲染。 */

@@ -112,12 +112,20 @@ def detect_corners(img_path: str, mask_path: str, chessboard_size: tuple, output
     return corners
 
 
-def main():
-    """主函数：执行完整的平整度检测流程"""
+def main(data_dir: str = None, result_dir: str = None):
+    """主函数：执行完整的平整度检测流程
+    
+    Args:
+        data_dir: 数据目录路径，如果为 None 则使用默认路径
+        result_dir: 结果目录路径，如果为 None 则使用默认路径
+    """
     # 设置路径
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = os.path.join(base_dir, "data")
-    result_dir = os.path.join(base_dir, "result")
+    if data_dir is None or result_dir is None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        if data_dir is None:
+            data_dir = os.path.join(base_dir, "data")
+        if result_dir is None:
+            result_dir = os.path.join(base_dir, "result")
     os.makedirs(result_dir, exist_ok=True)
     
     print("=== 平整度检测流程开始 ===")
@@ -218,9 +226,9 @@ def main():
     # TODO: 根据真实相机标定填写这些参数
     image_shape = (left_chessboard.shape[0], left_chessboard.shape[1])  # (高度, 宽度)
     K = np.array([[800, 0, image_shape[1]/2], 
-                  [0, 800, image_shape[0]/2], 
-                  [0, 0, 1]], dtype=float)
-    baseline = 0.1  # 基线距离（米）
+                   [0, 800, image_shape[0]/2], 
+                   [0, 0, 1]], dtype=float)
+    baseline = 0.265  # 基线距离（米）
     
     print(f"相机参数: K={K.tolist()}, baseline={baseline}m")
     print(f"图像尺寸: {image_shape}")
@@ -248,32 +256,31 @@ def main():
     import json
     with open(metrics_path, 'w', encoding='utf-8') as f:
         json.dump(result["flatness_metrics"], f, indent=2, ensure_ascii=False)
-    
+        
     print(f"平整度指标已保存: {metrics_path}")
     print("平整度指标:", result["flatness_metrics"])
     
-    # 保存点云数据用于前端 3D 展示（统一使用投影数据）
+    # 保存稀疏点云数据用于前端 3D 展示
     pointcloud_data_path = os.path.join(result_dir, "pointcloud_data.json")
     
     # 准备点云数据
     def _to_list(x):
         return x.tolist() if hasattr(x, "tolist") else list(x)
 
-    # 确保投影数据存在
-    if "projected_pts" not in result or "projected_z" not in result:
-        raise RuntimeError("缺少投影数据：projected_pts 和 projected_z 必须存在")
-    
-    # 统一使用投影数据，只保留必需字段
     pc_data = {
-        "projected_points": _to_list(result["projected_pts"]),  # 投影后的点坐标 (meters)
-        "projected_dists": _to_list(result["projected_z"]),      # 投影后的 Z' 值，用于颜色映射 (meters)
+        "points": _to_list(result["pts_sparse"]),            # 稀疏点坐标（米）
+        "dists": _to_list(result["dists_sparse"]),           # 到平面的距离（米）
+        "plane": _to_list(result["plane_coeffs"]),           # 平面参数 [a,b,c] (来自拟合)
+        "normal": _to_list(result["normal"]),                # 法向量
+        # 追加投影坐标，便于前端与 Python 可视化一致
+        "projected_points": _to_list(result.get("projected_pts", [])),
+        "projected_dists": _to_list(result.get("projected_z", [])),  # 与颜色对应的 z'
     }
     
     with open(pointcloud_data_path, 'w', encoding='utf-8') as f:
         json.dump(pc_data, f, ensure_ascii=False)
     
     print(f"3D点云数据已保存: {pointcloud_data_path}")
-    print(f"  投影点数: {len(pc_data['projected_points'])}")
     
     # ========== 步骤5：不平整度可视化 ==========
     print("\n[步骤5] 不平整度可视化")
