@@ -13,12 +13,18 @@ async def detect_glass_crack(image: UploadFile = File(...)):
         result = crack_service.detect_crack(image_content)
         return result
     
-    except Exception:
+    except Exception as e:
         return {
             "status": "error", 
             "title": "图片转换为数据流失败",
-            "description": None,
-            "details": None
+            "description": str(e),
+            "details": [
+                {
+                    "label": "错误详情",
+                    "value": str(e)[:2000],
+                    "description": "图片处理过程中发生的错误。请检查图片格式是否正确，或联系技术支持。"
+                }
+            ]
         }
 
 @router.post("/glass-flatness")
