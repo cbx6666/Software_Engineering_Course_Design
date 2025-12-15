@@ -60,7 +60,7 @@ function Points({ points, dists }: { points: number[][]; dists: number[] }) {
           args={[colors, 3]}
         />
       </bufferGeometry>
-      <pointsMaterial vertexColors size={2} sizeAttenuation={false} />
+      <pointsMaterial vertexColors size={3} sizeAttenuation={false} />
     </points>
   );
 }
@@ -113,7 +113,7 @@ function AxisArrows({ size }: { size: number }) {
   const labels = [
     { pos: new THREE.Vector3(len + labelOffset, 0, 0), text: "X (mm)", color: "#ff0000" },
     { pos: new THREE.Vector3(0, len + labelOffset, 0), text: "Y (mm)", color: "#00aa00" },
-    { pos: new THREE.Vector3(0, 0, len + labelOffset), text: "Z (0.1mm)", color: "#0088ff" },
+    { pos: new THREE.Vector3(0, 0, len + labelOffset), text: "Z (0.25mm)", color: "#0088ff" },
   ];
   return (
     <group>
@@ -197,16 +197,90 @@ function SceneContent({
 }
 
 /**
+ * 计算点集的包围盒
+ */
+function calculateBoundingBox(points: number[][]): { minX: number; maxX: number; minY: number; maxY: number; minZ: number; maxZ: number } {
+  let minX = Infinity, minY = Infinity, minZ = Infinity;
+  let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
+  for (const [x, y, z] of points) {
+    minX = Math.min(minX, x);
+    maxX = Math.max(maxX, x);
+    minY = Math.min(minY, y);
+    maxY = Math.max(maxY, y);
+    minZ = Math.min(minZ, z);
+    maxZ = Math.max(maxZ, z);
+  }
+  return { minX, maxX, minY, maxY, minZ, maxZ };
+}
+
+/**
+ * 缩放和平移点集到正半轴
+ * 流程：1. 先缩放 2. 处理负值（平移到正半轴）3. 加 padding
+ */
+function scaleAndShift(
+  points: number[][],
+  dists: number[],
+  xyScale: number,
+  zScale: number,
+  padding: number = 100
+): {
+  transformedPoints: number[][];
+  transformedDists: number[];
+  bbox: { minX: number; maxX: number; minY: number; maxY: number; minZ: number; maxZ: number };
+} {
+  // 1. 先缩放所有点
+  const scaledPoints = points.map(([x, y, z]) => [
+    x * xyScale,
+    y * xyScale,
+    z * zScale,
+  ] as [number, number, number]);
+
+  const scaledDists = dists.map(d => d * zScale);
+
+  // 2. 计算缩放后的包围盒
+  const scaledBbox = calculateBoundingBox(scaledPoints);
+
+  // 3. 先处理负值：平移到正半轴
+  const shiftToPositiveX = scaledBbox.minX < 0 ? -scaledBbox.minX : 0;
+  const shiftToPositiveY = scaledBbox.minY < 0 ? -scaledBbox.minY : 0;
+  const shiftToPositiveZ = scaledBbox.minZ < 0 ? -scaledBbox.minZ : 0;
+
+  // 4. 再加 padding
+  const shiftX = shiftToPositiveX + padding;
+  const shiftY = shiftToPositiveY + padding;
+  const shiftZ = shiftToPositiveZ + padding;
+
+  // 5. 应用最终平移
+  const transformedPoints = scaledPoints.map(([x, y, z]) => [
+    x + shiftX,
+    y + shiftY,
+    z + shiftZ,
+  ] as [number, number, number]);
+
+  // 6. 计算最终包围盒
+  const finalBbox = {
+    minX: scaledBbox.minX + shiftX,
+    maxX: scaledBbox.maxX + shiftX,
+    minY: scaledBbox.minY + shiftY,
+    maxY: scaledBbox.maxY + shiftY,
+    minZ: scaledBbox.minZ + shiftZ,
+    maxZ: scaledBbox.maxZ + shiftZ,
+  };
+
+  return { transformedPoints, transformedDists: scaledDists, bbox: finalBbox };
+}
+
+/**
  * 点云 3D 视图主组件。
  * - 兼容「原始点云 + 平面参数」和「后端投影结果」两种输入。
  * - 自动把坐标转换到毫米、放大 Z 差异并移到正半轴，便于观察。
  * - 提供 OrbitControls 旋转/缩放与一键重置视角。
  */
 export function PointCloud3D({ data }: PointCloud3DProps) {
-  // 单位：毫米 (mm)
-  // X/Y 轴：1 unit = 1 mm
-  // Z 轴：根据实际高度差自适应放大，确保视觉上更明显
-  const xyScale = 1000.0;
+  // 单位：X/Y 轴使用 1mm 单位，Z 轴使用 0.25mm 单位
+  const xyScale = 1000.0; // X/Y 轴：1 meter = 1000 mm
+  const zScale = 4000.0;  // Z 轴：1 meter = 4000 单位（0.25mm为单位）
+  const padding = 50;    // 统一 padding 值
 
   // useMemo 返回：
   // [0] 已缩放/平移后的点坐标
@@ -214,195 +288,63 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
   // [2] 原始对齐后的包围盒
   // [3] 基准网格尺寸
   const [transformedPoints, transformedDists, bbox, guideSize] = useMemo(() => {
-    // 如果有后端投影结果，直接使用（与 Python 可视化一致）
-    const useProjected = Array.isArray(data.projected_points) && Array.isArray(data.projected_dists);
+    let points: number[][];
+    let dists: number[];
 
-    // 1) 如果有投影结果：使用投影坐标作为 points，projected_dists 作为颜色
-    //    不再前端旋转，只做缩放/平移到正半轴
-    // 2) 否则：按原逻辑旋转、缩放、平移
-    if (useProjected) {
-      const projPts = data.projected_points as number[][];
-      const projDists = data.projected_dists as number[];
+    // 如果有后端投影结果，直接使用；否则进行旋转对齐
+    if (Array.isArray(data.projected_points) && Array.isArray(data.projected_dists)) {
+      // 使用投影数据（已由后端处理）
+      points = data.projected_points;
+      dists = data.projected_dists;
+    } else {
+      // 计算拟合平面的旋转四元数，使其法线对齐 Z 轴
+      const [a, b, c0] = data.plane;
+      const normal = new THREE.Vector3(a, b, -1).normalize();
+      const up = new THREE.Vector3(0, 0, 1);
+      const quat = new THREE.Quaternion().setFromUnitVectors(normal, up);
 
-      // 先统计原始范围
-      let minX = Infinity, minY = Infinity, minZ = Infinity;
-      let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
-      for (const [x, y, z] of projPts) {
-        minX = Math.min(minX, x);
-        maxX = Math.max(maxX, x);
-        minY = Math.min(minY, y);
-        maxY = Math.max(maxY, y);
-        minZ = Math.min(minZ, z);
-        maxZ = Math.max(maxZ, z);
-      }
+      // 计算平面在旋转后的 Z 高度偏移
+      const p0 = new THREE.Vector3(0, 0, c0).applyQuaternion(quat);
+      const offsetZ = p0.z;
 
-      // 自适应 Z 放大
-      const zRangeRaw = Math.max(maxZ - minZ, 1e-9);
-      const desiredVisualRange = 4000; // 让高度差在视觉上更明显
-      const zScale = Math.min(40000, Math.max(5000, desiredVisualRange / zRangeRaw));
-
-      // 缩放 & 平移到正半轴
-      const padding = 20;
-      const shiftX = (minX < 0 ? -minX : 0) + padding;
-      const shiftY = (minY < 0 ? -minY : 0) + padding;
-      const shiftZ = (minZ < 0 ? -minZ : 0) + 50;
-
-      let newMinX = Infinity, newMinY = Infinity, newMinZ = Infinity;
-      let newMaxX = -Infinity, newMaxY = -Infinity, newMaxZ = -Infinity;
-
-      const scaledPts = projPts.map(([x, y, z]) => {
-        const xVal = x * xyScale + shiftX;
-        const yVal = y * xyScale + shiftY;
-        const zVal = z * zScale + shiftZ;
-        newMinX = Math.min(newMinX, xVal);
-        newMaxX = Math.max(newMaxX, xVal);
-        newMinY = Math.min(newMinY, yVal);
-        newMaxY = Math.max(newMaxY, yVal);
-        newMinZ = Math.min(newMinZ, zVal);
-        newMaxZ = Math.max(newMaxZ, zVal);
-        return [xVal, yVal, zVal] as [number, number, number];
+      // 旋转所有点并对齐到水平
+      points = data.points.map(([x, y, z]) => {
+        const raw = new THREE.Vector3(x, y, z);
+        raw.applyQuaternion(quat);
+        return [raw.x, raw.y, raw.z - offsetZ]; // 减去平面高度偏移
       });
 
-      // 距离同样按 zScale 缩放，保持颜色映射一致
-      const scaledDists = projDists.map(d => d * zScale);
-
-      const sizeX = newMaxX - newMinX;
-      const sizeY = newMaxY - newMinY;
-      const sizeZ = newMaxZ - newMinZ;
-      const gSize = Math.max(sizeX, sizeY) * 1.2;
-
-      return [
-        scaledPts,
-        scaledDists,
-        { minX: newMinX, maxX: newMaxX, minY: newMinY, maxY: newMaxY, minZ: newMinZ, maxZ: newMaxZ },
-        gSize
-      ] as const;
+      dists = data.dists;
     }
 
-    // 1. 计算拟合平面的旋转四元数，使其法线对齐 Z 轴
-    const [a, b, c0] = data.plane;
-    const normal = new THREE.Vector3(a, b, -1).normalize();
-    const up = new THREE.Vector3(0, 0, 1);
-    const quat = new THREE.Quaternion().setFromUnitVectors(normal, up);
+    // 统一进行缩放和平移
+    const { transformedPoints, transformedDists, bbox } = scaleAndShift(
+      points,
+      dists,
+      xyScale,
+      zScale,
+      padding
+    );
 
-    // 2. 计算平面在旋转后的 Z 高度偏移，用于后续把平面抬到 z=0
-    const p0 = new THREE.Vector3(0, 0, c0).applyQuaternion(quat);
-    const offsetZ = p0.z;
+    // 计算基准网格大小
+    const sizeX = bbox.maxX - bbox.minX;
+    const sizeY = bbox.maxY - bbox.minY;
+    const guideSize = Math.max(sizeX, sizeY) * 1.2;
 
-    const pts: number[][] = [];
-    const distsScaled: number[] = [];
-
-    // 预先记录未缩放前的 z 偏差范围，用于自适应放大
-    let minZRaw = Infinity;
-    let maxZRaw = -Infinity;
-
-    let minX = Infinity, minY = Infinity, minZ = Infinity;
-    let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
-
-    for (let i = 0; i < data.points.length; i++) {
-      // 原始点 (米)
-      const raw = new THREE.Vector3(data.points[i][0], data.points[i][1], data.points[i][2]);
-
-      // 旋转对齐到水平
-      raw.applyQuaternion(quat);
-
-      // Z 轴处理：减去平面高度(变0)，后续再按自适应比例放大
-      const zRaw = raw.z - offsetZ;
-      minZRaw = Math.min(minZRaw, zRaw);
-      maxZRaw = Math.max(maxZRaw, zRaw);
-
-      // X/Y 轴处理：应用毫米比例
-      // 这里需要注意：旋转后的 x,y 也是米，乘 1000 变毫米
-      const xVal = raw.x * xyScale;
-      const yVal = raw.y * xyScale;
-
-      // 先存储未缩放的 zRaw，稍后统一缩放
-      pts.push([xVal, yVal, zRaw]);
-
-      minX = Math.min(minX, xVal);
-      maxX = Math.max(maxX, xVal);
-      minY = Math.min(minY, yVal);
-      maxY = Math.max(maxY, yVal);
-    }
-
-    // 根据 z 偏差范围自适应放大
-    const zRangeRaw = Math.max(maxZRaw - minZRaw, 1e-9);
-    const desiredVisualRange = 4000; // 期望的可视化高度范围（单位：显示单位）
-    const zScale = Math.min(40000, Math.max(5000, desiredVisualRange / zRangeRaw)); // 限制范围避免过大/过小
-
-    // 应用 zScale，并重新统计 z 范围
-    minZ = Infinity; maxZ = -Infinity;
-    const scaledPts = pts.map(([x, y, zRaw], idx) => {
-      const zVal = zRaw * zScale;
-      minZ = Math.min(minZ, zVal);
-      maxZ = Math.max(maxZ, zVal);
-      // 同时缩放距离用于颜色
-      distsScaled.push(data.dists[idx] * zScale);
-      return [x, y, zVal] as [number, number, number];
-    });
-
-    // 3. 整体平移到正半轴 (0,0,0) 起始，保留一定 padding
-    const padding = 20; // padding in xy units (mm)
-    const shiftX = (minX < 0 ? -minX : 0) + padding;
-    const shiftY = (minY < 0 ? -minY : 0) + padding;
-    // Z 轴：平移到 Z>0 区域
-    const shiftZ = (minZ < 0 ? -minZ : 0) + 50;
-
-    const shiftedPts = scaledPts.map(([x, y, z]) => [x + shiftX, y + shiftY, z + shiftZ]);
-
-    // 更新 bbox
-    const newMinX = 0, newMaxX = maxX + shiftX;
-    const newMinY = 0, newMaxY = maxY + shiftY;
-    const newMinZ = minZ + shiftZ, newMaxZ = maxZ + shiftZ;
-
-    // 计算场景大小
-    const sizeX = newMaxX - newMinX;
-    const sizeY = newMaxY - newMinY;
-    const sizeZ = newMaxZ - newMinZ;
-    const maxSize = Math.max(sizeX, sizeY, sizeZ);
-
-    // 墙角网格大小：稍微比物体大一点
-    const gSize = Math.max(sizeX, sizeY) * 1.2;
-
-    return [
-      shiftedPts,
-      distsScaled,
-      { minX: newMinX, maxX: newMaxX, minY: newMinY, maxY: newMaxY, minZ: newMinZ, maxZ: newMaxZ },
-      gSize
-    ] as const;
-
-  }, [data.points, data.dists, data.plane]);
+    return [transformedPoints, transformedDists, bbox, guideSize] as const;
+  }, [data.points, data.dists, data.plane, data.projected_points, data.projected_dists, xyScale, zScale, padding]);
 
   // 相机设置（初始视角朝向正半轴）
-  // 再次平移：确保包围盒都在正半轴，方便 OrbitControls 初始 target 计算
-  const padding = 25;
-  const shiftX = (bbox.minX < 0 ? -bbox.minX : 0) + padding;
-  const shiftY = (bbox.minY < 0 ? -bbox.minY : 0) + padding;
-  const shiftZ = (bbox.minZ < 0 ? -bbox.minZ : 0);
+  // bbox 已经在 scaleAndShift 中处理了平移，直接使用即可
+  const cx = (bbox.maxX + bbox.minX) / 2;
+  const cy = (bbox.maxY + bbox.minY) / 2;
+  const cz = (bbox.maxZ + bbox.minZ) / 2;
 
-  // 在最终绘制前再次平移，确保所有坐标为正，方便 OrbitControls 居中
-  const shiftedPoints = transformedPoints.map(([x, y, z]) => [x + shiftX, y + shiftY, z + shiftZ]);
-
-  const bboxShift = {
-    minX: bbox.minX + shiftX,
-    maxX: bbox.maxX + shiftX,
-    minY: bbox.minY + shiftY,
-    maxY: bbox.maxY + shiftY,
-    minZ: bbox.minZ + shiftZ,
-    maxZ: bbox.maxZ + shiftZ,
-  };
-
-  // 基准平面/坐标轴范围跟随偏移后的范围
-  const guideSizeShift = Math.max(bboxShift.maxX, bboxShift.maxY) * 1.2;
-
-  const cx = (bboxShift.maxX + bboxShift.minX) / 2;
-  const cy = (bboxShift.maxY + bboxShift.minY) / 2;
-  const cz = (bboxShift.maxZ + bboxShift.minZ) / 2;
   // 根据包围盒尺寸选择初始相机距离，保持所有内容入镜
   const camDist = Math.max(
-    bboxShift.maxX - bboxShift.minX,
-    bboxShift.maxY - bboxShift.minY,
-    bboxShift.maxZ - bboxShift.minZ,
+    bbox.maxX - bbox.minX,
+    bbox.maxY - bbox.minY,
+    bbox.maxZ - bbox.minZ,
     1
   ) * 1.2;
   const initialCameraPos = [camDist, camDist, camDist] as [number, number, number];
@@ -420,27 +362,52 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
   };
 
   return (
-    <div
-      className="w-full border rounded-lg bg-black overflow-hidden relative max-w-[800px] mx-auto"
-      style={{ height: "600px" }}
-    >
-      <ControlsPanel onReset={handleReset} />
-      <Canvas
-        style={{ width: "100%", height: "100%" }} // 确保跟随容器高度
-        camera={{ position: initialCameraPos, fov: 45, up: [0, 0, 1] }}
+    <div className="w-full max-w-[800px] mx-auto">
+      <div
+        className="w-full border rounded-lg bg-black overflow-hidden relative"
+        style={{ height: "600px" }}
       >
-        <SceneContent
-          points={shiftedPoints}
-          dists={transformedDists}
-          guideSize={guideSizeShift}
-          axesSize={guideSizeShift}
-        />
-        <OrbitControls
-          ref={controlsRef}
-          target={initialTarget}
-          enablePan={false}
-        />
-      </Canvas>
+        <ControlsPanel onReset={handleReset} />
+        <Canvas
+          style={{ width: "100%", height: "100%" }} // 确保跟随容器高度
+          camera={{ position: initialCameraPos, fov: 45, up: [0, 0, 1] }}
+        >
+          <SceneContent
+            points={transformedPoints}
+            dists={transformedDists}
+            guideSize={guideSize}
+            axesSize={guideSize}
+          />
+          <OrbitControls
+            ref={controlsRef}
+            target={initialTarget}
+            enablePan={false}
+          />
+        </Canvas>
+      </div>
+      {/* 颜色说明 */}
+      <div className="mt-4 px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+        <div className="space-y-3">
+          <div className="text-sm font-semibold text-slate-200 mb-2">颜色映射说明</div>
+          <div className="flex flex-wrap items-center gap-6 text-sm text-slate-300">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: "#0080ff" }}></div>
+              <span>蓝色：负偏差（低于标准平面）</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: "#00ff00" }}></div>
+              <span>绿色：标准（接近理想平面）</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded" style={{ backgroundColor: "#ff0000" }}></div>
+              <span>红色：正偏差（高于标准平面）</span>
+            </div>
+          </div>
+          <div className="text-xs text-slate-400 mt-2 leading-relaxed">
+            <p>颜色变化逻辑：点云颜色采用 HSL 色彩空间从蓝色到红色的连续渐变映射。根据各点到拟合平面的距离（偏差值），负偏差显示为蓝色，正偏差显示为红色，中间值按线性插值显示为蓝-绿-红的渐变过渡。</p>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

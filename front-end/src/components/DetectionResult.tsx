@@ -1,6 +1,7 @@
 import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
-import { AlertCircle, CheckCircle, Info } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { AlertCircle, CheckCircle, Info, HelpCircle } from "lucide-react";
 import { PointCloud3D } from "./PointCloud3D";
 
 // 检测结果定义在此处
@@ -8,7 +9,7 @@ export interface DetectionResultData {
   status: "success" | "warning" | "error";
   title: string;
   description: string;
-  details?: Array<{ label: string; value: string; image?: string }>;
+  details?: Array<{ label: string; value: string; description?: string; image?: string }>;
   image?: string; // 平整度可视化图片（base64 data URI）
   pointcloud?: {
     points: number[][];
@@ -96,10 +97,37 @@ export function DetectionResult({ result }: DetectionResultProps) {
 
           {resultDetails.length > 0 && (
             <div className="space-y-2 bg-slate-900/30 rounded-lg p-4 backdrop-blur-sm">
+              <h4 className="text-white text-sm font-medium mb-3">详细指标</h4>
               {resultDetails.map((detail, index) => (
-                <div key={index} className="flex justify-between items-center py-2 border-t border-white/10 first:border-t-0">
-                  <span className="text-slate-400">{detail.label}</span>
-                  <span className="text-white">{detail.value}</span>
+                <div key={index} className="py-2 border-t border-white/10 first:border-t-0">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      <span className="text-slate-400">{detail.label}</span>
+                      {detail.description && (
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button className="text-slate-500 hover:text-slate-300 transition-colors focus:outline-none">
+                              <HelpCircle className="w-4 h-4" />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            side="right"
+                            align="start"
+                            className="bg-slate-800 text-slate-200 border-slate-700 shadow-xl"
+                            style={{ maxWidth: '512px', width: 'auto' }}
+                          >
+                            <h4 className="font-semibold text-white text-sm mb-1">
+                              {detail.label}
+                            </h4>
+                            <p className="text-xs leading-relaxed text-slate-300 whitespace-normal break-all">
+                              {detail.description}
+                            </p>
+                          </PopoverContent>
+                        </Popover>
+                      )}
+                    </div>
+                    <span className="text-white font-medium">{detail.value}</span>
+                  </div>
 
                   {detail.image && (
                     <div className="mt-3">

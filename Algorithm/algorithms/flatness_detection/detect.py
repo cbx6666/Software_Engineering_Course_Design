@@ -11,10 +11,8 @@
 import os
 import sys
 import glob
-from pathlib import Path
-
 import numpy as np
-import cv2
+from pathlib import Path
 
 # 将算法模块路径添加到 sys.path，以便使用标准导入
 _base_dir = Path(__file__).parent
@@ -114,12 +112,20 @@ def detect_corners(img_path: str, mask_path: str, chessboard_size: tuple, output
     return corners
 
 
-def main():
-    """主函数：执行完整的平整度检测流程"""
+def main(data_dir: str = None, result_dir: str = None):
+    """主函数：执行完整的平整度检测流程
+    
+    Args:
+        data_dir: 数据目录路径，如果为 None 则使用默认路径
+        result_dir: 结果目录路径，如果为 None 则使用默认路径
+    """
     # 设置路径
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-    data_dir = os.path.join(base_dir, "data")
-    result_dir = os.path.join(base_dir, "result")
+    if data_dir is None or result_dir is None:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        if data_dir is None:
+            data_dir = os.path.join(base_dir, "data")
+        if result_dir is None:
+            result_dir = os.path.join(base_dir, "result")
     os.makedirs(result_dir, exist_ok=True)
     
     print("=== 平整度检测流程开始 ===")
@@ -222,7 +228,7 @@ def main():
     K = np.array([[800, 0, image_shape[1]/2], 
                    [0, 800, image_shape[0]/2], 
                    [0, 0, 1]], dtype=float)
-    baseline = 0.11  # 基线距离（米）
+    baseline = 0.265  # 基线距离（米）
     
     print(f"相机参数: K={K.tolist()}, baseline={baseline}m")
     print(f"图像尺寸: {image_shape}")
