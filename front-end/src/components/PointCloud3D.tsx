@@ -8,7 +8,7 @@ import { OrbitControls, Html } from "@react-three/drei";
 import * as THREE from "three";
 
 /** 后端传入的点云数据结构（只接受投影数据）。 */
-interface PointCloudData {
+export interface PointCloudData {
   projected_points: number[][]; // meters
   projected_dists: number[];    // meters
 }
