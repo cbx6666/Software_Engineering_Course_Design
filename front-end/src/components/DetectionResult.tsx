@@ -2,6 +2,7 @@ import { Card } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { AlertCircle, CheckCircle, Info } from "lucide-react";
 import { PointCloud3D } from "./PointCloud3D";
+import type { PointCloudData } from "./PointCloud3D";
 
 // 检测结果定义在此处
 export interface DetectionResultData {
@@ -10,14 +11,7 @@ export interface DetectionResultData {
   description: string;
   details?: Array<{ label: string; value: string; image?: string }>;
   image?: string; // 平整度可视化图片（base64 data URI）
-  pointcloud?: {
-    points: number[][];
-    dists: number[];
-    plane: number[];
-    normal: number[];
-    projected_points?: number[][];
-    projected_dists?: number[];
-  };
+  pointcloud?: PointCloudData;
 }
 
 interface DetectionResultProps {

@@ -14,7 +14,7 @@ import * as THREE from "three";
  * - projected_points: 投影后的点坐标 (N×3 array, 单位：米)
  * - projected_dists: 投影后的 Z' 值，用于颜色映射 (N array, 单位：米)
  */
-interface PointCloudData {
+export interface PointCloudData {
   projected_points: number[][]; // 投影后的点坐标 (meters)
   projected_dists: number[];    // 投影后的 Z' 值，用于颜色映射 (meters)
 }
