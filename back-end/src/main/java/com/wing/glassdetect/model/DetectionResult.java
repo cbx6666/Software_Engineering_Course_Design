@@ -32,6 +32,8 @@ public class DetectionResult {
     public static class Detail {
         private String label;
         private String value;
+        // 新增字段：用于承载前后端/算法返回的指标解释说明
+        private String description;
 
         public Detail() {
         }
@@ -56,6 +58,14 @@ public class DetectionResult {
         public void setValue(String value) {
             this.value = value;
         }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
     }
 
     /**
@@ -66,8 +76,8 @@ public class DetectionResult {
      * - projected_dists: 投影后的 Z' 值，用于颜色映射 (N array, 单位：米)
      */
     public static class PointCloudData {
-        private List<List<Double>> projected_points;  // 投影后的点坐标 (必需)
-        private List<Double> projected_dists;          // 投影后的 Z' 值 (必需)
+        private List<List<Double>> projected_points; // 投影后的点坐标 (必需)
+        private List<Double> projected_dists; // 投影后的 Z' 值 (必需)
 
         public PointCloudData() {
         }
@@ -123,7 +133,7 @@ public class DetectionResult {
         this.details = details;
     }
 
-    public String getImage(){
+    public String getImage() {
         return image;
     }
 
