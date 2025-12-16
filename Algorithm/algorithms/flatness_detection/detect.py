@@ -268,11 +268,6 @@ def main(data_dir: str = None, result_dir: str = None):
         return x.tolist() if hasattr(x, "tolist") else list(x)
 
     pc_data = {
-        "points": _to_list(result["pts_sparse"]),            # 稀疏点坐标（米）
-        "dists": _to_list(result["dists_sparse"]),           # 到平面的距离（米）
-        "plane": _to_list(result["plane_coeffs"]),           # 平面参数 [a,b,c] (来自拟合)
-        "normal": _to_list(result["normal"]),                # 法向量
-        # 追加投影坐标，便于前端与 Python 可视化一致
         "projected_points": _to_list(result.get("projected_pts", [])),
         "projected_dists": _to_list(result.get("projected_z", [])),  # 与颜色对应的 z'
     }
