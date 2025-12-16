@@ -329,7 +329,7 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
     // 计算基准网格大小
     const sizeX = bbox.maxX - bbox.minX;
     const sizeY = bbox.maxY - bbox.minY;
-    const guideSize = Math.max(sizeX, sizeY) * 1.2;
+    const guideSize = Math.max(sizeX, sizeY) * 1.6;
 
     return [transformedPoints, transformedDists, bbox, guideSize] as const;
   }, [data.points, data.dists, data.plane, data.projected_points, data.projected_dists, xyScale, zScale, padding]);
