@@ -9,40 +9,40 @@ export function LoginPage({
     onRegister,
     isSubmitting,
 }: {
-    onLogin: (params: { username: string; password: string }) => Promise<void>;
-    onRegister: (params: { username: string; password: string; displayName?: string }) => Promise<void>;
+    onLogin: (params: { email: string; password: string }) => Promise<void>;
+    onRegister: (params: { email: string; password: string }) => Promise<void>;
     isSubmitting: boolean;
 }) {
     const [mode, setMode] = useState<"login" | "register">("login");
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const canSubmit = useMemo(() => {
-        if (!username.trim() || !password || isSubmitting) return false;
+        if (!email.trim() || !password || isSubmitting) return false;
         if (mode === "register") {
             if (confirmPassword && confirmPassword !== password) return false;
         }
         return true;
-    }, [username, password, confirmPassword, isSubmitting, mode]);
+    }, [email, password, confirmPassword, isSubmitting, mode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         try {
             if (mode === "login") {
-                await onLogin({ username, password });
+                await onLogin({ email, password });
             } else {
                 if (password !== confirmPassword) {
                     setError("两次输入的密码不一致");
                     return;
                 }
-                await onRegister({ username, password });
+                await onRegister({ email, password });
             }
         } catch (err) {
-            const msg = err instanceof Error ? err.message : (mode === "login" ? "登录失败，请稍后再试。" : "注册失败，请稍后再试。");
+            const msg = (mode === "login" ? "登录失败，请稍后再试。" : "注册失败，请稍后再试。");
             setError(msg);
         }
     };
@@ -81,14 +81,14 @@ export function LoginPage({
             <div className="space-y-2">
                 <label className="text-slate-200 text-sm">邮箱</label>
                 <Input
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     type="email"
                     inputMode="email"
                     placeholder="请输入邮箱地址"
                     autoComplete="email"
                     disabled={isSubmitting}
-                    className="bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
+                    className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                 />
             </div>
 
@@ -101,7 +101,7 @@ export function LoginPage({
                         placeholder="请输入密码"
                         onChange={(e) => setPassword(e.target.value)}
                         type={showPassword ? "text" : "password"}
-                        className="h-9 w-full pr-10 bg-white/5 border-white/15 text-white"
+                        className="h-9 w-full pr-10 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                     />
 
                     <button
@@ -131,7 +131,7 @@ export function LoginPage({
                         placeholder="再次输入密码"
                         autoComplete="new-password"
                         disabled={isSubmitting}
-                        className="bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
+                        className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                     />
                     {confirmPassword && confirmPassword !== password && (
                         <div className="text-sm text-red-400">两次输入的密码不一致</div>
@@ -183,10 +183,10 @@ export function LoginPage({
                     setError(null);
                     const demoEmail = "demo@example.com";
                     const demoPassword = "123456";
-                    setUsername(demoEmail);
+                    setEmail(demoEmail);
                     setPassword(demoPassword);
                     try {
-                        await onLogin({ username: demoEmail, password: demoPassword });
+                        await onLogin({ email: demoEmail, password: demoPassword });
                     } catch (err) {
                         const msg = err instanceof Error ? err.message : "模拟进入失败";
                         setError(msg);

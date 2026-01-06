@@ -4,7 +4,6 @@ import { login as loginApi, register as registerApi, type LoginResponse } from "
 const STORAGE_KEY = "glassdetect.auth";
 
 export interface AuthState {
-    token: string;
     user: LoginResponse["user"];
 }
 
@@ -12,7 +11,15 @@ function readStoredAuth(): AuthState | null {
     const raw = localStorage.getItem(STORAGE_KEY) ?? sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     try {
-        return JSON.parse(raw) as AuthState;
+        const parsed = JSON.parse(raw) as any;
+        // 兼容旧版本：{ token, user }
+        if (parsed && typeof parsed === "object") {
+            const user = parsed.user;
+            if (user && typeof user === "object") {
+                return { user } as AuthState;
+            }
+        }
+        return null;
     } catch {
         return null;
     }
@@ -45,13 +52,13 @@ export function useAuth() {
         return () => window.removeEventListener("storage", onStorage);
     }, []);
 
-    const isAuthed = !!auth?.token;
+    const isAuthed = !!auth?.user;
 
-    const login = useCallback(async (params: { username: string; password: string; remember: boolean }) => {
+    const login = useCallback(async (params: { email: string; password: string; remember: boolean }) => {
         setIsLoggingIn(true);
         try {
-            const res = await loginApi({ username: params.username, password: params.password });
-            const next: AuthState = { token: res.token, user: res.user };
+            const res = await loginApi({ email: params.email, password: params.password });
+            const next: AuthState = { user: res.user };
             writeStoredAuth(next, params.remember);
             setAuth(next);
             return next;
@@ -61,15 +68,14 @@ export function useAuth() {
     }, []);
 
     const register = useCallback(
-        async (params: { username: string; password: string; displayName?: string; remember: boolean }) => {
+        async (params: { email: string; password: string; remember: boolean }) => {
             setIsLoggingIn(true);
             try {
                 const res = await registerApi({
-                    username: params.username,
+                    email: params.email,
                     password: params.password,
-                    displayName: params.displayName,
                 });
-                const next: AuthState = { token: res.token, user: res.user };
+                const next: AuthState = { user: res.user };
                 writeStoredAuth(next, params.remember);
                 setAuth(next);
                 return next;

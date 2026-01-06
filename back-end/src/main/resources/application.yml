@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: back-end
+  mvc:
+    async:
+      request-timeout: 6000
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+      
+  # ===== MySQL =====
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://139.196.151.22:3306/glassdetect
+    username: remote_user
+    password: "Software007@"
+
+server:
+  tomcat:
+    connection-timeout: 6000
+
+# 前端地址
+frontend:
+  url: "http://106.15.89.110"
+
+# 算法服务地址，和后端在同一本地地址
+algorithm:
+  url: "http://127.0.0.1:8000"
+
+mybatis-plus:
+  # XML 配置文件（你说的“xml”我落在这里）
+  config-location: classpath:mybatis/mybatis-config.xml
+  # Mapper XML 位置（可选，BaseMapper 不需要，但你后续写自定义 SQL 会用到）
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+
