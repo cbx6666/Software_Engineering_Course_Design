@@ -15,18 +15,19 @@ import java.util.concurrent.CompletableFuture;
 public class GlassCrackService {
 
     @Async("asyncExecutor")
-    public CompletableFuture<DetectionResult> detect(MultipartFile[] imageFiles, String url) {
-        Path[] tempFiles;
+    public CompletableFuture<DetectionResult> detect(Long userId, MultipartFile[] imageFiles, String url) {
+        Path[] tempFiles = null;
         Path tempDir = null;
+        DetectionResult result = null;
         try {
             // 保存到独立子目录
             tempFiles = FileUtils.saveTempFile(imageFiles);
             tempDir = tempFiles[0].getParent(); // 获取当前请求的临时目录
-            DetectionResult result = ApiUtils.postImage(tempFiles, url);
+            result = ApiUtils.postImage(tempFiles, url);
             return CompletableFuture.completedFuture(result);
         } catch (IOException e) {
-            DetectionResult errorResult = new DetectionResult("error", "上传图片失败", e.getMessage(), null);
-            return CompletableFuture.completedFuture(errorResult);
+            result = new DetectionResult("error", "上传图片失败", e.getMessage(), null);
+            return CompletableFuture.completedFuture(result);
         } finally {
             // 删除整个请求目录，清理所有文件
             if (tempDir != null) {

@@ -9,3 +9,19 @@ CREATE TABLE IF NOT EXISTS glass_user (
   UNIQUE KEY uk_glass_user_email (email)
 );
 
+-- 检测历史记录表
+CREATE TABLE IF NOT EXISTS glass_history (
+  id BIGINT PRIMARY KEY,
+  user_id BIGINT NOT NULL,
+  type VARCHAR(50) NOT NULL,
+  date DATETIME NOT NULL,
+  status VARCHAR(50) NOT NULL,
+  title VARCHAR(255),
+  description TEXT,
+  image VARCHAR(255),
+  pointcloud JSON,
+  details JSON,
+  FOREIGN KEY (user_id) REFERENCES glass_user(id)
+);
+
+
