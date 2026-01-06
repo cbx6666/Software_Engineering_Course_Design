@@ -12,6 +12,8 @@ export function HistoryDetailPage() {
   const [historyItem, setHistoryItem] = useState<HistoryItem | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
+
   useEffect(() => {
     if (id) {
       setLoading(true);
@@ -59,6 +61,25 @@ export function HistoryDetailPage() {
             <p><strong>描述:</strong> {historyItem.description}</p>
           </CardContent>
         </Card>
+
+        {/* 待检测图片展示区 */}
+        {historyItem.originalImages && historyItem.originalImages.length > 0 && (
+          <Card className="border-0 bg-white/10 backdrop-blur-xl shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-white">待检测图片</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-4">
+              {historyItem.originalImages.map((src, index) => (
+                <img
+                  key={index}
+                  src={`${API_BASE_URL}${src}`}
+                  alt={`检测图片 ${index + 1}`}
+                  className="w-48 h-48 object-cover rounded-md border-2 border-slate-700"
+                />
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         <DetectionResult result={historyItem as HistoryItem} />
       </div>

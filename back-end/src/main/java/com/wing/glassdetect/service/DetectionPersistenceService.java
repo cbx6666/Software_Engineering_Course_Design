@@ -7,7 +7,6 @@ import com.wing.glassdetect.model.History;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,7 +35,7 @@ public class DetectionPersistenceService {
         this.imageStoragePath = imageStoragePath;
     }
 
-        public void persistResult(Long userId, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
+    public void persistResult(Long userId, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
         History history = new History();
         history.setUserId(userId);
         history.setType(type);
@@ -45,10 +44,14 @@ public class DetectionPersistenceService {
         history.setTitle(result.getTitle());
         history.setDescription(result.getDescription());
 
-        // 1. 保存上传的原图
-        // 1. 保存上传的原图
+        // 为本次检测创建一个唯一的子目录
+        String taskFolderName = UUID.randomUUID().toString();
+        Path taskStoragePath = Paths.get(imageStoragePath, taskFolderName);
+        Files.createDirectories(taskStoragePath);
+
+        // 1. 保存上传的原图到子目录
         if (tempOriginalFiles != null && tempOriginalFiles.length > 0) {
-            List<String> originalImagePaths = saveOriginalImages(tempOriginalFiles);
+            List<String> originalImagePaths = saveOriginalImages(tempOriginalFiles, taskStoragePath, taskFolderName);
             history.setOriginalImages(originalImagePaths);
         }
 
@@ -63,16 +66,15 @@ public class DetectionPersistenceService {
             history.setDetails(detailsList);
         }
 
-        // 3. 保存算法生成的结果图
+        // 3. 保存算法生成的结果图到子目录
         if (result.getImage() != null && !result.getImage().isEmpty()) {
             Path tempImagePath = Paths.get(result.getImage());
             String newFileName = UUID.randomUUID().toString() + "_" + tempImagePath.getFileName().toString();
-            Path permanentImagePath = Paths.get(imageStoragePath, newFileName);
+            Path permanentImagePath = taskStoragePath.resolve(newFileName);
 
-            Files.createDirectories(permanentImagePath.getParent());
             Files.copy(tempImagePath, permanentImagePath, StandardCopyOption.REPLACE_EXISTING);
 
-            String webImagePath = "/images/" + newFileName;
+            String webImagePath = "/images/" + taskFolderName + "/" + newFileName;
             history.setImage(webImagePath);
             result.setImage(webImagePath); // 更新返回给前端的路径
         }
@@ -80,10 +82,8 @@ public class DetectionPersistenceService {
         historyService.saveHistory(history);
     }
 
-    private List<String> saveOriginalImages(Path[] tempFiles) throws IOException {
+    private List<String> saveOriginalImages(Path[] tempFiles, Path taskStoragePath, String taskFolderName) throws IOException {
         List<String> savedImagePaths = new ArrayList<>();
-        Path storageDirectory = Paths.get(imageStoragePath);
-        Files.createDirectories(storageDirectory); // 确保目录存在
 
         for (Path tempFile : tempFiles) {
             String originalFileName = tempFile.getFileName().toString();
@@ -94,9 +94,11 @@ public class DetectionPersistenceService {
             }
 
             String newFileName = UUID.randomUUID().toString() + fileExtension;
-            Path destinationPath = storageDirectory.resolve(newFileName);
+            Path destinationPath = taskStoragePath.resolve(newFileName);
             Files.copy(tempFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-            savedImagePaths.add("/images/" + newFileName);
+            
+            // 生成Web可访问路径
+            savedImagePaths.add("/images/" + taskFolderName + "/" + newFileName);
         }
         return savedImagePaths;
     }

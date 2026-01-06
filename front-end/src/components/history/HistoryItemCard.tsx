@@ -1,3 +1,4 @@
+import React from 'react';
 import type { HistoryItem } from "@/services/historyApi";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,4 +58,3 @@ export function HistoryItemCard({ item, onSelect }: HistoryItemCardProps & { onS
     </Card>
   );
 }
-

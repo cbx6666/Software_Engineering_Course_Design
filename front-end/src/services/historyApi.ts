@@ -11,6 +11,7 @@ export interface HistoryItem extends DetectionResultData {
   id: string;
   type: "crack" | "flatness";
   date: string; // 后端是 LocalDateTime，会被序列化为 ISO 8601 字符串
+  originalImages?: string[]; // 上传的原图路径列表
 }
 
 /**
