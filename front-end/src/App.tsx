@@ -1,17 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { HomePage } from "@/components/HomePage";
 import { GlassCrackDetection } from "@/components/GlassCrackDetection";
 import { GlassFlatnessDetection } from "@/components/GlassFlatnessDetection";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LoginPage } from "@/components/auth/LoginPage";
+import { useAuth } from "@/hooks/useAuth";
+import { LogOut } from "lucide-react";
 
-type Page = "home" | "crack" | "flatness";
+type Page = "login" | "home" | "crack" | "flatness";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>("home");
+  const { isAuthed, login, register, logout, isLoggingIn } = useAuth();
+  const [currentPage, setCurrentPage] = useState<Page>("login");
+
+  useEffect(() => {
+    if (!isAuthed) {
+      setCurrentPage("login");
+      return;
+    }
+    setCurrentPage((p) => (p === "login" ? "home" : p));
+  }, [isAuthed]);
 
   const renderPage = () => {
+    if (!isAuthed && currentPage !== "login") return null;
+
     switch (currentPage) {
+      case "login":
+        return (
+          <LoginPage
+            isSubmitting={isLoggingIn}
+            onLogin={async (params) => {
+              await login({ ...params, remember: true });
+              setCurrentPage("home");
+            }}
+            onRegister={async (params) => {
+              await register({ ...params, remember: true });
+              setCurrentPage("home");
+            }}
+          />
+        );
       case "home":
         return <HomePage onNavigate={(page) => setCurrentPage(page)} />;
       case "crack":
@@ -44,7 +72,7 @@ export default function App() {
       </div>
 
       {/* Back Button */}
-      {currentPage !== "home" && (
+      {isAuthed && currentPage !== "home" && currentPage !== "login" && (
         <div className="absolute top-6 left-6 z-50">
           <Button
             onClick={() => setCurrentPage("home")}
@@ -53,6 +81,23 @@ export default function App() {
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             返回主页
+          </Button>
+        </div>
+      )}
+
+      {/* Logout（仅主页显示，样式与返回按钮一致，位置在左上角偏右） */}
+      {isAuthed && currentPage === "home" && (
+        <div className="absolute top-6 left-6 z-50">
+          <Button
+            onClick={() => {
+              logout();
+              setCurrentPage("login");
+            }}
+            variant="outline"
+            className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            退出登录
           </Button>
         </div>
       )}
