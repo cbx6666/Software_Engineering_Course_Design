@@ -1,6 +1,7 @@
 package com.wing.glassdetect.controller;
 
 import com.wing.glassdetect.model.DetectionResult;
+import com.wing.glassdetect.dto.DetectionTaskResultDto;
 import com.wing.glassdetect.service.DetectionPersistenceService;
 import com.wing.glassdetect.service.GlassFlatnessService;
 import com.wing.glassdetect.utils.FileUtils;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -39,19 +39,17 @@ public class GlassFlatnessController {
         String[] fieldNames = {"left_env", "left_mix", "right_env", "right_mix"};
         String url = algorithmUrl + "/api/detect/glass-flatness";
 
-        CompletableFuture<DetectionResult> future = glassFlatnessService.detect(userId, images, fieldNames, url);
+        CompletableFuture<DetectionTaskResultDto> future = glassFlatnessService.detect(userId, images, fieldNames, url);
         Path tempImageDir = null;
 
         try {
-            DetectionResult result = future.get(); // 等待异步任务完成
-
-            // 从结果中获取临时图片路径以备清理
-            if (result.getImage() != null && !result.getImage().isEmpty()) {
-                tempImageDir = Paths.get(result.getImage()).getParent();
-            }
+            DetectionTaskResultDto taskResult = future.get(); // 等待异步任务完成
+            DetectionResult result = taskResult.getDetectionResult();
+            tempImageDir = taskResult.getTempDirectory();
+            Path[] tempFiles = taskResult.getTempFiles();
 
             // 调用服务进行持久化
-            persistenceService.persistResult(userId, "flatness", result);
+            persistenceService.persistResult(userId, "flatness", result, tempFiles);
 
             return ResponseEntity.ok(result);
         } catch (Exception e) {

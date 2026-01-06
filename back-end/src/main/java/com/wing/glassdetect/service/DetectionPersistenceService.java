@@ -7,6 +7,7 @@ import com.wing.glassdetect.model.History;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,7 +36,7 @@ public class DetectionPersistenceService {
         this.imageStoragePath = imageStoragePath;
     }
 
-    public void persistResult(Long userId, String type, DetectionResult result) throws IOException {
+        public void persistResult(Long userId, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
         History history = new History();
         history.setUserId(userId);
         history.setType(type);
@@ -43,7 +45,14 @@ public class DetectionPersistenceService {
         history.setTitle(result.getTitle());
         history.setDescription(result.getDescription());
 
-        // 根据类型处理不同的数据
+        // 1. 保存上传的原图
+        // 1. 保存上传的原图
+        if (tempOriginalFiles != null && tempOriginalFiles.length > 0) {
+            List<String> originalImagePaths = saveOriginalImages(tempOriginalFiles);
+            history.setOriginalImages(originalImagePaths);
+        }
+
+        // 2. 根据类型处理不同的数据
         if ("flatness".equals(type) && result.getPointcloud() != null) {
             Map<String, Object> pointcloudMap = objectMapper.convertValue(result.getPointcloud(), new TypeReference<>() {});
             history.setPointcloud(pointcloudMap);
@@ -54,7 +63,7 @@ public class DetectionPersistenceService {
             history.setDetails(detailsList);
         }
 
-        // 处理图片存储
+        // 3. 保存算法生成的结果图
         if (result.getImage() != null && !result.getImage().isEmpty()) {
             Path tempImagePath = Paths.get(result.getImage());
             String newFileName = UUID.randomUUID().toString() + "_" + tempImagePath.getFileName().toString();
@@ -70,5 +79,25 @@ public class DetectionPersistenceService {
 
         historyService.saveHistory(history);
     }
-}
 
+    private List<String> saveOriginalImages(Path[] tempFiles) throws IOException {
+        List<String> savedImagePaths = new ArrayList<>();
+        Path storageDirectory = Paths.get(imageStoragePath);
+        Files.createDirectories(storageDirectory); // 确保目录存在
+
+        for (Path tempFile : tempFiles) {
+            String originalFileName = tempFile.getFileName().toString();
+            String fileExtension = "";
+            int lastDot = originalFileName.lastIndexOf('.');
+            if (lastDot > 0) {
+                fileExtension = originalFileName.substring(lastDot);
+            }
+
+            String newFileName = UUID.randomUUID().toString() + fileExtension;
+            Path destinationPath = storageDirectory.resolve(newFileName);
+            Files.copy(tempFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+            savedImagePaths.add("/images/" + newFileName);
+        }
+        return savedImagePaths;
+    }
+}

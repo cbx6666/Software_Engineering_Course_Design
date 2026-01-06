@@ -1,5 +1,6 @@
 package com.wing.glassdetect.service;
 
+import com.wing.glassdetect.dto.DetectionTaskResultDto;
 import com.wing.glassdetect.model.DetectionResult;
 import com.wing.glassdetect.utils.ApiUtils;
 import com.wing.glassdetect.utils.FileUtils;
@@ -15,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class GlassFlatnessService {
 
     @Async("asyncExecutor")
-    public CompletableFuture<DetectionResult> detect(Long userId, MultipartFile[] imageFiles, String[] fieldNames, String url) {
+    public CompletableFuture<DetectionTaskResultDto> detect(Long userId, MultipartFile[] imageFiles, String[] fieldNames, String url) {
         Path[] tempFiles = null;
         Path tempDir = null;
         DetectionResult result = null;
@@ -26,17 +27,11 @@ public class GlassFlatnessService {
 
             result = ApiUtils.postImageWithFieldNames(tempFiles, fieldNames, url);
 
-            return CompletableFuture.completedFuture(result);
+            return CompletableFuture.completedFuture(new DetectionTaskResultDto(result, tempDir, tempFiles));
 
         } catch (IOException e) {
             result = new DetectionResult("error", "上传图片失败", e.getMessage(), null);
-            return CompletableFuture.completedFuture(result);
-
-        } finally {
-            // 删除整个请求目录，清理所有文件
-            if (tempDir != null) {
-                FileUtils.deleteTempDir(tempDir);
-            }
+            return CompletableFuture.completedFuture(new DetectionTaskResultDto(result, tempDir, tempFiles));
         }
     }
 }

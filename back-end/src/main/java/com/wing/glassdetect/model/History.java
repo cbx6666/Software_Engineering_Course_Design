@@ -31,7 +31,10 @@ public class History {
 
     private String description;
 
-    private String image;
+    private String image; // Result image path
+
+    @TableField(typeHandler = JacksonTypeHandler.class)
+    private List<String> originalImages; // Original uploaded images
 
     @TableField(typeHandler = JacksonTypeHandler.class)
     private Map<String, Object> pointcloud;

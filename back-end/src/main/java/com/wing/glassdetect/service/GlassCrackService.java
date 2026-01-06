@@ -1,6 +1,7 @@
 package com.wing.glassdetect.service;
 
 import com.wing.glassdetect.model.DetectionResult;
+import com.wing.glassdetect.dto.DetectionTaskResultDto;
 import com.wing.glassdetect.utils.ApiUtils;
 import com.wing.glassdetect.utils.FileUtils;
 import org.springframework.scheduling.annotation.Async;
@@ -15,7 +16,7 @@ import java.util.concurrent.CompletableFuture;
 public class GlassCrackService {
 
     @Async("asyncExecutor")
-    public CompletableFuture<DetectionResult> detect(Long userId, MultipartFile[] imageFiles, String url) {
+    public CompletableFuture<DetectionTaskResultDto> detect(Long userId, MultipartFile[] imageFiles, String url) {
         Path[] tempFiles = null;
         Path tempDir = null;
         DetectionResult result = null;
@@ -24,15 +25,10 @@ public class GlassCrackService {
             tempFiles = FileUtils.saveTempFile(imageFiles);
             tempDir = tempFiles[0].getParent(); // 获取当前请求的临时目录
             result = ApiUtils.postImage(tempFiles, url);
-            return CompletableFuture.completedFuture(result);
+            return CompletableFuture.completedFuture(new DetectionTaskResultDto(result, tempDir, tempFiles));
         } catch (IOException e) {
             result = new DetectionResult("error", "上传图片失败", e.getMessage(), null);
-            return CompletableFuture.completedFuture(result);
-        } finally {
-            // 删除整个请求目录，清理所有文件
-            if (tempDir != null) {
-                FileUtils.deleteTempDir(tempDir);
-            }
+            return CompletableFuture.completedFuture(new DetectionTaskResultDto(result, tempDir, tempFiles));
         }
     }
 }

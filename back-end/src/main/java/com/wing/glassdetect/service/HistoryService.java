@@ -44,6 +44,7 @@ public class HistoryService {
      */
     @Transactional
     public void saveHistory(History history) {
+        System.out.println("Saving original images: " + history.getOriginalImages());
         historyMapper.insert(history);
     }
 }
