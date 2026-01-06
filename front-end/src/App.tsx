@@ -1,55 +1,21 @@
-import { useEffect, useState } from "react";
-import { HomePage } from "@/components/HomePage";
-import { GlassCrackDetection } from "@/components/GlassCrackDetection";
-import { GlassFlatnessDetection } from "@/components/GlassFlatnessDetection";
-import { ArrowLeft } from "lucide-react";
+import { useEffect } from "react";
+import { ArrowLeft, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LoginPage } from "@/components/auth/LoginPage";
 import { useAuth } from "@/hooks/useAuth";
-import { LogOut } from "lucide-react";
-
-type Page = "login" | "home" | "crack" | "flatness";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export default function App() {
-  const { isAuthed, login, register, logout, isLoggingIn } = useAuth();
-  const [currentPage, setCurrentPage] = useState<Page>("login");
+  const { isAuthed, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     if (!isAuthed) {
-      setCurrentPage("login");
-      return;
+      navigate("/login");
     }
-    setCurrentPage((p) => (p === "login" ? "home" : p));
-  }, [isAuthed]);
+  }, [isAuthed, navigate]);
 
-  const renderPage = () => {
-    if (!isAuthed && currentPage !== "login") return null;
-
-    switch (currentPage) {
-      case "login":
-        return (
-          <LoginPage
-            isSubmitting={isLoggingIn}
-            onLogin={async (params) => {
-              await login({ ...params, remember: true });
-              setCurrentPage("home");
-            }}
-            onRegister={async (params) => {
-              await register({ ...params, remember: true });
-              setCurrentPage("home");
-            }}
-          />
-        );
-      case "home":
-        return <HomePage onNavigate={(page) => setCurrentPage(page)} />;
-      case "crack":
-        return <GlassCrackDetection />;
-      case "flatness":
-        return <GlassFlatnessDetection />;
-      default:
-        return <HomePage onNavigate={(page) => setCurrentPage(page)} />;
-    }
-  };
+  const isHomePage = location.pathname === "/";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
@@ -72,10 +38,10 @@ export default function App() {
       </div>
 
       {/* Back Button */}
-      {isAuthed && currentPage !== "home" && currentPage !== "login" && (
+      {!isHomePage && (
         <div className="absolute top-6 left-6 z-50">
           <Button
-            onClick={() => setCurrentPage("home")}
+            onClick={() => navigate("/")}
             variant="outline"
             className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
           >
@@ -85,13 +51,12 @@ export default function App() {
         </div>
       )}
 
-      {/* Logout（仅主页显示，样式与返回按钮一致，位置在左上角偏右） */}
-      {isAuthed && currentPage === "home" && (
-        <div className="absolute top-6 left-6 z-50">
+      {/* Logout Button */}
+      {isAuthed && (
+        <div className="absolute top-6 right-6 z-50">
           <Button
             onClick={() => {
               logout();
-              setCurrentPage("login");
             }}
             variant="outline"
             className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
@@ -104,7 +69,7 @@ export default function App() {
 
       {/* Content */}
       <div className="relative z-10">
-        {renderPage()}
+        <Outlet />
       </div>
     </div>
   );

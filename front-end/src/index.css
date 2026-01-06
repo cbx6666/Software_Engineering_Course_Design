@@ -1042,6 +1042,21 @@
     }
   }
 
+  /* 完全不透明的绿色背景 */
+  .bg-green-500 {
+    background-color: var(--color-green-500);
+  }
+
+  /* 可选：暗黑模式下加深 */
+  .dark .bg-green-500 {
+    background-color: var(--color-green-500-dark, var(--color-green-500));
+  }
+
+  /* hover 效果 */
+  .bg-green-500:hover {
+    background-color: var(--color-green-500-hover, var(--color-green-500));
+  }
+
   .bg-indigo-500\/10 {
     background-color: color-mix(in srgb, oklch(.585 .233 277.117) 10%, transparent);
   }
@@ -1138,6 +1153,20 @@
     .bg-yellow-500\/20 {
       background-color: color-mix(in oklab, var(--color-yellow-500) 20%, transparent);
     }
+  }
+
+  .bg-yellow-500 {
+    background-color: var(--color-yellow-500);
+  }
+  
+  /* 可选：暗黑模式下加深 */
+  .dark .bg-yellow-500 {
+    background-color: var(--color-yellow-500-dark, var(--color-yellow-500));
+  }
+  
+  /* hover 效果 */
+  .bg-yellow-500:hover {
+    background-color: var(--color-yellow-500-hover, var(--color-yellow-500));
   }
 
   .bg-gradient-to-br {

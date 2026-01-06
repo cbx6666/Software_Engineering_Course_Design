@@ -4,31 +4,26 @@ import { Button } from "@/components/ui/button";
 import { ImageUploader } from "@/utils/ImageUploader";
 import { DetectionResult } from "@/components/DetectionResult";
 import type { DetectionResultData } from "@/types/detection";
-import { Loader2, Ruler } from "lucide-react";
+import { Loader2, ScanSearch } from "lucide-react";
 import { useImageSlots } from "@/hooks/useImageSlots";
-import { detectGlassFlatness, type FlatnessFieldName } from "@/services/detectApi";
+import { detectGlassCrack } from "@/services/detectApi";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InstructionList } from "@/components/layout/InstructionList";
 
-export function GlassFlatnessDetection() {
-  const maxCount = 4; // 可以上传的最大图片数量
-  const fieldNames = ["left_env", "left_mix", "right_env", "right_mix"] as const satisfies readonly FlatnessFieldName[];
-  const [isUploading, setIsUploading] = useState(false);
+export function GlassCrackDetectionPage() {
   const [result, setResult] = useState<DetectionResultData | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const maxCount = 1; // 最大上传图片数，可根据需求调整
   const { files, previewUrls, currentIndex, setCurrentIndex, setFileAt, removeAt, isComplete, filledCount } = useImageSlots(maxCount);
 
-  // 调用后端逻辑
+  /** 调用后端逻辑，上传所有图片并返回统一结果 */
   const handleDetect = async () => {
     if (!isComplete) return;
+    const uploadFiles = files.filter(Boolean) as File[];
 
     setIsUploading(true);
     try {
-      const payload: Partial<Record<FlatnessFieldName, File>> = {};
-      fieldNames.forEach((field, idx) => {
-        const file = files[idx];
-        if (file) payload[field] = file;
-      });
-      setResult(await detectGlassFlatness(payload));
+      setResult(await detectGlassCrack(uploadFiles));
     } catch {
       setResult({
         status: "error",
@@ -46,24 +41,24 @@ export function GlassFlatnessDetection() {
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Page Header */}
         <PageHeader
-          icon={<Ruler className="w-8 h-8 text-white" />}
-          title="玻璃幕墙平整度检测"
-          description="上传幕墙图片，系统将分析玻璃表面的平整度"
-          iconBgClassName="bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/30"
+          icon={<ScanSearch className="w-8 h-8 text-white" />}
+          title="玻璃破裂检测"
+          description="上传玻璃图片，系统将自动检测是否存在裂纹或破损"
+          iconBgClassName="bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/30"
         />
 
         {/* Main Card */}
         <Card className="border-0 bg-white/10 backdrop-blur-xl p-8 shadow-2xl">
           <div className="grid md:grid-cols-2 gap-8">
+            {/* 图片上传区 */}
             <div>
               <h3 className="text-white mb-4">上传图片</h3>
               <ImageUploader
+                currentIndex={currentIndex}
+                disabled={isUploading}
+                onCurrentIndexChange={setCurrentIndex}
                 files={files}
                 previewUrls={previewUrls}
-                currentIndex={currentIndex}
-                onCurrentIndexChange={setCurrentIndex}
-                disabled={isUploading}
-                slotTips={["请上传左侧环境图", "请上传左侧投影图", "请上传右侧环境图", "请上传右侧投影图"]}
                 onSelectFile={(idx, file) => {
                   setFileAt(idx, file);
                   setResult(null);
@@ -75,6 +70,7 @@ export function GlassFlatnessDetection() {
               />
             </div>
 
+            {/* 操作面板 */}
             <div>
               <h3 className="text-white mb-4">操作面板</h3>
               <Card className="p-6 bg-slate-900/50 backdrop-blur-md border-white/10">
@@ -82,12 +78,12 @@ export function GlassFlatnessDetection() {
                   <div>
                     <p className="text-white mb-3">检测说明</p>
                     <InstructionList
-                      colorClassName="text-blue-400"
+                      colorClassName="text-cyan-400"
                       items={[
-                        "拍摄角度尽量垂直于幕墙表面",
-                        "保持3-5米的适当拍摄距离",
-                        "确保整体幕墙结构在画面中",
-                        "光线均匀，避免强烈阴影",
+                        "支持常见图片格式（JPG、PNG、WEBP）",
+                        "建议图片清晰度较高，分辨率≥1080p",
+                        "光线充足效果更佳，避免强烈反光",
+                        "确保检测区域无遮挡",
                       ]}
                     />
                   </div>
@@ -101,17 +97,17 @@ export function GlassFlatnessDetection() {
                   <Button
                     onClick={handleDetect}
                     disabled={!isComplete || isUploading}
-                    className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 shadow-lg shadow-blue-500/30"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-cyan-500/30"
                     size="lg"
                   >
                     {isUploading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        AI分析中...
+                        AI检测中...
                       </>
                     ) : (
                       <>
-                        <Ruler className="w-4 h-4 mr-2" />
+                        <ScanSearch className="w-4 h-4 mr-2" />
                         开始检测
                       </>
                     )}
@@ -122,6 +118,7 @@ export function GlassFlatnessDetection() {
           </div>
         </Card>
 
+        {/* 检测结果 */}
         {result && (
           <div>
             <h3 className="text-white mb-4">检测结果</h3>

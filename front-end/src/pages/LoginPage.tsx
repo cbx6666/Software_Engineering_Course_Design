@@ -1,18 +1,14 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Loader2, LogIn, Sparkles, UserPlus } from "lucide-react";
 
-export function LoginPage({
-    onLogin,
-    onRegister,
-    isSubmitting,
-}: {
-    onLogin: (params: { email: string; password: string }) => Promise<void>;
-    onRegister: (params: { email: string; password: string }) => Promise<void>;
-    isSubmitting: boolean;
-}) {
+export function LoginPage() {
+    const { login, register, isLoggingIn } = useAuth();
+    const navigate = useNavigate();
     const [mode, setMode] = useState<"login" | "register">("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -21,26 +17,27 @@ export function LoginPage({
     const [error, setError] = useState<string | null>(null);
 
     const canSubmit = useMemo(() => {
-        if (!email.trim() || !password || isSubmitting) return false;
+        if (!email.trim() || !password || isLoggingIn) return false;
         if (mode === "register") {
             if (confirmPassword && confirmPassword !== password) return false;
         }
         return true;
-    }, [email, password, confirmPassword, isSubmitting, mode]);
+    }, [email, password, confirmPassword, isLoggingIn, mode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         try {
             if (mode === "login") {
-                await onLogin({ email, password });
+                await login({ email, password, remember: true });
             } else {
                 if (password !== confirmPassword) {
                     setError("两次输入的密码不一致");
                     return;
                 }
-                await onRegister({ email, password });
+                await register({ email, password, remember: true });
             }
+            navigate("/");
         } catch (err) {
             const msg = (mode === "login" ? "登录失败，请稍后再试。" : "注册失败，请稍后再试。");
             setError(msg);
@@ -65,7 +62,7 @@ export function LoginPage({
             <button
                 type="button"
                 className="text-sm text-white hover:text-white/90 hover:underline underline-offset-4 transition-colors"
-                disabled={isSubmitting}
+                disabled={isLoggingIn}
                 onClick={() => {
                     setMode((m) => (m === "login" ? "register" : "login"));
                     setError(null);
@@ -87,7 +84,7 @@ export function LoginPage({
                     inputMode="email"
                     placeholder="请输入邮箱地址"
                     autoComplete="email"
-                    disabled={isSubmitting}
+                    disabled={isLoggingIn}
                     className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                 />
             </div>
@@ -110,7 +107,7 @@ export function LoginPage({
                         style={{ top: "50%", transform: "translateY(-50%)" }}
                         onClick={() => setShowPassword((v) => !v)}
                         aria-label={showPassword ? "隐藏密码" : "显示密码"}
-                        disabled={isSubmitting}
+                        disabled={isLoggingIn}
                     >
                         {showPassword ? (
                             <EyeOff className="w-4 h-4 text-slate-300" />
@@ -130,7 +127,7 @@ export function LoginPage({
                         type={showPassword ? "text" : "password"}
                         placeholder="再次输入密码"
                         autoComplete="new-password"
-                        disabled={isSubmitting}
+                        disabled={isLoggingIn}
                         className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                     />
                     {confirmPassword && confirmPassword !== password && (
@@ -154,11 +151,11 @@ export function LoginPage({
                 size="lg"
             >
                 <span className="relative inline-flex items-center">
-                    {isSubmitting ? (
+                    {isLoggingIn ? (
                         <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                             {mode === "login" ? "登录中..." : "注册中..."}
-                        </>
+                        </> 
                     ) : mode === "login" ? (
                         <>
                             <LogIn className="w-4 h-4 mr-2" />
@@ -172,29 +169,6 @@ export function LoginPage({
                     )}
                 </span>
             </Button>
-
-            {/* <Button
-                type="button"
-                variant="outline"
-                disabled={isSubmitting}
-                className="w-full bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
-                onClick={async () => {
-                    // 模拟进入：走一遍占位登录，方便查看系统 UI
-                    setError(null);
-                    const demoEmail = "demo@example.com";
-                    const demoPassword = "123456";
-                    setEmail(demoEmail);
-                    setPassword(demoPassword);
-                    try {
-                        await onLogin({ email: demoEmail, password: demoPassword });
-                    } catch (err) {
-                        const msg = err instanceof Error ? err.message : "模拟进入失败";
-                        setError(msg);
-                    }
-                }}
-            >
-                模拟进入系统
-            </Button> */}
         </form>
     );
 
@@ -237,5 +211,3 @@ export function LoginPage({
         </div>
     );
 }
-
-

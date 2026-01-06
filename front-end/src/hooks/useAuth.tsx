@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { login as loginApi, register as registerApi, type LoginResponse } from "@/services/authApi";
 
 const STORAGE_KEY = "glassdetect.auth";
@@ -7,12 +7,22 @@ export interface AuthState {
     user: LoginResponse["user"];
 }
 
+interface AuthContextType {
+    auth: AuthState | null;
+    isAuthed: boolean;
+    isLoggingIn: boolean;
+    login: (params: { email: string; password: string; remember: boolean }) => Promise<AuthState>;
+    register: (params: { email: string; password: string; remember: boolean }) => Promise<AuthState>;
+    logout: () => void;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
 function readStoredAuth(): AuthState | null {
     const raw = localStorage.getItem(STORAGE_KEY) ?? sessionStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
     try {
         const parsed = JSON.parse(raw) as any;
-        // 兼容旧版本：{ token, user }
         if (parsed && typeof parsed === "object") {
             const user = parsed.user;
             if (user && typeof user === "object") {
@@ -41,11 +51,10 @@ function clearStoredAuth() {
     sessionStorage.removeItem(STORAGE_KEY);
 }
 
-export function useAuth() {
+export function AuthProvider({ children }: { children: ReactNode }) {
     const [auth, setAuth] = useState<AuthState | null>(() => readStoredAuth());
     const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-    // 同步外部（比如手动清 storage）情况
     useEffect(() => {
         const onStorage = () => setAuth(readStoredAuth());
         window.addEventListener("storage", onStorage);
@@ -91,7 +100,7 @@ export function useAuth() {
         setAuth(null);
     }, []);
 
-    return useMemo(
+    const value = useMemo(
         () => ({
             auth,
             isAuthed,
@@ -102,6 +111,14 @@ export function useAuth() {
         }),
         [auth, isAuthed, isLoggingIn, login, register, logout],
     );
+
+    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-
+export function useAuth() {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+}

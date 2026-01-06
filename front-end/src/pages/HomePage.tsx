@@ -1,13 +1,11 @@
 import { Building2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { ModuleCard } from "@/components/home/ModuleCard";
-import { getHomeModules, type HomePageRoute } from "@/components/home/modules";
+import { getHomeModules } from "@/components/home/modules";
 
-interface HomePageProps {
-  onNavigate: (page: HomePageRoute) => void;
-}
-
-export function HomePage({ onNavigate }: HomePageProps) {
-  const modules = getHomeModules(onNavigate);
+export function HomePage() {
+  const navigate = useNavigate();
+  const modules = getHomeModules(navigate);
 
   return (
     <div className="min-h-screen p-8 md:p-12">
