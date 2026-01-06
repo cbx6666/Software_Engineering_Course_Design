@@ -68,13 +68,7 @@ public class DetectionPersistenceService {
 
         // 3. 保存算法生成的结果图到子目录
         if (result.getImage() != null && !result.getImage().isEmpty()) {
-            Path tempImagePath = Paths.get(result.getImage());
-            String newFileName = UUID.randomUUID().toString() + "_" + tempImagePath.getFileName().toString();
-            Path permanentImagePath = taskStoragePath.resolve(newFileName);
-
-            Files.copy(tempImagePath, permanentImagePath, StandardCopyOption.REPLACE_EXISTING);
-
-            String webImagePath = "/images/" + taskFolderName + "/" + newFileName;
+            String webImagePath = result.getImage().replace("/data/result", "/results");
             history.setImage(webImagePath);
             result.setImage(webImagePath); // 更新返回给前端的路径
         }
@@ -93,7 +87,7 @@ public class DetectionPersistenceService {
                 fileExtension = originalFileName.substring(lastDot);
             }
 
-            String newFileName = UUID.randomUUID().toString() + fileExtension;
+            String newFileName = UUID.randomUUID() + fileExtension;
             Path destinationPath = taskStoragePath.resolve(newFileName);
             Files.copy(tempFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
             

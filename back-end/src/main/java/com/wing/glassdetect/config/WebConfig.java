@@ -35,9 +35,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 确保路径以斜杠结尾，避免 Windows/Linux 路径解析问题
+        // 映射原图存放目录
         String location = imageStoragePath.endsWith("/") ? imageStoragePath : imageStoragePath + "/";
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:" + location);
+
+        // 映射算法结果目录
+        registry.addResourceHandler("/results/**")
+                .addResourceLocations("file:/data/result/");
     }
 }
