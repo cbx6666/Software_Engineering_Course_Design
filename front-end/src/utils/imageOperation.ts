@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-import type { DetectionResultData } from "../components/DetectionResult";
+import type { DetectionResultData } from "@/types/detection";
 
 export function useImageUpload(backendUrl: string) {
   const [imageFiles, setImageFiles] = useState<File[]>([]);

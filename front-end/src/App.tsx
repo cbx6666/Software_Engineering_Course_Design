@@ -1,9 +1,9 @@
 import { useState } from "react";
-import { HomePage } from "./components/HomePage";
-import { GlassCrackDetection } from "./components/GlassCrackDetection";
-import { GlassFlatnessDetection } from "./components/GlassFlatnessDetection";
+import { HomePage } from "@/components/HomePage";
+import { GlassCrackDetection } from "@/components/GlassCrackDetection";
+import { GlassFlatnessDetection } from "@/components/GlassFlatnessDetection";
 import { ArrowLeft } from "lucide-react";
-import { Button } from "./components/ui/button";
+import { Button } from "@/components/ui/button";
 
 type Page = "home" | "crack" | "flatness";
 
@@ -13,13 +13,13 @@ export default function App() {
   const renderPage = () => {
     switch (currentPage) {
       case "home":
-        return <HomePage onNavigate={setCurrentPage} />;
+        return <HomePage onNavigate={(page) => setCurrentPage(page)} />;
       case "crack":
         return <GlassCrackDetection />;
       case "flatness":
         return <GlassFlatnessDetection />;
       default:
-        return <HomePage onNavigate={setCurrentPage} />;
+        return <HomePage onNavigate={(page) => setCurrentPage(page)} />;
     }
   };
 
