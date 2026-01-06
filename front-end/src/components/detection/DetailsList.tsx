@@ -17,7 +17,7 @@ export function DetailsList({ details }: { details: DetectionDetail[] }) {
                             {detail.description && (
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <button className="text-slate-500 hover:text-slate-300 transition-colors focus:outline-none">
+                                        <button className="text-white hover:text-slate-400 transition-colors focus:outline-none">
                                             <HelpCircle className="w-4 h-4" />
                                         </button>
                                     </PopoverTrigger>
