@@ -1,23 +1,12 @@
-import axios from "axios";
 import type { DetectionResultData } from "@/types/detection";
+import { createApiClient, postFormData } from "./http";
 
-function getBackendUrl() {
-  const url = import.meta.env.VITE_BACKEND_URL as string | undefined;
-  return (url ?? "").replace(/\/+$/, "");
-}
-
-const api = axios.create({
-  baseURL: getBackendUrl(),
-  withCredentials: true,
-});
+const api = createApiClient({ withCredentials: true });
 
 export async function detectGlassCrack(files: File[]): Promise<DetectionResultData> {
   const formData = new FormData();
   files.forEach((file) => formData.append("images", file));
-  const { data } = await api.post<DetectionResultData>("/api/detect/glass-crack", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
-  return data;
+  return await postFormData<DetectionResultData>(api, "/api/detect/glass-crack", formData);
 }
 
 const flatnessFieldNames = ["left_env", "left_mix", "right_env", "right_mix"] as const;
@@ -30,8 +19,5 @@ export async function detectGlassFlatness(filesByField: Partial<Record<FlatnessF
     if (file) formData.append(field, file);
   });
 
-  const { data } = await api.post<DetectionResultData>("/api/detect/glass-flatness", formData);
-  return data;
+  return await postFormData<DetectionResultData>(api, "/api/detect/glass-flatness", formData);
 }
-
-
