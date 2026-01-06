@@ -4,13 +4,14 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { DetectionResult } from "@/components/detection/DetectionResult";
 import { getHistoryItemById, type HistoryItem } from "@/services/historyApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 
 export function HistoryDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [historyItem, setHistoryItem] = useState<HistoryItem | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
@@ -43,7 +44,7 @@ export function HistoryDetailPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 lg:p-8">
+    <div className="container mx-auto p-4 md:p-6 lg:p-8 max-w-6xl">
       <PageHeader
         title="检测详情"
         description={`查看 ${historyItem.title} 的详细信息`}
@@ -68,15 +69,49 @@ export function HistoryDetailPage() {
             <CardHeader>
               <CardTitle className="text-white">待检测图片</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-wrap gap-4">
-              {historyItem.originalImages.map((src, index) => (
+            <CardContent className="flex flex-col items-center gap-4">
+              <div className="relative w-full max-w-lg flex justify-center items-center">
+                {historyItem.originalImages.length > 1 && (
+                  <button
+                    onClick={() => {
+                    if (historyItem.originalImages && historyItem.originalImages.length > 1) {
+                      setCurrentImageIndex((prev) =>
+                        prev === 0 ? historyItem.originalImages!.length - 1 : prev - 1
+                      );
+                    }
+                  }}
+                    className="absolute left-0 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-black/75 transition-colors"
+                    aria-label="Previous Image"
+                  >
+                    <ChevronLeft className="w-6 h-6" />
+                  </button>
+                )}
                 <img
-                  key={index}
-                  src={`${API_BASE_URL}${src}`}
-                  alt={`检测图片 ${index + 1}`}
-                  className="w-48 h-48 object-cover rounded-md border-2 border-slate-700"
+                  src={`${API_BASE_URL}${historyItem.originalImages[currentImageIndex]}`}
+                  alt={`检测图片 ${currentImageIndex + 1}`}
+                  className="w-full h-auto max-h-[60vh] object-contain rounded-md"
                 />
-              ))}
+                {historyItem.originalImages.length > 1 && (
+                  <button
+                    onClick={() => {
+                    if (historyItem.originalImages && historyItem.originalImages.length > 1) {
+                      setCurrentImageIndex((prev) =>
+                        prev === historyItem.originalImages!.length - 1 ? 0 : prev + 1
+                      );
+                    }
+                  }}
+                    className="absolute right-0 z-10 p-2 bg-black/50 rounded-full text-white hover:bg-black/75 transition-colors"
+                    aria-label="Next Image"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
+                )}
+              </div>
+              {historyItem.originalImages.length > 1 && (
+                <p className="text-sm text-slate-400">
+                  {currentImageIndex + 1} / {historyItem.originalImages.length}
+                </p>
+              )}
             </CardContent>
           </Card>
         )}
