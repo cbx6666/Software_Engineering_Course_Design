@@ -3,12 +3,12 @@ spring:
     name: back-end
   mvc:
     async:
-      request-timeout: 6000
+      request-timeout: 60000
   servlet:
     multipart:
       max-file-size: 30MB
       max-request-size: 30MB
-      
+
   # ===== MySQL =====
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -18,7 +18,7 @@ spring:
 
 server:
   tomcat:
-    connection-timeout: 6000
+    connection-timeout: 60000
 
 # 前端地址
 frontend:
