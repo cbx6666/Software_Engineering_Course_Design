@@ -35,6 +35,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        System.out.println("DEBUG: 注册静态映射 /results/** -> file:///data/result/");
+
         // 映射原图存放目录
         String location = imageStoragePath.endsWith("/") ? imageStoragePath : imageStoragePath + "/";
         registry.addResourceHandler("/images/**")
@@ -42,6 +44,6 @@ public class WebConfig implements WebMvcConfigurer {
 
         // 映射算法结果目录
         registry.addResourceHandler("/results/**")
-                .addResourceLocations("file:/data/result/");
+                .addResourceLocations("file:///data/result/");
     }
 }
