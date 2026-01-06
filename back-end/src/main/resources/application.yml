@@ -31,7 +31,7 @@ algorithm:
 # 图片存储路径
 image:
   storage:
-    path: E:/glassdetect/images/
+    path: /data/images
 
 mybatis-plus:
   # Mapper XML 位置（可选，BaseMapper 不需要，但你后续写自定义 SQL 会用到）
