@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -16,6 +18,7 @@ import java.util.Map;
 public class History {
 
     @TableId(type = IdType.ASSIGN_ID)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     private String type; // "crack" or "flatness"
@@ -37,6 +40,6 @@ public class History {
     private List<Map<String, String>> details;
 
     // Foreign key to user table
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long userId;
 }
-

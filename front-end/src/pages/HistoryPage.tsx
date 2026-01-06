@@ -54,7 +54,7 @@ export function HistoryPage() {
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
       <PageHeader
         title="检测历史"
-        description="查看和管理过去的所有检测记录。"
+        description="查看过去的所有检测记录"
         icon={<HistoryIcon className="w-8 h-8 text-white" />}
         iconBgClassName="bg-indigo-500"
       />
