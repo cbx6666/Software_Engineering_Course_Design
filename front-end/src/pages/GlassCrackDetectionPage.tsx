@@ -9,10 +9,12 @@ import { useImageSlots } from "@/hooks/useImageSlots";
 import { detectGlassCrack } from "@/services/detectApi";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InstructionList } from "@/components/layout/InstructionList";
+import { useAuth } from "@/hooks/useAuth";
 
 export function GlassCrackDetectionPage() {
   const [result, setResult] = useState<DetectionResultData | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const { auth } = useAuth();
   const maxCount = 1; // 最大上传图片数，可根据需求调整
   const { files, previewUrls, currentIndex, setCurrentIndex, setFileAt, removeAt, isComplete, filledCount } = useImageSlots(maxCount);
 
@@ -23,7 +25,16 @@ export function GlassCrackDetectionPage() {
 
     setIsUploading(true);
     try {
-      setResult(await detectGlassCrack(uploadFiles));
+      const user = auth?.user;
+      if (!user) {
+        setResult({
+          status: "error",
+          title: "用户未登录",
+          description: "请先登录后再进行操作。",
+        });
+        return;
+      }
+      setResult(await detectGlassCrack(user.id, uploadFiles));
     } catch {
       setResult({
         status: "error",

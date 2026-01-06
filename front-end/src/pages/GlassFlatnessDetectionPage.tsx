@@ -9,12 +9,14 @@ import { useImageSlots } from "@/hooks/useImageSlots";
 import { detectGlassFlatness, type FlatnessFieldName } from "@/services/detectApi";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { InstructionList } from "@/components/layout/InstructionList";
+import { useAuth } from "@/hooks/useAuth";
 
 export function GlassFlatnessDetectionPage() {
   const maxCount = 4; // 可以上传的最大图片数量
   const fieldNames = ["left_env", "left_mix", "right_env", "right_mix"] as const satisfies readonly FlatnessFieldName[];
   const [isUploading, setIsUploading] = useState(false);
   const [result, setResult] = useState<DetectionResultData | null>(null);
+  const { auth } = useAuth();
   const { files, previewUrls, currentIndex, setCurrentIndex, setFileAt, removeAt, isComplete, filledCount } = useImageSlots(maxCount);
 
   // 调用后端逻辑
@@ -28,7 +30,16 @@ export function GlassFlatnessDetectionPage() {
         const file = files[idx];
         if (file) payload[field] = file;
       });
-      setResult(await detectGlassFlatness(payload));
+      const user = auth?.user;
+      if (!user) {
+        setResult({
+          status: "error",
+          title: "用户未登录",
+          description: "请先登录后再进行操作。",
+        });
+        return;
+      }
+      setResult(await detectGlassFlatness(user.id, payload));
     } catch {
       setResult({
         status: "error",

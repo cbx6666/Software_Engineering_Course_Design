@@ -1,44 +1,88 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { History } from "lucide-react";
 import { HistoryItemCard } from "@/components/history/HistoryItemCard";
-
-// Mock data for demonstration
-const mockHistoryItems = [
-  {
-    id: "1",
-    date: "2024-05-20T10:30:00Z",
-    type: "平整度检测",
-    result: "合格",
-    imageUrl: "/placeholder.svg", // Replace with actual image path or URL
-  },
-  {
-    id: "2",
-    date: "2024-05-19T15:00:00Z",
-    type: "裂纹检测",
-    result: "不合格",
-    details: {
-      "裂纹数量": 3,
-      "最大裂纹长度": "1.2mm",
-    },
-    imageUrl: "/placeholder.svg", // Replace with actual image path or URL
-  },
-];
+import { getHistory, type HistoryItem } from "@/services/historyApi";
+import { useAuth } from "@/hooks/useAuth";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/CustomTabs";
+import { History as HistoryIcon, Loader2 } from "lucide-react";
 
 export function HistoryPage() {
+  const navigate = useNavigate();
+  const { auth } = useAuth();
+  const [historyItems, setHistoryItems] = useState<HistoryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const user = auth?.user;
+    if (user) {
+      setLoading(true);
+      getHistory(user.id)
+        .then(items => {
+          setHistoryItems(items);
+        })
+        .catch(error => {
+          console.error("Failed to fetch history:", error);
+          setHistoryItems([]); // On error, show an empty list
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      // If not logged in, ensure the list is empty and stop loading
+      setHistoryItems([]);
+      setLoading(false);
+    }
+  }, [auth]);
+
+  const handleItemClick = (id: string) => {
+    navigate(`/history/${id}`);
+  };
+
+  // Hardcode detection types for simplicity and stability
+  const detectionTypes = ["all", "crack", "flatness"];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <Loader2 className="w-8 h-8 text-white animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto p-4 md:p-6 lg:p-8">
       <PageHeader
         title="检测历史"
         description="查看和管理过去的所有检测记录。"
-        icon={<History className="w-8 h-8 text-white" />}
+        icon={<HistoryIcon className="w-8 h-8 text-white" />}
         iconBgClassName="bg-indigo-500"
       />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {mockHistoryItems.map((item) => (
-          <HistoryItemCard key={item.id} item={item as any} />
+      <Tabs defaultValue="all" className="w-full mt-6">
+        <TabsList>
+          {detectionTypes.map(type => (
+            <TabsTrigger key={type} value={type}>
+              {type === 'all' ? '全部' : type === 'crack' ? '裂纹检测' : '平整度检测'}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        {detectionTypes.map(type => (
+          <TabsContent key={type} value={type}>
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4">
+              {historyItems
+                .filter(item => type === 'all' || item.type === type)
+                .map((item) => (
+                  <HistoryItemCard key={item.id} item={item} onSelect={() => handleItemClick(String(item.id))} />
+                ))}
+            </div>
+            {historyItems.filter(item => type === 'all' || item.type === type).length === 0 && (
+              <div className="text-center text-slate-400 py-10">
+                <p>没有找到相关记录。</p>
+              </div>
+            )}
+          </TabsContent>
         ))}
-      </div>
+      </Tabs>
     </div>
   );
 }
-

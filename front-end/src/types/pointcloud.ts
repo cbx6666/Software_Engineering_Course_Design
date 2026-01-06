@@ -6,7 +6,7 @@ export interface PointCloudData {
   /** [a, b, c] for z = a x + b y + c */
   plane: number[];
   /** [nx, ny, nz] */
-  normal: number[];
+  normal?: number[];
   /** Optional: already projected by backend */
   projected_points?: number[][];
   projected_dists?: number[];

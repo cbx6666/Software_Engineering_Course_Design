@@ -5,6 +5,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { GlassCrackDetectionPage } from "./pages/GlassCrackDetectionPage";
 import { GlassFlatnessDetectionPage } from "./pages/GlassFlatnessDetectionPage";
 import { HistoryPage } from "./pages/HistoryPage";
+import { HistoryDetailPage } from "./pages/HistoryDetailPage";
 import { useAuth } from "./hooks/useAuth";
 
 function AuthPage() {
@@ -45,6 +46,10 @@ export const router = createBrowserRouter([
       {
         path: "history",
         element: <HistoryPage />,
+      },
+      {
+        path: "history/:id",
+        element: <HistoryDetailPage />,
       },
     ],
   },
