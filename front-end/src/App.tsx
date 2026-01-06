@@ -52,8 +52,8 @@ export default function App() {
       )}
 
       {/* Logout Button */}
-      {isAuthed && (
-        <div className="absolute top-6 right-6 z-50">
+      {isAuthed && isHomePage && (
+        <div className="absolute top-6 left-6 z-50">
           <Button
             onClick={() => {
               logout();

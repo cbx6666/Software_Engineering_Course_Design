@@ -1,14 +1,18 @@
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff, Loader2, LogIn, Sparkles, UserPlus } from "lucide-react";
 
-export function LoginPage() {
-    const { login, register, isLoggingIn } = useAuth();
-    const navigate = useNavigate();
+export function LoginPage({
+    onLogin,
+    onRegister,
+    isSubmitting,
+}: {
+    onLogin: (params: { email: string; password: string }) => Promise<void>;
+    onRegister: (params: { email: string; password: string }) => Promise<void>;
+    isSubmitting: boolean;
+}) {
     const [mode, setMode] = useState<"login" | "register">("login");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -17,27 +21,26 @@ export function LoginPage() {
     const [error, setError] = useState<string | null>(null);
 
     const canSubmit = useMemo(() => {
-        if (!email.trim() || !password || isLoggingIn) return false;
+        if (!email.trim() || !password || isSubmitting) return false;
         if (mode === "register") {
             if (confirmPassword && confirmPassword !== password) return false;
         }
         return true;
-    }, [email, password, confirmPassword, isLoggingIn, mode]);
+    }, [email, password, confirmPassword, isSubmitting, mode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         try {
             if (mode === "login") {
-                await login({ email, password, remember: true });
+                await onLogin({ email, password });
             } else {
                 if (password !== confirmPassword) {
                     setError("两次输入的密码不一致");
                     return;
                 }
-                await register({ email, password, remember: true });
+                await onRegister({ email, password });
             }
-            navigate("/");
         } catch (err) {
             const msg = (mode === "login" ? "登录失败，请稍后再试。" : "注册失败，请稍后再试。");
             setError(msg);
@@ -62,7 +65,7 @@ export function LoginPage() {
             <button
                 type="button"
                 className="text-sm text-white hover:text-white/90 hover:underline underline-offset-4 transition-colors"
-                disabled={isLoggingIn}
+                disabled={isSubmitting}
                 onClick={() => {
                     setMode((m) => (m === "login" ? "register" : "login"));
                     setError(null);
@@ -84,7 +87,7 @@ export function LoginPage() {
                     inputMode="email"
                     placeholder="请输入邮箱地址"
                     autoComplete="email"
-                    disabled={isLoggingIn}
+                    disabled={isSubmitting}
                     className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                 />
             </div>
@@ -107,7 +110,7 @@ export function LoginPage() {
                         style={{ top: "50%", transform: "translateY(-50%)" }}
                         onClick={() => setShowPassword((v) => !v)}
                         aria-label={showPassword ? "隐藏密码" : "显示密码"}
-                        disabled={isLoggingIn}
+                        disabled={isSubmitting}
                     >
                         {showPassword ? (
                             <EyeOff className="w-4 h-4 text-slate-300" />
@@ -127,7 +130,7 @@ export function LoginPage() {
                         type={showPassword ? "text" : "password"}
                         placeholder="再次输入密码"
                         autoComplete="new-password"
-                        disabled={isLoggingIn}
+                        disabled={isSubmitting}
                         className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                     />
                     {confirmPassword && confirmPassword !== password && (
@@ -151,11 +154,11 @@ export function LoginPage() {
                 size="lg"
             >
                 <span className="relative inline-flex items-center">
-                    {isLoggingIn ? (
+                    {isSubmitting ? (
                         <>
                             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                             {mode === "login" ? "登录中..." : "注册中..."}
-                        </> 
+                        </>
                     ) : mode === "login" ? (
                         <>
                             <LogIn className="w-4 h-4 mr-2" />
@@ -198,7 +201,25 @@ export function LoginPage() {
     );
 
     return (
-        <div className="min-h-screen relative overflow-hidden">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
+            {/* Glass Pattern Background */}
+            <div className="absolute inset-0 opacity-10">
+                <div className="absolute inset-0" style={{
+                    backgroundImage: `
+                        linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
+                        linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)
+                    `,
+                    backgroundSize: '60px 60px'
+                }}></div>
+            </div>
+
+            {/* Animated Glass Shards */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            </div>
+
             <div
                 className="relative z-10 min-h-screen flex items-start justify-center p-6"
                 style={{ paddingTop: "10rem" }}
