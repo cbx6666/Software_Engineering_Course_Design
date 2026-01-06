@@ -23,7 +23,7 @@ export function createApiClient(options?: {
     return axios.create({
         baseURL: options?.baseURL ?? getBaseURL(),
         withCredentials: options?.withCredentials ?? false,
-        timeout: options?.timeout ?? 15000,
+        timeout: options?.timeout ?? 60000,
     });
 }
 
