@@ -33,20 +33,13 @@ export function ModuleCard({ icon, title, description, onClick, gradient, iconBg
           <p className="text-slate-300 leading-relaxed">{description}</p>
         </div>
 
-        {comingSoon && (
-          <div className="absolute top-4 right-4">
-            <span className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm backdrop-blur-sm border border-yellow-500/30">
-              即将上线
-            </span>
-          </div>
-        )}
-
         {!comingSoon && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-blue-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
+          <div
+          className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-blue-500
+                     transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"
+        />
         )}
       </div>
     </Card>
   );
 }
-
-
