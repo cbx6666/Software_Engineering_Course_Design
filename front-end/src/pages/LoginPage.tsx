@@ -1,8 +1,11 @@
 import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff, Loader2, LogIn, Sparkles, UserPlus } from "lucide-react";
+import { Loader2, LogIn, Sparkles, UserPlus } from "lucide-react";
+
+// Base classes from the original Input component, combined for reuse.
+const baseInputClassName = "file:text-foreground placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground dark:bg-input/30 border-input flex w-full min-w-0 rounded-md border px-3 py-1 text-base bg-input-background transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive";
+const loginPageInputClassName = "h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30";
 
 export function LoginPage({
     onLogin,
@@ -80,7 +83,7 @@ export function LoginPage({
         <form onSubmit={handleSubmit} className="space-y-3 flex-1 w-full">
             <div className="space-y-2">
                 <label className="text-slate-200 text-sm">邮箱</label>
-                <Input
+                <input
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     type="email"
@@ -88,7 +91,7 @@ export function LoginPage({
                     placeholder="请输入邮箱地址"
                     autoComplete="email"
                     disabled={isSubmitting}
-                    className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
+                    className={`${baseInputClassName} ${loginPageInputClassName}`}
                 />
             </div>
 
@@ -96,42 +99,27 @@ export function LoginPage({
                 <label className="text-slate-200 text-sm">密码</label>
 
                 <div className="relative flex items-center">
-                    <Input
+                    <input
                         value={password}
                         placeholder="请输入密码"
-                        onChange={(e) => setPassword(e.target.value)}
                         type={showPassword ? "text" : "password"}
-                        className="h-9 w-full pr-10 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
+                        onChange={(e) => setPassword(e.target.value)}
+                        className={`${baseInputClassName} ${loginPageInputClassName} pr-10`}
                     />
-
-                    <button
-                        type="button"
-                        className="absolute right-2 flex items-center justify-center"
-                        style={{ top: "50%", transform: "translateY(-50%)" }}
-                        onClick={() => setShowPassword((v) => !v)}
-                        aria-label={showPassword ? "隐藏密码" : "显示密码"}
-                        disabled={isSubmitting}
-                    >
-                        {showPassword ? (
-                            <EyeOff className="w-4 h-4 text-slate-300" />
-                        ) : (
-                            <Eye className="w-4 h-4 text-slate-300" />
-                        )}
-                    </button>
                 </div>
             </div>
 
             {mode === "register" && (
                 <div className="space-y-2">
                     <label className="text-slate-200 text-sm">确认密码</label>
-                    <Input
+                    <input
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         type={showPassword ? "text" : "password"}
                         placeholder="再次输入密码"
                         autoComplete="new-password"
                         disabled={isSubmitting}
-                        className="h-9 bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
+                        className={`${baseInputClassName} ${loginPageInputClassName}`}
                     />
                     {confirmPassword && confirmPassword !== password && (
                         <div className="text-sm text-red-400">两次输入的密码不一致</div>
