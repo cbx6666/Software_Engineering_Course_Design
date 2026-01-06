@@ -60,9 +60,9 @@
 
 		<!-- MyBatis-Plus（适配 MySQL 持久化） -->
 		<dependency>
-			<groupId>com.baomidou</groupId>
-			<artifactId>mybatis-plus-boot-starter</artifactId>
-			<version>3.5.8</version>
+    		<groupId>com.baomidou</groupId>
+    		<artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+    		<version>3.5.10</version>
 		</dependency>
 
 		<!-- MySQL Driver（具体连接信息你后续在配置里填） -->

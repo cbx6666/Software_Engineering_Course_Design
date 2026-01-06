@@ -29,8 +29,6 @@ algorithm:
   url: "http://127.0.0.1:8000"
 
 mybatis-plus:
-  # XML 配置文件（你说的“xml”我落在这里）
-  config-location: classpath:mybatis/mybatis-config.xml
   # Mapper XML 位置（可选，BaseMapper 不需要，但你后续写自定义 SQL 会用到）
   mapper-locations: classpath*:mapper/**/*.xml
   configuration:
