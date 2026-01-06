@@ -1,8 +1,7 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
 import { Eye, EyeOff, Loader2, LogIn, Sparkles, UserPlus } from "lucide-react";
 
 export function LoginPage({
@@ -20,47 +19,19 @@ export function LoginPage({
     const [confirmPassword, setConfirmPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [progress, setProgress] = useState(0);
-
-    const isEmail = useMemo(() => {
-        const v = username.trim();
-        // 简单邮箱校验（前端足够；后端仍需严格校验）
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    }, [username]);
-
-    // 提交时进度条（前端假进度，后续接真实接口也依然好用）
-    useEffect(() => {
-        if (!isSubmitting) {
-            setProgress(0);
-            return;
-        }
-        let v = 12;
-        setProgress(v);
-        const timer = window.setInterval(() => {
-            v = Math.min(92, v + Math.random() * 9);
-            setProgress(v);
-        }, 220);
-        return () => window.clearInterval(timer);
-    }, [isSubmitting]);
 
     const canSubmit = useMemo(() => {
         if (!username.trim() || !password || isSubmitting) return false;
-        if (!isEmail) return false;
         if (mode === "register") {
-            if (password.length < 6) return false;
             if (confirmPassword && confirmPassword !== password) return false;
         }
         return true;
-    }, [username, password, confirmPassword, isSubmitting, mode, isEmail]);
+    }, [username, password, confirmPassword, isSubmitting, mode]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         try {
-            if (!isEmail) {
-                setError("用户名必须为邮箱格式（例如：name@example.com）");
-                return;
-            }
             if (mode === "login") {
                 await onLogin({ username, password });
             } else {
@@ -88,12 +59,6 @@ export function LoginPage({
             <p className="mt-2 text-slate-300 text-sm">{mode === "login" ? "登录后进入检测主页" : "注册后将自动登录"}</p>
         </div>
     );
-
-    const progressBar = isSubmitting ? (
-        <div className="px-4 pt-3">
-            <Progress value={progress} className="h-2 bg-white/10" />
-        </div>
-    ) : null;
 
     const modeSwitch = (
         <div className="flex items-center justify-end">
@@ -125,7 +90,6 @@ export function LoginPage({
                     disabled={isSubmitting}
                     className="bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                 />
-                {username && !isEmail && <div className="text-xs text-red-300">请输入有效邮箱地址</div>}
             </div>
 
             <div className="space-y-2">
@@ -169,13 +133,19 @@ export function LoginPage({
                         disabled={isSubmitting}
                         className="bg-white/5 border-white/15 text-white placeholder:text-slate-400 focus-visible:ring-cyan-500/30"
                     />
-                    {confirmPassword && confirmPassword !== password && <div className="text-xs text-red-300">两次输入的密码不一致</div>}
+                    {confirmPassword && confirmPassword !== password && (
+                        <div className="text-sm text-red-400">两次输入的密码不一致</div>
+                    )}
                 </div>
             )}
 
             {modeSwitch}
 
-            {error && <div className="text-sm text-red-300 bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">{error}</div>}
+            {error && (
+                <div className="text-sm text-red-400 bg-red-500/15 px-4 py-3">
+                    {error}
+                </div>
+            )}
 
             <Button
                 type="submit"
@@ -247,9 +217,6 @@ export function LoginPage({
             <Card className="relative h-full border-0 bg-white/10 backdrop-blur-xl shadow-2xl rounded-3xl overflow-hidden">
                 {/* 顶部条纹（移除亮光拂过动效，保持简洁） */}
                 <div className="h-1 w-full bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500" />
-
-                {/* 提交进度条（仅提交时渲染，避免非提交状态也占位导致顶部空白过大） */}
-                {progressBar}
 
                 <div className="p-4 pt-3 flex flex-col">{form}</div>
             </Card>
