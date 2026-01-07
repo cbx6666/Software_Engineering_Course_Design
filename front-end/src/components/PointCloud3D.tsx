@@ -13,10 +13,10 @@ import * as THREE from "three";
  * - projected_* 存在时，表示已在后端做过平面投影与距离计算。
  */
 interface PointCloudData {
-  points: number[][]; // N×3 array [x, y, z] (meters)
-  dists: number[];    // N array, distance to plane (meters)
-  plane: number[];    // [a, b, c] for z = a x + b y + c
-  normal: number[];   // [nx, ny, nz]
+  points?: number[][]; // N×3 array [x, y, z] (meters)
+  dists?: number[];    // N array, distance to plane (meters)
+  plane?: number[];    // [a, b, c] for z = a x + b y + c
+  normal?: number[];   // [nx, ny, nz]
   projected_points?: number[][];
   projected_dists?: number[];
 }
