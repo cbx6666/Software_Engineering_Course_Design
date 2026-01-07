@@ -3,7 +3,7 @@ spring:
     name: back-end
   mvc:
     async:
-      request-timeout: 60000
+      request-timeout: 600000
   servlet:
     multipart:
       max-file-size: 30MB
@@ -18,7 +18,7 @@ spring:
 
 server:
   tomcat:
-    connection-timeout: 60000
+    connection-timeout: 600000
 
 # 前端地址
 frontend:
