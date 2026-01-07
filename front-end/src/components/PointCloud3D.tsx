@@ -1,5 +1,3 @@
-// @ts-nocheck
-/// <reference types="@react-three/fiber" />
 import { useMemo, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
@@ -34,31 +32,26 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
     let points: number[][];
     let dists: number[];
 
-    // 如果有后端投影结果，直接使用；否则进行旋转对齐
-    if (Array.isArray(data.projected_points) && Array.isArray(data.projected_dists)) {
-      // 使用投影数据（已由后端处理）
-      points = data.projected_points;
-      dists = data.projected_dists;
-    } else {
-      // 计算拟合平面的旋转四元数，使其法线对齐 Z 轴
-      const [a, b, c0] = data.plane;
-      const normal = new THREE.Vector3(a, b, -1).normalize();
-      const up = new THREE.Vector3(0, 0, 1);
-      const quat = new THREE.Quaternion().setFromUnitVectors(normal, up);
 
-      // 计算平面在旋转后的 Z 高度偏移
-      const p0 = new THREE.Vector3(0, 0, c0).applyQuaternion(quat);
-      const offsetZ = p0.z;
+    // 计算拟合平面的旋转四元数，使其法线对齐 Z 轴
+    const [a, b, c0] = data.plane;
+    const normal = new THREE.Vector3(a, b, -1).normalize();
+    const up = new THREE.Vector3(0, 0, 1);
+    const quat = new THREE.Quaternion().setFromUnitVectors(normal, up);
 
-      // 旋转所有点并对齐到水平
-      points = data.points.map(([x, y, z]) => {
-        const raw = new THREE.Vector3(x, y, z);
-        raw.applyQuaternion(quat);
-        return [raw.x, raw.y, raw.z - offsetZ]; // 减去平面高度偏移
-      });
+    // 计算平面在旋转后的 Z 高度偏移
+    const p0 = new THREE.Vector3(0, 0, c0).applyQuaternion(quat);
+    const offsetZ = p0.z;
 
-      dists = data.dists;
-    }
+    // 旋转所有点并对齐到水平
+    points = data.points.map(([x, y, z]) => {
+      const raw = new THREE.Vector3(x, y, z);
+      raw.applyQuaternion(quat);
+      return [raw.x, raw.y, raw.z - offsetZ]; // 减去平面高度偏移
+    });
+
+    dists = data.dists;
+
 
     // 统一进行缩放和平移
     const { transformedPoints, transformedDists, bbox } = scaleAndShift(
@@ -119,6 +112,7 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
             points={transformedPoints}
             dists={transformedDists}
             guideSize={guideSize}
+            axesSize={guideSize}
           />
           <OrbitControls
             ref={controlsRef}

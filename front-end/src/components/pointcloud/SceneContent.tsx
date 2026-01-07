@@ -6,10 +6,12 @@ export function SceneContent({
   points,
   dists,
   guideSize,
+  axesSize,
 }: {
   points: number[][];
   dists: number[];
   guideSize: number;
+  axesSize: number;
 }) {
   return (
     <>
@@ -18,7 +20,7 @@ export function SceneContent({
 
       <Points points={points} dists={dists} />
       <CornerGuide size={guideSize} />
-      <AxisArrows size={guideSize} />
+      <AxisArrows size={axesSize} />
     </>
   );
 }
