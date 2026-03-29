@@ -1,0 +1,733 @@
+[INFO] Scanning for projects...
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-parent/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 476/810 BProgress (1): 810 B                       Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-parent/4.0.0-SNAPSHOT/maven-metadata.xml (810 B at 427 B/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-dependencies/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 476/808 BProgress (1): 808 B                       Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-dependencies/4.0.0-SNAPSHOT/maven-metadata.xml (808 B at 2.9 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/cyclonedx/maven-metadata.xml
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/maven-metadata.xml
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/maven-metadata.xml
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/cyclonedx/maven-metadata.xml
+Progress (1): 244 B                   Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/cyclonedx/maven-metadata.xml (244 B at 953 B/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/flywaydb/maven-metadata.xml
+Progress (1): 250 B                   Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/maven-metadata.xml
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/springframework/boot/maven-metadata.xml (250 B at 741 B/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/io/github/git-commit-id/maven-metadata.xml
+Progress (1): 235 B                   Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/flywaydb/maven-metadata.xml (235 B at 1.7 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/io/github/git-commit-id/maven-metadata.xml
+Progress (1): 256 B                   Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/jooq/maven-metadata.xml
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/jooq/maven-metadata.xml
+Progress (2): 256 B | 399 B                           Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/jooq/maven-metadata.xml (399 B at 3.0 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/jetbrains/kotlin/maven-metadata.xml
+[WARNING] Could not validate integrity of download from https://maven.aliyun.com/repository/public/io/github/git-commit-id/maven-metadata.xml
+org.eclipse.aether.transfer.ChecksumFailureException: Checksum validation failed, no checksums available
+    at org.eclipse.aether.internal.impl.AbstractChecksumPolicy.onNoMoreChecksums (AbstractChecksumPolicy.java:63)
+    at org.eclipse.aether.connector.basic.ChecksumValidator.validate (ChecksumValidator.java:112)
+    at org.eclipse.aether.connector.basic.BasicRepositoryConnector$GetTaskRunner.runTask (BasicRepositoryConnector.java:462)
+    at org.eclipse.aether.connector.basic.BasicRepositoryConnector$TaskRunner.run (BasicRepositoryConnector.java:392)
+    at org.eclipse.aether.util.concurrency.RunnableErrorForwarder.lambda$wrap$0 (RunnableErrorForwarder.java:66)
+    at org.eclipse.aether.connector.basic.BasicRepositoryConnector.get (BasicRepositoryConnector.java:212)
+    at org.eclipse.aether.internal.impl.DefaultMetadataResolver$ResolveTask.run (DefaultMetadataResolver.java:556)
+    at org.eclipse.aether.util.concurrency.RunnableErrorForwarder.lambda$wrap$0 (RunnableErrorForwarder.java:66)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker (ThreadPoolExecutor.java:1144)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run (ThreadPoolExecutor.java:642)
+    at java.lang.Thread.run (Thread.java:1583)
+[WARNING] Checksum validation failed, no checksums available from aliyunmaven for https://maven.aliyun.com/repository/public/io/github/git-commit-id/maven-metadata.xml
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/io/github/git-commit-id/maven-metadata.xml (256 B at 436 B/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/jetbrains/kotlin/maven-metadata.xml
+Progress (1): 376 B                   Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/jetbrains/kotlin/maven-metadata.xml (376 B at 3.0 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/liquibase/maven-metadata.xml
+Progress (1): 270 B                   Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/maven-metadata.xml (270 B at 237 B/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/liquibase/maven-metadata.xml
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/graalvm/buildtools/maven-metadata.xml
+Progress (1): 395 B                   Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/graalvm/buildtools/maven-metadata.xml
+Progress (2): 395 B | 243 B                           Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/graalvm/buildtools/maven-metadata.xml (243 B at 1.9 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/apache/maven/plugins/maven-metadata.xml
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/liquibase/maven-metadata.xml (395 B at 1.4 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-metadata.xml
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/codehaus/mojo/maven-metadata.xml
+Progress (1): 1.9/10 kBProgress (1): 10 kB                       Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/mojo/maven-metadata.xml
+Progress (2): 10 kB | 0.6/21 kBProgress (2): 10 kB | 17/21 kB Progress (2): 10 kB | 21 kB                              Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-metadata.xml (10 kB at 29 kB/s)
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/codehaus/mojo/maven-metadata.xml (21 kB at 147 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-maven-plugin/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.0 kBProgress (1): 1.9/2.0 kBProgress (1): 2.0 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-maven-plugin/4.0.0-SNAPSHOT/maven-metadata.xml (2.0 kB at 7.5 kB/s)
+[INFO] 
+[INFO] -------------------------< com.wing:back-end >--------------------------
+[INFO] Building back-end 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:4.0.0-SNAPSHOT:run (default-cli) > test-compile @ back-end >>>
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.7 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-logging/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-logging/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.8 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-autoconfigure/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-autoconfigure/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.7 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.8 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-test/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-test/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.9 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-test/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-test/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.7 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-test-autoconfigure/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-test-autoconfigure/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.2 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-web/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-web/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.6 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-jackson/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-jackson/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.4 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-jackson/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-jackson/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.6 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-tomcat/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-tomcat/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.4 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-tomcat-runtime/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-tomcat-runtime/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.3 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-tomcat/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-tomcat/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.3 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-web-server/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-web-server/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.5 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-http-converter/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-http-converter/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.4 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-webmvc/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-webmvc/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.3 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-servlet/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-servlet/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.5 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-validation/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-starter-validation/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.6 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-validation/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-validation/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.5 kB/s)
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ back-end ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ back-end ---
+[INFO] Recompiling the module because of added or removed source files.
+[INFO] Compiling 10 source files with javac [debug parameters release 21] to target\classes
+[INFO] /D:/Homework/SE/GlassCurtainWallDetection/back-end/src/main/java/com/wing/glassdetect/utils/ApiUtils.java: D:\Homework\SE\GlassCurtainWallDetection\back-end\src\main\java\com\wing\glassdetect\utils\ApiUtils.java使用了未经检查或不安全的操作。
+[INFO] /D:/Homework/SE/GlassCurtainWallDetection/back-end/src/main/java/com/wing/glassdetect/utils/ApiUtils.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ back-end ---
+[INFO] skip non existing resourceDirectory D:\Homework\SE\GlassCurtainWallDetection\back-end\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.14.1:testCompile (default-testCompile) @ back-end ---
+[INFO] Recompiling the module because of changed dependency.
+[INFO] Compiling 1 source file with javac [debug parameters release 21] to target\test-classes
+[INFO] 
+[INFO] <<< spring-boot:4.0.0-SNAPSHOT:run (default-cli) < test-compile @ back-end <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:4.0.0-SNAPSHOT:run (default-cli) @ back-end ---
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-buildpack-platform/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-buildpack-platform/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.3 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-buildpack-platform/4.0.0-SNAPSHOT/spring-boot-buildpack-platform-4.0.0-20251120.144330-848.pom
+Progress (1): 0.3/3.0 kBProgress (1): 1.7/3.0 kBProgress (1): 3.0 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-buildpack-platform/4.0.0-SNAPSHOT/spring-boot-buildpack-platform-4.0.0-20251120.144330-848.pom (3.0 kB at 10 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna-platform/5.17.0/jna-platform-5.17.0.pom
+Progress (1): 1.9/2.3 kBProgress (1): 2.3 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna-platform/5.17.0/jna-platform-5.17.0.pom (2.3 kB at 18 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna/5.17.0/jna-5.17.0.pom
+Progress (1): 2.0 kB                    Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna/5.17.0/jna-5.17.0.pom (2.0 kB at 18 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.pom
+Progress (1): 0.5/23 kBProgress (1): 17/23 kB Progress (1): 23 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.pom (23 kB at 187 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/72/commons-parent-72.pom
+Progress (1): 1.9/78 kBProgress (1): 18/78 kB Progress (1): 35/78 kBProgress (1): 51/78 kBProgress (1): 67/78 kBProgress (1): 78 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/72/commons-parent-72.pom (78 kB at 500 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/junit/junit-bom/5.11.0-M2/junit-bom-5.11.0-M2.pom
+Progress (1): 1.9/5.7 kBProgress (1): 5.7 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/junit/junit-bom/5.11.0-M2/junit-bom-5.11.0-M2.pom (5.7 kB at 48 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.pom
+Progress (1): 0.5/18 kBProgress (1): 17/18 kB Progress (1): 18 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.pom (18 kB at 166 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/71/commons-parent-71.pom
+Progress (1): 4.8/78 kBProgress (1): 21/78 kB Progress (1): 38/78 kBProgress (1): 54/78 kBProgress (1): 70/78 kBProgress (1): 78 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/71/commons-parent-71.pom (78 kB at 420 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom
+Progress (1): 1.9/20 kBProgress (1): 18/20 kB Progress (1): 20 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/commons-io/commons-io/2.16.1/commons-io-2.16.1.pom (20 kB at 180 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/69/commons-parent-69.pom
+Progress (1): 7.3/77 kBProgress (1): 15/77 kB Progress (1): 31/77 kBProgress (1): 47/77 kBProgress (1): 64/77 kBProgress (1): 77 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/69/commons-parent-69.pom (77 kB at 445 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.pom
+Progress (1): 1.9/31 kBProgress (1): 18/31 kB Progress (1): 31 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.pom (31 kB at 202 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.1/httpclient5-5.5.1.pom
+Progress (1): 6.1 kB                    Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.1/httpclient5-5.5.1.pom (6.1 kB at 20 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5-parent/5.5.1/httpclient5-parent-5.5.1.pom
+Progress (1): 1.9/17 kBProgress (1): 17 kB                       Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5-parent/5.5.1/httpclient5-parent-5.5.1.pom (17 kB at 49 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/httpcomponents-parent/14/httpcomponents-parent-14.pom
+Progress (1): 1.9/30 kBProgress (1): 18/30 kB Progress (1): 30 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/httpcomponents-parent/14/httpcomponents-parent-14.pom (30 kB at 276 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/apache/27/apache-27.pom
+Progress (1): 1.9/20 kBProgress (1): 18/20 kB Progress (1): 20 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/apache/27/apache-27.pom (20 kB at 192 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/junit/junit-bom/5.13.0/junit-bom-5.13.0.pom
+Progress (1): 1.9/5.6 kBProgress (1): 5.6 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/junit/junit-bom/5.13.0/junit-bom-5.13.0.pom (5.6 kB at 18 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.pom
+Progress (1): 1.9/3.9 kBProgress (1): 3.9 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.pom (3.9 kB at 39 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-parent/5.3.6/httpcore5-parent-5.3.6.pom
+Progress (1): 1.8/14 kBProgress (1): 14 kB                       Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-parent/5.3.6/httpcore5-parent-5.3.6.pom (14 kB at 125 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/httpcomponents-parent/13/httpcomponents-parent-13.pom
+Progress (1): 1.9/30 kBProgress (1): 18/30 kB Progress (1): 30 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/httpcomponents-parent/13/httpcomponents-parent-13.pom (30 kB at 96 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.pom
+Progress (1): 1.9/3.6 kBProgress (1): 3.6 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.pom (3.6 kB at 34 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-loader-tools/4.0.0-SNAPSHOT/maven-metadata.xml
+Progress (1): 0.5/2.4 kBProgress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-loader-tools/4.0.0-SNAPSHOT/maven-metadata.xml (2.4 kB at 8.2 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-loader-tools/4.0.0-SNAPSHOT/spring-boot-loader-tools-4.0.0-20251120.144330-848.pom
+Progress (1): 0.3/2.2 kBProgress (1): 1.7/2.2 kBProgress (1): 2.2 kB                        Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-loader-tools/4.0.0-SNAPSHOT/spring-boot-loader-tools-4.0.0-20251120.144330-848.pom (2.2 kB at 8.0 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/shared/maven-common-artifact-filters/3.4.0/maven-common-artifact-filters-3.4.0.pom
+Progress (1): 1.9/5.4 kBProgress (1): 5.4 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/shared/maven-common-artifact-filters/3.4.0/maven-common-artifact-filters-3.4.0.pom (5.4 kB at 15 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/shared/maven-shared-components/42/maven-shared-components-42.pom
+Progress (1): 1.9/3.8 kBProgress (1): 3.8 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/shared/maven-shared-components/42/maven-shared-components-42.pom (3.8 kB at 12 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-util/1.4.1/maven-resolver-util-1.4.1.pom
+Progress (1): 1.9/2.8 kBProgress (1): 2.8 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-util/1.4.1/maven-resolver-util-1.4.1.pom (2.8 kB at 25 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver/1.4.1/maven-resolver-1.4.1.pom
+Progress (1): 1.9/18 kBProgress (1): 18 kB                       Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver/1.4.1/maven-resolver-1.4.1.pom (18 kB at 112 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-api/1.4.1/maven-resolver-api-1.4.1.pom
+Progress (1): 1.9/2.6 kBProgress (1): 2.6 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-api/1.4.1/maven-resolver-api-1.4.1.pom (2.6 kB at 25 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-shade-plugin/3.6.0/maven-shade-plugin-3.6.0.pom
+Progress (1): 1.9/12 kBProgress (1): 12 kB                       Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-shade-plugin/3.6.0/maven-shade-plugin-3.6.0.pom (12 kB at 112 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm/9.7/asm-9.7.pom
+Progress (1): 1.9/2.4 kBProgress (1): 2.4 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm/9.7/asm-9.7.pom (2.4 kB at 23 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.pom
+Progress (1): 1.9/2.8 kBProgress (1): 2.8 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.pom (2.8 kB at 25 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.pom
+Progress (1): 2.6 kB                    Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.pom (2.6 kB at 25 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.pom
+Progress (1): 1.9/4.6 kBProgress (1): 4.6 kB                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.pom (4.6 kB at 44 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-compress/1.26.2/commons-compress-1.26.2.pom
+Progress (1): 1.9/23 kBProgress (1): 18/23 kB Progress (1): 23 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-compress/1.26.2/commons-compress-1.26.2.pom (23 kB at 201 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/commons-codec/commons-codec/1.17.0/commons-codec-1.17.0.pom
+Progress (1): 1.9/18 kBProgress (1): 18 kB                       Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/commons-codec/commons-codec/1.17.0/commons-codec-1.17.0.pom (18 kB at 61 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.pom
+Progress (1): 4.8/31 kBProgress (1): 21/31 kB Progress (1): 31 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.pom (31 kB at 253 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/64/commons-parent-64.pom
+Progress (1): 3.4/78 kBProgress (1): 20/78 kB Progress (1): 36/78 kBProgress (1): 53/78 kBProgress (1): 69/78 kBProgress (1): 78 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-parent/64/commons-parent-64.pom (78 kB at 561 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/apache/30/apache-30.pom
+Progress (1): 1.9/23 kBProgress (1): 18/23 kB Progress (1): 23 kB                      Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/apache/30/apache-30.pom (23 kB at 197 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/vafer/jdependency/2.10/jdependency-2.10.pom
+Progress (1): 6.3/14 kBProgress (1): 14 kB                       Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/vafer/jdependency/2.10/jdependency-2.10.pom (14 kB at 134 kB/s)
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-buildpack-platform/4.0.0-SNAPSHOT/spring-boot-buildpack-platform-4.0.0-20251120.144330-848.jar
+Downloading from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-loader-tools/4.0.0-SNAPSHOT/spring-boot-loader-tools-4.0.0-20251120.144330-848.jar
+Progress (1): 16/330 kBProgress (1): 17/330 kBProgress (2): 17/330 kB | 16/339 kBProgress (2): 17/330 kB | 17/339 kBProgress (2): 33/330 kB | 17/339 kBProgress (2): 34/330 kB | 17/339 kBProgress (2): 34/330 kB | 33/339 kBProgress (2): 34/330 kB | 34/339 kBProgress (2): 34/330 kB | 51/339 kBProgress (2): 34/330 kB | 52/339 kBProgress (2): 34/330 kB | 53/339 kBProgress (2): 34/330 kB | 69/339 kBProgress (2): 51/330 kB | 69/339 kBProgress (2): 52/330 kB | 69/339 kBProgress (2): 68/330 kB | 69/339 kBProgress (2): 69/330 kB | 69/339 kBProgress (2): 85/330 kB | 69/339 kBProgress (2): 86/330 kB | 69/339 kBProgress (2): 103/330 kB | 69/339 kBProgress (2): 104/330 kB | 69/339 kBProgress (2): 120/330 kB | 69/339 kBProgress (2): 121/330 kB | 69/339 kBProgress (2): 138/330 kB | 69/339 kBProgress (2): 139/330 kB | 69/339 kBProgress (2): 155/330 kB | 69/339 kBProgress (2): 156/330 kB | 69/339 kBProgress (2): 172/330 kB | 69/339 kBProgress (2): 173/330 kB | 69/339 kBProgress (2): 173/330 kB | 85/339 kBProgress (2): 173/330 kB | 86/339 kBProgress (2): 173/330 kB | 103/339 kBProgress (2): 173/330 kB | 104/339 kBProgress (2): 173/330 kB | 120/339 kBProgress (2): 173/330 kB | 121/339 kBProgress (2): 173/330 kB | 138/339 kBProgress (2): 173/330 kB | 139/339 kBProgress (2): 173/330 kB | 155/339 kBProgress (2): 173/330 kB | 156/339 kBProgress (2): 173/330 kB | 172/339 kBProgress (2): 173/330 kB | 173/339 kBProgress (2): 190/330 kB | 173/339 kBProgress (2): 191/330 kB | 173/339 kBProgress (2): 207/330 kB | 173/339 kBProgress (2): 208/330 kB | 173/339 kBProgress (2): 225/330 kB | 173/339 kBProgress (2): 226/330 kB | 173/339 kBProgress (2): 226/330 kB | 190/339 kBProgress (2): 226/330 kB | 191/339 kBProgress (2): 226/330 kB | 207/339 kBProgress (2): 226/330 kB | 208/339 kBProgress (2): 242/330 kB | 208/339 kBProgress (2): 243/330 kB | 208/339 kBProgress (2): 259/330 kB | 208/339 kBProgress (2): 260/330 kB | 208/339 kBProgress (2): 277/330 kB | 208/339 kBProgress (2): 278/330 kB | 208/339 kBProgress (2): 294/330 kB | 208/339 kBProgress (2): 295/330 kB | 208/339 kBProgress (2): 312/330 kB | 208/339 kBProgress (2): 313/330 kB | 208/339 kBProgress (2): 329/330 kB | 208/339 kBProgress (2): 330/330 kB | 208/339 kBProgress (2): 330 kB | 208/339 kB    Progress (2): 330 kB | 225/339 kBProgress (2): 330 kB | 226/339 kBProgress (2): 330 kB | 242/339 kBProgress (2): 330 kB | 243/339 kBProgress (2): 330 kB | 259/339 kBProgress (2): 330 kB | 260/339 kBProgress (2): 330 kB | 277/339 kBProgress (2): 330 kB | 278/339 kBProgress (2): 330 kB | 294/339 kBProgress (2): 330 kB | 295/339 kBProgress (2): 330 kB | 312/339 kBProgress (2): 330 kB | 313/339 kBProgress (2): 330 kB | 329/339 kBProgress (2): 330 kB | 330/339 kBProgress (2): 330 kB | 339 kB                                 Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-buildpack-platform/4.0.0-SNAPSHOT/spring-boot-buildpack-platform-4.0.0-20251120.144330-848.jar (330 kB at 130 kB/s)
+Downloaded from spring-snapshots: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-loader-tools/4.0.0-SNAPSHOT/spring-boot-loader-tools-4.0.0-20251120.144330-848.jar (339 kB at 131 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna-platform/5.17.0/jna-platform-5.17.0.jar
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna/5.17.0/jna-5.17.0.jar
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.jar
+Progress (1): 0/2.0 MBProgress (2): 0/2.0 MB | 1.9/674 kBProgress (2): 0/2.0 MB | 14/674 kB Progress (2): 0/2.0 MB | 18/674 kBProgress (2): 0/2.0 MB | 18/674 kBProgress (2): 0/2.0 MB | 30/674 kBProgress (2): 0/2.0 MB | 30/674 kBProgress (2): 0/2.0 MB | 36/674 kBProgress (2): 0.1/2.0 MB | 36/674 kBProgress (2): 0.1/2.0 MB | 46/674 kBProgress (2): 0.1/2.0 MB | 50/674 kBProgress (2): 0.1/2.0 MB | 54/674 kBProgress (2): 0.1/2.0 MB | 54/674 kBProgress (2): 0.1/2.0 MB | 68/674 kBProgress (2): 0.1/2.0 MB | 71/674 kBProgress (2): 0.1/2.0 MB | 75/674 kBProgress (2): 0.1/2.0 MB | 75/674 kBProgress (3): 0.1/2.0 MB | 75/674 kB | 0/1.1 MBProgress (3): 0.1/2.0 MB | 79/674 kB | 0/1.1 MBProgress (3): 0.1/2.0 MB | 79/674 kB | 0/1.1 MBProgress (4): 0.1/2.0 MB | 79/674 kB | 0/1.1 MB | 0/1.4 MBProgress (4): 0.1/2.0 MB | 79/674 kB | 0/1.1 MB | 0/1.4 MBProgress (4): 0.1/2.0 MB | 96/674 kB | 0/1.1 MB | 0/1.4 MBProgress (4): 0.1/2.0 MB | 97/674 kB | 0/1.1 MB | 0/1.4 MBProgress (4): 0.1/2.0 MB | 97/674 kB | 0/1.1 MB | 0/1.4 MBProgress (4): 0.1/2.0 MB | 107/674 kB | 0/1.1 MB | 0/1.4 MBProgress (4): 0.1/2.0 MB | 107/674 kB | 0/1.1 MB | 0/1.4 MBProgress (4): 0.1/2.0 MB | 107/674 kB | 0/1.1 MB | 0/1.4 MBProgress (5): 0.1/2.0 MB | 107/674 kB | 0/1.1 MB | 0/1.4 MB | 7.3/373 kBProgress (5): 0.1/2.0 MB | 107/674 kB | 0/1.1 MB | 0/1.4 MB | 16/373 kB Progress (5): 0.1/2.0 MB | 107/674 kB | 0.1/1.1 MB | 0/1.4 MB | 16/373 kBProgress (5): 0.1/2.0 MB | 114/674 kB | 0.1/1.1 MB | 0/1.4 MB | 16/373 kBProgress (5): 0.1/2.0 MB | 114/674 kB | 0.1/1.1 MB | 0/1.4 MB | 16/373 kBProgress (5): 0.1/2.0 MB | 123/674 kB | 0.1/1.1 MB | 0/1.4 MB | 16/373 kBProgress (5): 0.1/2.0 MB | 123/674 kB | 0.1/1.1 MB | 0/1.4 MB | 16/373 kBProgress (5): 0.1/2.0 MB | 123/674 kB | 0.1/1.1 MB | 0/1.4 MB | 16/373 kBProgress (5): 0.1/2.0 MB | 123/674 kB | 0.1/1.1 MB | 0/1.4 MB | 32/373 kBProgress (5): 0.1/2.0 MB | 132/674 kB | 0.1/1.1 MB | 0/1.4 MB | 32/373 kBProgress (5): 0.1/2.0 MB | 132/674 kB | 0.1/1.1 MB | 0/1.4 MB | 32/373 kBProgress (5): 0.1/2.0 MB | 132/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.1/2.0 MB | 142/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.1/2.0 MB | 145/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 145/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 157/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 157/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 173/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 174/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 179/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 179/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 189/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 189/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 202/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 206/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 209/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 209/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 209/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 212/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 221/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 221/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.2/2.0 MB | 237/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 237/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 238/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 241/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 244/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 253/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 253/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 253/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 253/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 32/373 kBProgress (5): 0.3/2.0 MB | 253/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 48/373 kBProgress (5): 0.3/2.0 MB | 269/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 48/373 kBProgress (5): 0.3/2.0 MB | 272/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 48/373 kBProgress (5): 0.3/2.0 MB | 275/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 48/373 kBProgress (5): 0.3/2.0 MB | 275/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 48/373 kBProgress (5): 0.3/2.0 MB | 275/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 65/373 kBProgress (5): 0.3/2.0 MB | 275/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 65/373 kBProgress (5): 0.3/2.0 MB | 275/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 65/373 kBProgress (5): 0.3/2.0 MB | 278/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 65/373 kBProgress (5): 0.3/2.0 MB | 278/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 287/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 287/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 287/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 287/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 303/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 306/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 310/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 310/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.3/2.0 MB | 320/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 320/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 333/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 339/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 342/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 346/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 346/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 346/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 346/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 346/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 81/373 kBProgress (5): 0.4/2.0 MB | 346/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 97/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 97/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 97/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 354/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 370/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 373/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 377/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 377/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 377/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 377/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 377/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 377/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 377/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 386/674 kB | 0.1/1.1 MB | 0.1/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 386/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 386/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 386/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 386/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 386/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 401/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 114/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 130/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.1/1.1 MB | 0.2/1.4 MB | 146/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 146/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.4/2.0 MB | 412/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.4/2.0 MB | 422/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.4/2.0 MB | 422/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.4/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 427/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 438/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 438/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 163/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 179/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 179/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 179/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 179/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 179/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 179/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 179/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.2/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 450/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 462/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 462/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 462/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 462/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 462/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 474/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 474/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 474/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 479/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 492/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 492/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 504/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.5/2.0 MB | 504/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 196/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 212/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 212/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.2/1.1 MB | 0.3/1.4 MB | 212/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 212/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 212/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 212/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 228/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 228/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 228/373 kBProgress (5): 0.6/2.0 MB | 504/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 228/373 kBProgress (5): 0.6/2.0 MB | 517/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 228/373 kBProgress (5): 0.6/2.0 MB | 521/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 228/373 kBProgress (5): 0.6/2.0 MB | 521/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 245/373 kBProgress (5): 0.6/2.0 MB | 521/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 245/373 kBProgress (5): 0.6/2.0 MB | 537/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 245/373 kBProgress (5): 0.6/2.0 MB | 537/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 245/373 kBProgress (5): 0.6/2.0 MB | 537/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 245/373 kBProgress (5): 0.6/2.0 MB | 537/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 261/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 261/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 261/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.3/1.4 MB | 261/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 261/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 278/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 278/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 278/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 278/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 278/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.3/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 550/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.4/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 566/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 583/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 583/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 583/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.6/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 599/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 616/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.4/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.5/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.5/1.1 MB | 0.5/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 294/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 310/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 327/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 327/373 kBProgress (5): 0.7/2.0 MB | 632/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 327/373 kBProgress (5): 0.7/2.0 MB | 648/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 327/373 kBProgress (5): 0.7/2.0 MB | 648/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.7/2.0 MB | 665/674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.7/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kB    Progress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.8/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.9/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.9/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.9/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.9/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.9/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.9/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 343/373 kBProgress (5): 0.9/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 359/373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 359/373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 359/373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 359/373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 359/373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.6/1.4 MB | 359/373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.7/1.4 MB | 359/373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.7/1.4 MB | 373 kB    Progress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.5/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.0/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.1/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.1/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.1/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (5): 1.1/2.0 MB | 674 kB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kB                                                                    Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.jar (674 kB at 938 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.1/httpclient5-5.5.1.jar
+Progress (4): 1.1/2.0 MB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.1/2.0 MB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.1/2.0 MB | 0.6/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.1/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.1/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.1/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.7/1.4 MB | 373 kB                                                           Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar (373 kB at 475 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.jar
+Progress (3): 1.2/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MBProgress (3): 1.2/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MBProgress (3): 1.2/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MB | 3.3/959 kBProgress (4): 1.2/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MB | 3.3/959 kBProgress (4): 1.3/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MB | 3.3/959 kBProgress (4): 1.3/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MB | 20/959 kB Progress (4): 1.3/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MB | 20/959 kBProgress (4): 1.3/2.0 MB | 0.7/1.1 MB | 0.8/1.4 MB | 20/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 20/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 20/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 20/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 20/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 20/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 36/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 36/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kBProgress (4): 1.3/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kBProgress (4): 1.4/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kBProgress (4): 1.4/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kBProgress (4): 1.4/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kBProgress (5): 1.4/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.4/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.4/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.4/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.5/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.6/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.6/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 52/959 kB | 1.9/909 kBProgress (5): 1.6/2.0 MB | 0.8/1.1 MB | 0.8/1.4 MB | 69/959 kB | 1.9/909 kBProgress (5): 1.6/2.0 MB | 0.8/1.1 MB | 0.9/1.4 MB | 69/959 kB | 1.9/909 kBProgress (5): 1.6/2.0 MB | 0.8/1.1 MB | 0.9/1.4 MB | 69/959 kB | 1.9/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 69/959 kB | 1.9/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 69/959 kB | 18/909 kB Progress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 69/959 kB | 35/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 69/959 kB | 51/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 69/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 85/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 102/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 102/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 102/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 118/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 118/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 118/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 118/959 kB | 67/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 118/959 kB | 84/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 118/959 kB | 100/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 118/959 kB | 117/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 134/959 kB | 117/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 151/959 kB | 117/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 151/959 kB | 117/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 151/959 kB | 133/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 151/959 kB | 149/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 167/959 kB | 149/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 167/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 167/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 184/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 184/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 184/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 184/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 184/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 184/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 184/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 200/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 0.9/1.1 MB | 0.9/1.4 MB | 200/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 200/959 kB | 166/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 200/959 kB | 182/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 200/959 kB | 182/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 200/959 kB | 182/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 200/959 kB | 182/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 200/959 kB | 182/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 200/959 kB | 198/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 216/959 kB | 198/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 216/959 kB | 215/909 kBProgress (5): 1.6/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 216/959 kB | 215/909 kBProgress (5): 1.7/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 216/959 kB | 215/909 kBProgress (5): 1.7/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 216/959 kB | 215/909 kBProgress (5): 1.7/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 233/959 kB | 215/909 kBProgress (5): 1.7/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 233/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.0/1.1 MB | 0.9/1.4 MB | 233/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1/1.1 MB | 0.9/1.4 MB | 233/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1/1.1 MB | 0.9/1.4 MB | 233/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1/1.1 MB | 0.9/1.4 MB | 249/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1/1.1 MB | 0.9/1.4 MB | 265/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1/1.1 MB | 0.9/1.4 MB | 265/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 0.9/1.4 MB | 265/959 kB | 231/909 kB    Progress (5): 1.7/2.0 MB | 1.1 MB | 0.9/1.4 MB | 265/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 231/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 248/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 248/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 248/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 248/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 248/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 264/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 264/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 264/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 265/959 kB | 264/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 264/909 kBProgress (5): 1.7/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 280/909 kBProgress (5): 1.8/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 280/909 kBProgress (5): 1.8/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 280/909 kBProgress (5): 1.8/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 280/909 kBProgress (5): 1.8/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 297/909 kBProgress (5): 1.8/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 297/909 kBProgress (5): 1.8/2.0 MB | 1.1 MB | 1.0/1.4 MB | 282/959 kB | 313/909 kBProgress (5): 1.8/2.0 MB | 1.1 MB | 1.1/1.4 MB | 282/959 kB | 313/909 kB                                                                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/commons/commons-compress/1.27.1/commons-compress-1.27.1.jar (1.1 MB at 884 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.jar
+Progress (4): 1.8/2.0 MB | 1.1/1.4 MB | 282/959 kB | 330/909 kBProgress (4): 1.8/2.0 MB | 1.1/1.4 MB | 282/959 kB | 330/909 kBProgress (4): 1.8/2.0 MB | 1.1/1.4 MB | 282/959 kB | 330/909 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 282/959 kB | 330/909 kB | 7.2/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 282/959 kB | 330/909 kB | 9.2/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 282/959 kB | 330/909 kB | 9.2/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 282/959 kB | 346/909 kB | 9.2/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 298/959 kB | 346/909 kB | 9.2/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 298/959 kB | 346/909 kB | 26/243 kB Progress (5): 1.8/2.0 MB | 1.1/1.4 MB | 298/959 kB | 346/909 kB | 26/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 315/959 kB | 346/909 kB | 26/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 315/959 kB | 346/909 kB | 26/243 kBProgress (5): 1.8/2.0 MB | 1.1/1.4 MB | 315/959 kB | 346/909 kB | 42/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 315/959 kB | 346/909 kB | 42/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 331/959 kB | 346/909 kB | 42/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 331/959 kB | 362/909 kB | 42/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 331/959 kB | 362/909 kB | 58/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 331/959 kB | 362/909 kB | 58/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 347/959 kB | 362/909 kB | 58/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 347/959 kB | 362/909 kB | 75/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 347/959 kB | 379/909 kB | 75/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 364/959 kB | 379/909 kB | 75/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 364/959 kB | 379/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 364/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 364/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 380/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 380/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 397/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 413/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 429/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 446/959 kB | 395/909 kB | 91/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 446/959 kB | 395/909 kB | 107/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 446/959 kB | 395/909 kB | 107/243 kBProgress (5): 1.9/2.0 MB | 1.1/1.4 MB | 462/959 kB | 395/909 kB | 107/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 462/959 kB | 395/909 kB | 107/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 462/959 kB | 411/909 kB | 107/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 462/959 kB | 411/909 kB | 107/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 411/909 kB | 107/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 411/909 kB | 124/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 411/909 kB | 124/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 428/909 kB | 124/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 428/909 kB | 124/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 428/909 kB | 140/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 428/909 kB | 140/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 428/909 kB | 140/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 478/959 kB | 428/909 kB | 157/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 495/959 kB | 428/909 kB | 157/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 495/959 kB | 428/909 kB | 157/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 495/959 kB | 428/909 kB | 173/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 511/959 kB | 428/909 kB | 173/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 511/959 kB | 428/909 kB | 189/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 511/959 kB | 428/909 kB | 189/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 524/959 kB | 428/909 kB | 189/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 528/959 kB | 428/909 kB | 189/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 528/959 kB | 428/909 kB | 206/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 544/959 kB | 428/909 kB | 206/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 557/959 kB | 428/909 kB | 206/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 573/959 kB | 428/909 kB | 206/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 590/959 kB | 428/909 kB | 206/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 590/959 kB | 428/909 kB | 222/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 590/959 kB | 428/909 kB | 222/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 590/959 kB | 428/909 kB | 239/243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 590/959 kB | 428/909 kB | 243 kB    Progress (5): 1.9/2.0 MB | 1.2/1.4 MB | 590/959 kB | 428/909 kB | 243 kBProgress (5): 1.9/2.0 MB | 1.2/1.4 MB | 590/959 kB | 444/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.2/1.4 MB | 590/959 kB | 444/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.2/1.4 MB | 590/959 kB | 461/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 590/959 kB | 461/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 606/959 kB | 461/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 606/959 kB | 477/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 606/959 kB | 485/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 606/959 kB | 485/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 623/959 kB | 485/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 623/959 kB | 502/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 639/959 kB | 502/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 639/959 kB | 502/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 639/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 639/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 639/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 655/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 655/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 655/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.3/1.4 MB | 672/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.4/1.4 MB | 672/959 kB | 508/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.4/1.4 MB | 672/959 kB | 524/909 kB | 243 kBProgress (5): 2.0/2.0 MB | 1.4/1.4 MB | 672/959 kB | 525/909 kB | 243 kB                                                                        Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5-h2/5.3.6/httpcore5-h2-5.3.6.jar (243 kB at 156 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/shared/maven-common-artifact-filters/3.4.0/maven-common-artifact-filters-3.4.0.jar
+Progress (4): 2.0/2.0 MB | 1.4/1.4 MB | 672/959 kB | 525/909 kBProgress (4): 2.0/2.0 MB | 1.4 MB | 672/959 kB | 525/909 kB    Progress (4): 2.0/2.0 MB | 1.4 MB | 688/959 kB | 525/909 kBProgress (4): 2.0/2.0 MB | 1.4 MB | 688/959 kB | 541/909 kBProgress (4): 2.0/2.0 MB | 1.4 MB | 688/959 kB | 557/909 kBProgress (4): 2.0/2.0 MB | 1.4 MB | 705/959 kB | 557/909 kBProgress (4): 2.0/2.0 MB | 1.4 MB | 705/959 kB | 573/909 kBProgress (4): 2.0/2.0 MB | 1.4 MB | 705/959 kB | 573/909 kBProgress (4): 2.0 MB | 1.4 MB | 705/959 kB | 573/909 kB    Progress (4): 2.0 MB | 1.4 MB | 721/959 kB | 573/909 kBProgress (4): 2.0 MB | 1.4 MB | 721/959 kB | 590/909 kBProgress (5): 2.0 MB | 1.4 MB | 721/959 kB | 590/909 kB | 0.4/58 kBProgress (5): 2.0 MB | 1.4 MB | 737/959 kB | 590/909 kB | 0.4/58 kBProgress (5): 2.0 MB | 1.4 MB | 737/959 kB | 606/909 kB | 0.4/58 kB                                                                   Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna-platform/5.17.0/jna-platform-5.17.0.jar (1.4 MB at 843 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-util/1.4.1/maven-resolver-util-1.4.1.jar
+Progress (4): 2.0 MB | 754/959 kB | 606/909 kB | 0.4/58 kBProgress (4): 2.0 MB | 754/959 kB | 623/909 kB | 0.4/58 kBProgress (4): 2.0 MB | 754/959 kB | 639/909 kB | 0.4/58 kBProgress (4): 2.0 MB | 754/959 kB | 655/909 kB | 0.4/58 kBProgress (4): 2.0 MB | 770/959 kB | 655/909 kB | 0.4/58 kB                                                          Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/net/java/dev/jna/jna/5.17.0/jna-5.17.0.jar (2.0 MB at 1.2 MB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-api/1.4.1/maven-resolver-api-1.4.1.jar
+Progress (3): 770/959 kB | 672/909 kB | 0.4/58 kBProgress (3): 786/959 kB | 672/909 kB | 0.4/58 kBProgress (3): 786/959 kB | 688/909 kB | 0.4/58 kBProgress (3): 786/959 kB | 705/909 kB | 0.4/58 kBProgress (3): 803/959 kB | 705/909 kB | 0.4/58 kBProgress (4): 803/959 kB | 705/909 kB | 0.4/58 kB | 1.9/168 kBProgress (4): 803/959 kB | 705/909 kB | 17/58 kB | 1.9/168 kB Progress (4): 819/959 kB | 705/909 kB | 17/58 kB | 1.9/168 kBProgress (4): 836/959 kB | 705/909 kB | 17/58 kB | 1.9/168 kBProgress (4): 836/959 kB | 721/909 kB | 17/58 kB | 1.9/168 kBProgress (4): 836/959 kB | 721/909 kB | 33/58 kB | 1.9/168 kBProgress (5): 836/959 kB | 721/909 kB | 33/58 kB | 1.9/168 kB | 1.9/149 kBProgress (5): 836/959 kB | 721/909 kB | 33/58 kB | 18/168 kB | 1.9/149 kB Progress (5): 852/959 kB | 721/909 kB | 33/58 kB | 18/168 kB | 1.9/149 kBProgress (5): 852/959 kB | 737/909 kB | 33/58 kB | 18/168 kB | 1.9/149 kBProgress (5): 868/959 kB | 737/909 kB | 33/58 kB | 18/168 kB | 1.9/149 kBProgress (5): 868/959 kB | 737/909 kB | 33/58 kB | 18/168 kB | 18/149 kB Progress (5): 868/959 kB | 737/909 kB | 33/58 kB | 35/168 kB | 18/149 kBProgress (5): 868/959 kB | 737/909 kB | 50/58 kB | 35/168 kB | 18/149 kBProgress (5): 885/959 kB | 737/909 kB | 50/58 kB | 35/168 kB | 18/149 kBProgress (5): 885/959 kB | 737/909 kB | 50/58 kB | 51/168 kB | 18/149 kBProgress (5): 885/959 kB | 737/909 kB | 58 kB | 51/168 kB | 18/149 kB   Progress (5): 885/959 kB | 754/909 kB | 58 kB | 51/168 kB | 18/149 kBProgress (5): 901/959 kB | 754/909 kB | 58 kB | 51/168 kB | 18/149 kBProgress (5): 901/959 kB | 754/909 kB | 58 kB | 51/168 kB | 35/149 kBProgress (5): 918/959 kB | 754/909 kB | 58 kB | 51/168 kB | 35/149 kBProgress (5): 918/959 kB | 770/909 kB | 58 kB | 51/168 kB | 35/149 kBProgress (5): 934/959 kB | 770/909 kB | 58 kB | 51/168 kB | 35/149 kBProgress (5): 934/959 kB | 770/909 kB | 58 kB | 51/168 kB | 51/149 kBProgress (5): 934/959 kB | 770/909 kB | 58 kB | 67/168 kB | 51/149 kBProgress (5): 934/959 kB | 786/909 kB | 58 kB | 67/168 kB | 51/149 kBProgress (5): 950/959 kB | 786/909 kB | 58 kB | 67/168 kB | 51/149 kBProgress (5): 959 kB | 786/909 kB | 58 kB | 67/168 kB | 51/149 kB    Progress (5): 959 kB | 786/909 kB | 58 kB | 84/168 kB | 51/149 kBProgress (5): 959 kB | 803/909 kB | 58 kB | 84/168 kB | 51/149 kBProgress (5): 959 kB | 803/909 kB | 58 kB | 84/168 kB | 67/149 kBProgress (5): 959 kB | 803/909 kB | 58 kB | 100/168 kB | 67/149 kBProgress (5): 959 kB | 819/909 kB | 58 kB | 100/168 kB | 67/149 kBProgress (5): 959 kB | 819/909 kB | 58 kB | 117/168 kB | 67/149 kBProgress (5): 959 kB | 836/909 kB | 58 kB | 117/168 kB | 67/149 kBProgress (5): 959 kB | 836/909 kB | 58 kB | 117/168 kB | 84/149 kBProgress (5): 959 kB | 836/909 kB | 58 kB | 133/168 kB | 84/149 kBProgress (5): 959 kB | 836/909 kB | 58 kB | 149/168 kB | 84/149 kBProgress (5): 959 kB | 852/909 kB | 58 kB | 149/168 kB | 84/149 kBProgress (5): 959 kB | 852/909 kB | 58 kB | 149/168 kB | 100/149 kBProgress (5): 959 kB | 852/909 kB | 58 kB | 166/168 kB | 100/149 kBProgress (5): 959 kB | 852/909 kB | 58 kB | 168 kB | 100/149 kB    Progress (5): 959 kB | 868/909 kB | 58 kB | 168 kB | 100/149 kBProgress (5): 959 kB | 885/909 kB | 58 kB | 168 kB | 100/149 kBProgress (5): 959 kB | 885/909 kB | 58 kB | 168 kB | 117/149 kBProgress (5): 959 kB | 901/909 kB | 58 kB | 168 kB | 117/149 kBProgress (5): 959 kB | 909 kB | 58 kB | 168 kB | 117/149 kB    Progress (5): 959 kB | 909 kB | 58 kB | 168 kB | 133/149 kBProgress (5): 959 kB | 909 kB | 58 kB | 168 kB | 149 kB                                                           Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-util/1.4.1/maven-resolver-util-1.4.1.jar (168 kB at 86 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-shade-plugin/3.6.0/maven-shade-plugin-3.6.0.jar
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/core5/httpcore5/5.3.6/httpcore5-5.3.6.jar (909 kB at 467 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm/9.7/asm-9.7.jar
+Progress (4): 959 kB | 58 kB | 149 kB | 0.5/150 kBProgress (4): 959 kB | 58 kB | 149 kB | 17/150 kB Progress (5): 959 kB | 58 kB | 149 kB | 17/150 kB | 1.9/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 17/150 kB | 18/125 kB Progress (5): 959 kB | 58 kB | 149 kB | 33/150 kB | 18/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 33/150 kB | 35/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 33/150 kB | 51/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 50/150 kB | 51/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 50/150 kB | 67/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 50/150 kB | 84/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 66/150 kB | 84/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 66/150 kB | 100/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 66/150 kB | 117/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 82/150 kB | 117/125 kBProgress (5): 959 kB | 58 kB | 149 kB | 82/150 kB | 125 kB    Progress (5): 959 kB | 58 kB | 149 kB | 99/150 kB | 125 kBProgress (5): 959 kB | 58 kB | 149 kB | 115/150 kB | 125 kBProgress (5): 959 kB | 58 kB | 149 kB | 132/150 kB | 125 kBProgress (5): 959 kB | 58 kB | 149 kB | 148/150 kB | 125 kBProgress (5): 959 kB | 58 kB | 149 kB | 150 kB | 125 kB                                                           Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/shared/maven-common-artifact-filters/3.4.0/maven-common-artifact-filters-3.4.0.jar (58 kB at 28 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm/9.7/asm-9.7.jar (125 kB at 60 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/plugins/maven-shade-plugin/3.6.0/maven-shade-plugin-3.6.0.jar (150 kB at 71 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.jar
+Progress (3): 959 kB | 149 kB | 6.3/73 kBProgress (3): 959 kB | 149 kB | 23/73 kB Progress (4): 959 kB | 149 kB | 23/73 kB | 7.3/52 kBProgress (4): 959 kB | 149 kB | 23/73 kB | 16/52 kB                                                    Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/httpcomponents/client5/httpclient5/5.5.1/httpclient5-5.5.1.jar (959 kB at 450 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar
+Progress (3): 149 kB | 23/73 kB | 32/52 kBProgress (3): 149 kB | 39/73 kB | 32/52 kBProgress (4): 149 kB | 39/73 kB | 32/52 kB | 0.5/328 kBProgress (4): 149 kB | 39/73 kB | 32/52 kB | 17/328 kB Progress (4): 149 kB | 55/73 kB | 32/52 kB | 17/328 kBProgress (4): 149 kB | 55/73 kB | 48/52 kB | 17/328 kBProgress (4): 149 kB | 55/73 kB | 52 kB | 17/328 kB   Progress (4): 149 kB | 72/73 kB | 52 kB | 17/328 kBProgress (4): 149 kB | 73 kB | 52 kB | 17/328 kB   Progress (4): 149 kB | 73 kB | 52 kB | 33/328 kBProgress (4): 149 kB | 73 kB | 52 kB | 50/328 kBProgress (5): 149 kB | 73 kB | 52 kB | 50/328 kB | 1.9/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 66/328 kB | 1.9/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 73/328 kB | 1.9/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 76/328 kB | 1.9/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 76/328 kB | 18/509 kB Progress (5): 149 kB | 73 kB | 52 kB | 85/328 kB | 18/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 85/328 kB | 35/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 102/328 kB | 35/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 107/328 kB | 35/509 kBProgress (5): 149 kB | 73 kB | 52 kB | 107/328 kB | 47/509 kB                                                             Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-tree/9.7/asm-tree-9.7.jar (52 kB at 23 kB/s)
+Downloading from aliyunmaven: https://maven.aliyun.com/repository/public/org/vafer/jdependency/2.10/jdependency-2.10.jar
+Progress (4): 149 kB | 73 kB | 122/328 kB | 47/509 kBProgress (4): 149 kB | 73 kB | 122/328 kB | 53/509 kBProgress (4): 149 kB | 73 kB | 138/328 kB | 53/509 kBProgress (4): 149 kB | 73 kB | 144/328 kB | 53/509 kBProgress (4): 149 kB | 73 kB | 144/328 kB | 69/509 kB                                                     Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/ow2/asm/asm-commons/9.7/asm-commons-9.7.jar (73 kB at 33 kB/s)
+Progress (3): 149 kB | 160/328 kB | 69/509 kBProgress (3): 149 kB | 160/328 kB | 76/509 kBProgress (3): 149 kB | 160/328 kB | 79/509 kBProgress (3): 149 kB | 167/328 kB | 79/509 kBProgress (3): 149 kB | 167/328 kB | 87/509 kBProgress (3): 149 kB | 183/328 kB | 87/509 kBProgress (3): 149 kB | 183/328 kB | 88/509 kBProgress (3): 149 kB | 187/328 kB | 88/509 kB                                             Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/apache/maven/resolver/maven-resolver-api/1.4.1/maven-resolver-api-1.4.1.jar (149 kB at 66 kB/s)
+Progress (2): 187/328 kB | 95/509 kBProgress (2): 187/328 kB | 106/509 kBProgress (2): 204/328 kB | 106/509 kBProgress (2): 209/328 kB | 106/509 kBProgress (2): 209/328 kB | 117/509 kBProgress (3): 209/328 kB | 117/509 kB | 1.9/416 kBProgress (3): 226/328 kB | 117/509 kB | 1.9/416 kBProgress (3): 227/328 kB | 117/509 kB | 1.9/416 kBProgress (3): 243/328 kB | 117/509 kB | 1.9/416 kBProgress (3): 249/328 kB | 117/509 kB | 1.9/416 kBProgress (3): 249/328 kB | 134/509 kB | 1.9/416 kBProgress (3): 249/328 kB | 138/509 kB | 1.9/416 kBProgress (3): 249/328 kB | 141/509 kB | 1.9/416 kBProgress (3): 249/328 kB | 146/509 kB | 1.9/416 kBProgress (3): 249/328 kB | 146/509 kB | 18/416 kB Progress (3): 260/328 kB | 146/509 kB | 18/416 kBProgress (3): 272/328 kB | 146/509 kB | 18/416 kBProgress (3): 272/328 kB | 161/509 kB | 18/416 kBProgress (3): 272/328 kB | 161/509 kB | 35/416 kBProgress (3): 272/328 kB | 161/509 kB | 51/416 kBProgress (3): 284/328 kB | 161/509 kB | 51/416 kBProgress (3): 284/328 kB | 173/509 kB | 51/416 kBProgress (3): 284/328 kB | 176/509 kB | 51/416 kBProgress (3): 300/328 kB | 176/509 kB | 51/416 kBProgress (3): 300/328 kB | 179/509 kB | 51/416 kBProgress (3): 307/328 kB | 179/509 kB | 51/416 kBProgress (3): 307/328 kB | 187/509 kB | 51/416 kBProgress (3): 307/328 kB | 187/509 kB | 67/416 kBProgress (3): 323/328 kB | 187/509 kB | 67/416 kBProgress (3): 328 kB | 187/509 kB | 67/416 kB    Progress (3): 328 kB | 200/509 kB | 67/416 kBProgress (3): 328 kB | 205/509 kB | 67/416 kBProgress (3): 328 kB | 208/509 kB | 67/416 kBProgress (3): 328 kB | 212/509 kB | 67/416 kBProgress (3): 328 kB | 219/509 kB | 67/416 kBProgress (3): 328 kB | 219/509 kB | 79/416 kBProgress (3): 328 kB | 219/509 kB | 82/416 kBProgress (3): 328 kB | 219/509 kB | 91/416 kBProgress (3): 328 kB | 234/509 kB | 91/416 kBProgress (3): 328 kB | 240/509 kB | 91/416 kBProgress (3): 328 kB | 243/509 kB | 91/416 kBProgress (3): 328 kB | 243/509 kB | 107/416 kBProgress (3): 328 kB | 243/509 kB | 114/416 kBProgress (3): 328 kB | 253/509 kB | 114/416 kBProgress (3): 328 kB | 269/509 kB | 114/416 kBProgress (3): 328 kB | 269/509 kB | 131/416 kBProgress (3): 328 kB | 269/509 kB | 147/416 kBProgress (3): 328 kB | 285/509 kB | 147/416 kBProgress (3): 328 kB | 302/509 kB | 147/416 kBProgress (3): 328 kB | 306/509 kB | 147/416 kBProgress (3): 328 kB | 310/509 kB | 147/416 kBProgress (3): 328 kB | 310/509 kB | 163/416 kBProgress (3): 328 kB | 310/509 kB | 180/416 kBProgress (3): 328 kB | 317/509 kB | 180/416 kBProgress (3): 328 kB | 334/509 kB | 180/416 kBProgress (3): 328 kB | 341/509 kB | 180/416 kBProgress (3): 328 kB | 346/509 kB | 180/416 kBProgress (3): 328 kB | 349/509 kB | 180/416 kBProgress (3): 328 kB | 349/509 kB | 196/416 kBProgress (3): 328 kB | 349/509 kB | 208/416 kBProgress (3): 328 kB | 354/509 kB | 208/416 kBProgress (3): 328 kB | 363/509 kB | 208/416 kBProgress (3): 328 kB | 374/509 kB | 208/416 kB                                              Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/jdom/jdom2/2.0.6.1/jdom2-2.0.6.1.jar (328 kB at 136 kB/s)
+Progress (2): 387/509 kB | 208/416 kBProgress (2): 389/509 kB | 208/416 kBProgress (2): 389/509 kB | 224/416 kBProgress (2): 389/509 kB | 241/416 kBProgress (2): 392/509 kB | 241/416 kBProgress (2): 398/509 kB | 241/416 kBProgress (2): 399/509 kB | 241/416 kBProgress (2): 408/509 kB | 241/416 kBProgress (2): 422/509 kB | 241/416 kBProgress (2): 422/509 kB | 257/416 kBProgress (2): 422/509 kB | 266/416 kBProgress (2): 439/509 kB | 266/416 kBProgress (2): 440/509 kB | 266/416 kBProgress (2): 443/509 kB | 266/416 kBProgress (2): 446/509 kB | 266/416 kBProgress (2): 455/509 kB | 266/416 kBProgress (2): 455/509 kB | 283/416 kBProgress (2): 455/509 kB | 299/416 kBProgress (2): 471/509 kB | 299/416 kBProgress (2): 478/509 kB | 299/416 kBProgress (2): 487/509 kB | 299/416 kBProgress (2): 490/509 kB | 299/416 kBProgress (2): 498/509 kB | 299/416 kBProgress (2): 509 kB | 299/416 kB    Progress (2): 509 kB | 315/416 kBProgress (2): 509 kB | 332/416 kBProgress (2): 509 kB | 348/416 kBProgress (2): 509 kB | 360/416 kBProgress (2): 509 kB | 376/416 kBProgress (2): 509 kB | 392/416 kBProgress (2): 509 kB | 409/416 kBProgress (2): 509 kB | 416 kB                                 Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar (509 kB at 201 kB/s)
+Downloaded from aliyunmaven: https://maven.aliyun.com/repository/public/org/vafer/jdependency/2.10/jdependency-2.10.jar (416 kB at 164 kB/s)
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::       (v4.0.0-SNAPSHOT)
+
+2026-03-29T19:22:22.239+08:00  INFO 20640 --- [back-end] [           main] c.wing.glassdetect.BackEndApplication    : Starting BackEndApplication using Java 21.0.8 with PID 20640 (D:\Homework\SE\GlassCurtainWallDetection\back-end\target\classes started by Lenovo in D:\Homework\SE\GlassCurtainWallDetection\back-end)
+2026-03-29T19:22:22.242+08:00  INFO 20640 --- [back-end] [           main] c.wing.glassdetect.BackEndApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-03-29T19:22:22.243+08:00 DEBUG 20640 --- [back-end] [           main] o.s.boot.SpringApplication               : Loading source class com.wing.glassdetect.BackEndApplication
+2026-03-29T19:22:22.297+08:00 DEBUG 20640 --- [back-end] [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.server.servlet.context.AnnotationConfigServletWebServerApplicationContext@768fc0f2
+2026-03-29T19:22:23.186+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : Code archive: C:\Users\Lenovo\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.0-SNAPSHOT\spring-boot-web-server-4.0.0-SNAPSHOT.jar
+2026-03-29T19:22:23.187+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : Code archive: C:\Users\Lenovo\.m2\repository\org\springframework\boot\spring-boot-web-server\4.0.0-SNAPSHOT\spring-boot-web-server-4.0.0-SNAPSHOT.jar
+2026-03-29T19:22:23.188+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.t.s.TomcatServletWebServerFactory  : None of the document roots [src/main/webapp, public, static] point to a directory and will be ignored.
+2026-03-29T19:22:23.216+08:00  INFO 20640 --- [back-end] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-03-29T19:22:23.233+08:00  INFO 20640 --- [back-end] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-29T19:22:23.234+08:00  INFO 20640 --- [back-end] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.14]
+2026-03-29T19:22:23.312+08:00 DEBUG 20640 --- [back-end] [           main] b.w.c.s.WebApplicationContextInitializer : Published root WebApplicationContext as ServletContext attribute with name [org.springframework.web.context.WebApplicationContext.ROOT]
+2026-03-29T19:22:23.313+08:00  INFO 20640 --- [back-end] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1016 ms
+2026-03-29T19:22:23.328+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping filters: characterEncodingFilter urls=[/*] order=-2147483648, formContentFilter urls=[/*] order=-9900, requestContextFilter urls=[/*] order=-105
+2026-03-29T19:22:23.329+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.w.s.ServletContextInitializerBeans : Mapping servlets: dispatcherServlet urls=[/]
+2026-03-29T19:22:23.357+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.s.f.OrderedRequestContextFilter    : Filter 'requestContextFilter' configured for use
+2026-03-29T19:22:23.359+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.s.f.OrderedCharacterEncodingFilter : Filter 'characterEncodingFilter' configured for use
+2026-03-29T19:22:23.359+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.s.filter.OrderedFormContentFilter  : Filter 'formContentFilter' configured for use
+2026-03-29T19:22:23.505+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.a.AutoConfigurationPackages        : @EnableAutoConfiguration was declared on a class in the package 'com.wing.glassdetect'. Automatic @Repository and @Entity scanning is enabled.
+2026-03-29T19:22:23.574+08:00 DEBUG 20640 --- [back-end] [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : 4 mappings in 'requestMappingHandlerMapping'
+2026-03-29T19:22:23.605+08:00 DEBUG 20640 --- [back-end] [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Patterns [/webjars/**, /**] in 'resourceHandlerMapping'
+2026-03-29T19:22:23.622+08:00 DEBUG 20640 --- [back-end] [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : ControllerAdvice beans: 0 @ModelAttribute, 0 @InitBinder, 1 RequestBodyAdvice, 1 ResponseBodyAdvice
+2026-03-29T19:22:23.662+08:00 DEBUG 20640 --- [back-end] [           main] .m.m.a.ExceptionHandlerExceptionResolver : ControllerAdvice beans: 0 @ExceptionHandler, 1 ResponseBodyAdvice
+2026-03-29T19:22:23.725+08:00  INFO 20640 --- [back-end] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-03-29T19:22:23.735+08:00 DEBUG 20640 --- [back-end] [           main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+
+============================
+CONDITIONS EVALUATION REPORT
+============================
+
+
+Positive matches:
+-----------------
+
+   AopAutoConfiguration matched:
+      - @ConditionalOnBooleanProperty (spring.aop.auto=true) matched (OnPropertyCondition)
+
+   AopAutoConfiguration.ClassProxyingConfiguration matched:
+      - @ConditionalOnMissingClass did not find unwanted class 'org.aspectj.weaver.Advice' (OnClassCondition)
+      - @ConditionalOnBooleanProperty (spring.aop.proxy-target-class=true) matched (OnPropertyCondition)
+
+   ApplicationAvailabilityAutoConfiguration#applicationAvailability matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.availability.ApplicationAvailability; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   DispatcherServletAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.web.servlet.DispatcherServlet' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+
+   DispatcherServletAutoConfiguration.DispatcherServletConfiguration matched:
+      - @ConditionalOnClass found required class 'jakarta.servlet.ServletRegistration' (OnClassCondition)
+      - Default DispatcherServlet did not find dispatcher servlet beans (DispatcherServletAutoConfiguration.DefaultDispatcherServletCondition)
+
+   DispatcherServletAutoConfiguration.DispatcherServletRegistrationConfiguration matched:
+      - @ConditionalOnClass found required class 'jakarta.servlet.ServletRegistration' (OnClassCondition)
+      - DispatcherServlet Registration did not find servlet registration bean (DispatcherServletAutoConfiguration.DispatcherServletRegistrationCondition)
+
+   DispatcherServletAutoConfiguration.DispatcherServletRegistrationConfiguration#dispatcherServletRegistration matched:
+      - @ConditionalOnBean (names: dispatcherServlet types: org.springframework.web.servlet.DispatcherServlet; SearchStrategy: all) found bean 'dispatcherServlet' (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.servlet.Servlet', 'org.springframework.web.servlet.DispatcherServlet' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+
+   ErrorMvcAutoConfiguration#basicErrorController matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.webmvc.error.ErrorController; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration#errorAttributes matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.webmvc.error.ErrorAttributes; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration.DefaultErrorViewResolverConfiguration#conventionErrorViewResolver matched:
+      - @ConditionalOnBean (types: org.springframework.web.servlet.DispatcherServlet; SearchStrategy: all) found bean 'dispatcherServlet'; @ConditionalOnMissingBean (types: org.springframework.boot.webmvc.autoconfigure.error.ErrorViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration matched:
+      - @ConditionalOnBooleanProperty (spring.web.error.whitelabel.enabled=true) matched (OnPropertyCondition)
+      - ErrorTemplate Missing did not find error template view (ErrorMvcAutoConfiguration.ErrorTemplateMissingCondition)
+
+   ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration#beanNameViewResolver matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.view.BeanNameViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   ErrorMvcAutoConfiguration.WhitelabelErrorViewConfiguration#defaultErrorView matched:
+      - @ConditionalOnMissingBean (names: error; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   HttpEncodingAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.web.filter.CharacterEncodingFilter' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+      - @ConditionalOnBooleanProperty (spring.servlet.encoding.enabled=true) matched (OnPropertyCondition)
+
+   HttpEncodingAutoConfiguration#characterEncodingFilter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.filter.CharacterEncodingFilter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   HttpMessageConvertersAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.converter.HttpMessageConverter' (OnClassCondition)
+      - NoneNestedConditions 0 matched 1 did not; NestedCondition on HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition.ReactiveWebApplication did not find reactive web application classes (HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition)
+
+   HttpMessageConvertersAutoConfiguration.StringHttpMessageConverterConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.converter.StringHttpMessageConverter' (OnClassCondition)
+
+   HttpMessageConvertersAutoConfiguration.StringHttpMessageConverterConfiguration#stringHttpMessageConverter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.http.converter.StringHttpMessageConverter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   JacksonAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'tools.jackson.databind.json.JsonMapper' (OnClassCondition)
+
+   JacksonAutoConfiguration#jacksonJsonMapper matched:
+      - @ConditionalOnMissingBean (types: tools.jackson.databind.json.JsonMapper; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   JacksonAutoConfiguration#jsonMapperBuilder matched:
+      - @ConditionalOnMissingBean (types: tools.jackson.databind.json.JsonMapper$Builder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   JacksonAutoConfiguration.JsonProblemDetailsConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.http.ProblemDetail' (OnClassCondition)
+
+   JacksonHttpMessageConvertersConfiguration.JacksonJsonHttpMessageConverterConfiguration matched:
+      - @ConditionalOnClass found required class 'tools.jackson.databind.json.JsonMapper' (OnClassCondition)
+      - @ConditionalOnProperty (spring.http.converters.preferred-json-mapper=jackson) matched (OnPropertyCondition)
+      - @ConditionalOnBean (types: tools.jackson.databind.json.JsonMapper; SearchStrategy: all) found bean 'jacksonJsonMapper' (OnBeanCondition)
+
+   JacksonHttpMessageConvertersConfiguration.JacksonJsonHttpMessageConverterConfiguration#jacksonJsonHttpMessageConverter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.http.converter.json.JacksonJsonHttpMessageConverter ignored: ?; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   LifecycleAutoConfiguration#defaultLifecycleProcessor matched:
+      - @ConditionalOnMissingBean (names: lifecycleProcessor; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   MultipartAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.servlet.Servlet', 'org.springframework.web.multipart.support.StandardServletMultipartResolver', 'jakarta.servlet.MultipartConfigElement' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+      - @ConditionalOnBooleanProperty (spring.servlet.multipart.enabled=true) matched (OnPropertyCondition)
+
+   MultipartAutoConfiguration#multipartConfigElement matched:
+      - @ConditionalOnMissingBean (types: jakarta.servlet.MultipartConfigElement; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   MultipartAutoConfiguration#multipartResolver matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.multipart.MultipartResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   PropertyPlaceholderAutoConfiguration#propertySourcesPlaceholderConfigurer matched:
+      - @ConditionalOnMissingBean (types: org.springframework.context.support.PropertySourcesPlaceholderConfigurer; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   SslAutoConfiguration#sslBundleRegistry matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.ssl.SslBundleRegistry,org.springframework.boot.ssl.SslBundles; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   TaskExecutionAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor' (OnClassCondition)
+
+   TaskExecutorConfigurations.SimpleAsyncTaskExecutorBuilderConfiguration#simpleAsyncTaskExecutorBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+      - @ConditionalOnThreading found PLATFORM (OnThreadingCondition)
+
+   TaskExecutorConfigurations.ThreadPoolTaskExecutorBuilderConfiguration#threadPoolTaskExecutorBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.task.ThreadPoolTaskExecutorBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   TaskSchedulingAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler' (OnClassCondition)
+
+   TaskSchedulingConfigurations.SimpleAsyncTaskSchedulerBuilderConfiguration#simpleAsyncTaskSchedulerBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+      - @ConditionalOnThreading found PLATFORM (OnThreadingCondition)
+
+   TaskSchedulingConfigurations.ThreadPoolTaskSchedulerBuilderConfiguration#threadPoolTaskSchedulerBuilder matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.task.ThreadPoolTaskSchedulerBuilder; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   TomcatServletWebServerAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.servlet.ServletRequest', 'org.apache.catalina.startup.Tomcat', 'org.apache.coyote.UpgradeProtocol', 'org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+
+   TomcatServletWebServerAutoConfiguration#tomcatServletWebServerFactory matched:
+      - @ConditionalOnMissingBean (types: org.springframework.boot.web.server.servlet.ServletWebServerFactory; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   TomcatWebServerConfiguration matched:
+      - @ConditionalOnWarDeployment the application is not deployed as a WAR file. (OnWarDeploymentCondition)
+
+   TomcatWebServerConfiguration.TomcatWebSocketConfiguration matched:
+      - @ConditionalOnClass found required class 'org.apache.tomcat.websocket.server.WsSci' (OnClassCondition)
+
+   ValidationAutoConfiguration matched:
+      - @ConditionalOnClass found required class 'jakarta.validation.executable.ExecutableValidator' (OnClassCondition)
+      - @ConditionalOnResource found location classpath:META-INF/services/jakarta.validation.spi.ValidationProvider (OnResourceCondition)
+
+   ValidationAutoConfiguration#defaultValidator matched:
+      - @ConditionalOnMissingBean (types: jakarta.validation.Validator; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   ValidationAutoConfiguration#methodValidationPostProcessor matched:
+      - @ConditionalOnMissingBean (types: org.springframework.validation.beanvalidation.MethodValidationPostProcessor; SearchStrategy: current) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration matched:
+      - @ConditionalOnClass found required classes 'jakarta.servlet.Servlet', 'org.springframework.web.servlet.DispatcherServlet', 'org.springframework.web.servlet.config.annotation.WebMvcConfigurer' (OnClassCondition)
+      - found 'session' scope (OnWebApplicationCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration#formContentFilter matched:
+      - @ConditionalOnBooleanProperty (spring.mvc.formcontent.filter.enabled=true) matched (OnPropertyCondition)
+      - @ConditionalOnMissingBean (types: org.springframework.web.filter.FormContentFilter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.EnableWebMvcConfiguration#flashMapManager matched:
+      - @ConditionalOnMissingBean (names: flashMapManager; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.EnableWebMvcConfiguration#localeResolver matched:
+      - @ConditionalOnMissingBean (names: localeResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.EnableWebMvcConfiguration#viewNameTranslator matched:
+      - @ConditionalOnMissingBean (names: viewNameTranslator; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#defaultViewResolver matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.servlet.view.InternalResourceViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#requestContextFilter matched:
+      - @ConditionalOnMissingBean (types: org.springframework.web.context.request.RequestContextListener,org.springframework.web.filter.RequestContextFilter; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#viewResolver matched:
+      - @ConditionalOnBean (types: org.springframework.web.servlet.ViewResolver; SearchStrategy: all) found beans 'defaultViewResolver', 'beanNameViewResolver', 'mvcViewResolver'; @ConditionalOnMissingBean (names: viewResolver types: org.springframework.web.servlet.view.ContentNegotiatingViewResolver; SearchStrategy: all) did not find any beans (OnBeanCondition)
+
+
+Negative matches:
+-----------------
+
+   AopAutoConfiguration.AspectJAutoProxyingConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.aspectj.weaver.Advice' (OnClassCondition)
+
+   DispatcherServletAutoConfiguration.DispatcherServletConfiguration#multipartResolver:
+      Did not match:
+         - @ConditionalOnBean (types: org.springframework.web.multipart.MultipartResolver; SearchStrategy: all) did not find any beans of type org.springframework.web.multipart.MultipartResolver (OnBeanCondition)
+
+   GsonHttpMessageConvertersConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'com.google.gson.Gson' (OnClassCondition)
+
+   Jackson2HttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration:
+      Did not match:
+         - AnyNestedCondition 0 matched 2 did not; NestedCondition on Jackson2HttpMessageConvertersConfiguration.PreferJackson2OrJacksonUnavailableCondition.JacksonUnavailable @ConditionalOnMissingBean (types: org.springframework.http.converter.json.JacksonJsonHttpMessageConverter; SearchStrategy: all) found beans of type 'org.springframework.http.converter.json.JacksonJsonHttpMessageConverter' jacksonJsonHttpMessageConverter; NestedCondition on Jackson2HttpMessageConvertersConfiguration.PreferJackson2OrJacksonUnavailableCondition.Jackson2Preferred @ConditionalOnProperty (spring.http.converters.preferred-json-mapper=jackson2) did not find property 'spring.http.converters.preferred-json-mapper' (Jackson2HttpMessageConvertersConfiguration.PreferJackson2OrJacksonUnavailableCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'com.fasterxml.jackson.databind.ObjectMapper' (OnClassCondition)
+
+   Jackson2HttpMessageConvertersConfiguration.MappingJackson2XmlHttpMessageConverterConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'tools.jackson.dataformat.xml.XmlMapper' (OnClassCondition)
+
+   JacksonAutoConfiguration.CborConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'tools.jackson.dataformat.cbor.CBORMapper' (OnClassCondition)
+
+   JacksonAutoConfiguration.XmlConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'tools.jackson.dataformat.xml.XmlMapper' (OnClassCondition)
+
+   JacksonHttpMessageConvertersConfiguration.JacksonXmlHttpMessageConverterConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'tools.jackson.dataformat.xml.XmlMapper' (OnClassCondition)
+
+   JmxAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBooleanProperty (spring.jmx.enabled=true) did not find property 'spring.jmx.enabled' (OnPropertyCondition)
+      Matched:
+         - @ConditionalOnClass found required class 'org.springframework.jmx.export.MBeanExporter' (OnClassCondition)
+
+   JsonbHttpMessageConvertersConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'jakarta.json.bind.Jsonb' (OnClassCondition)
+
+   KotlinSerializationHttpMessageConvertersConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required classes 'kotlinx.serialization.Serializable', 'kotlinx.serialization.json.Json' (OnClassCondition)
+
+   MessageSourceAutoConfiguration:
+      Did not match:
+         - ResourceBundle did not find bundle with basename messages (MessageSourceAutoConfiguration.ResourceBundleCondition)
+
+   ProjectInfoAutoConfiguration#buildProperties:
+      Did not match:
+         - @ConditionalOnResource did not find resource '${spring.info.build.location:classpath:META-INF/build-info.properties}' (OnResourceCondition)
+
+   ProjectInfoAutoConfiguration#gitProperties:
+      Did not match:
+         - GitResource did not find git info at classpath:git.properties (ProjectInfoAutoConfiguration.GitResourceAvailableCondition)
+
+   ServletHttpExchangesAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean did not find required type 'org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository' (OnBeanCondition)
+
+   ServletManagementContextAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties' (OnClassCondition)
+
+   ServletMappingsAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint' (OnClassCondition)
+
+   ServletWebServerConfiguration#forwardedHeaderFilter:
+      Did not match:
+         - @ConditionalOnProperty (server.forward-headers-strategy=framework) did not find property 'server.forward-headers-strategy' (OnPropertyCondition)
+
+   SpringApplicationAdminJmxAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBooleanProperty (spring.application.admin.enabled=true) did not find property 'spring.application.admin.enabled' (OnPropertyCondition)
+
+   TaskExecutorConfigurations.SimpleAsyncTaskExecutorBuilderConfiguration#simpleAsyncTaskExecutorBuilderVirtualThreads:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder; SearchStrategy: all) found beans of type 'org.springframework.boot.task.SimpleAsyncTaskExecutorBuilder' simpleAsyncTaskExecutorBuilder (OnBeanCondition)
+
+   TaskExecutorConfigurations.TaskExecutorConfiguration:
+      Did not match:
+         - AnyNestedCondition 0 matched 2 did not; NestedCondition on TaskExecutorConfigurations.OnExecutorCondition.ModelCondition @ConditionalOnProperty (spring.task.execution.mode=force) did not find property 'spring.task.execution.mode'; NestedCondition on TaskExecutorConfigurations.OnExecutorCondition.ExecutorBeanCondition @ConditionalOnMissingBean (types: java.util.concurrent.Executor; SearchStrategy: all) found beans of type 'java.util.concurrent.Executor' asyncExecutor (TaskExecutorConfigurations.OnExecutorCondition)
+
+   TaskSchedulingAutoConfiguration#scheduledBeanLazyInitializationExcludeFilter:
+      Did not match:
+         - @ConditionalOnBean (names: org.springframework.scheduling.config.internalScheduledAnnotationProcessor; SearchStrategy: all) did not find any beans named org.springframework.scheduling.config.internalScheduledAnnotationProcessor (OnBeanCondition)
+
+   TaskSchedulingConfigurations.SimpleAsyncTaskSchedulerBuilderConfiguration#simpleAsyncTaskSchedulerBuilderVirtualThreads:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder; SearchStrategy: all) found beans of type 'org.springframework.boot.task.SimpleAsyncTaskSchedulerBuilder' simpleAsyncTaskSchedulerBuilder (OnBeanCondition)
+
+   TaskSchedulingConfigurations.TaskSchedulerConfiguration:
+      Did not match:
+         - @ConditionalOnBean (names: org.springframework.scheduling.config.internalScheduledAnnotationProcessor; SearchStrategy: all) did not find any beans named org.springframework.scheduling.config.internalScheduledAnnotationProcessor (OnBeanCondition)
+
+   TomcatMetricsAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'io.micrometer.core.instrument.binder.tomcat.TomcatMetrics' (OnClassCondition)
+
+   TomcatReactiveManagementContextAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextFactory' (OnClassCondition)
+
+   TomcatReactiveWebServerAutoConfiguration:
+      Did not match:
+         - @ConditionalOnWebApplication did not find reactive web application classes (OnWebApplicationCondition)
+
+   TomcatServletManagementContextAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextFactory' (OnClassCondition)
+
+   TomcatServletWebServerAutoConfiguration#tomcatForwardedHeaderFilterCustomizer:
+      Did not match:
+         - @ConditionalOnProperty (server.forward-headers-strategy=framework) did not find property 'server.forward-headers-strategy' (OnPropertyCondition)
+
+   TomcatWebServerConfiguration#tomcatVirtualThreadsProtocolHandlerCustomizer:
+      Did not match:
+         - @ConditionalOnThreading did not find VIRTUAL (OnThreadingCondition)
+
+   WebMvcAutoConfiguration#hiddenHttpMethodFilter:
+      Did not match:
+         - @ConditionalOnBooleanProperty (spring.mvc.hiddenmethod.filter.enabled=true) did not find property 'spring.mvc.hiddenmethod.filter.enabled' (OnPropertyCondition)
+
+   WebMvcAutoConfiguration.ProblemDetailsErrorHandlingConfiguration:
+      Did not match:
+         - @ConditionalOnBooleanProperty (spring.mvc.problemdetails.enabled=true) did not find property 'spring.mvc.problemdetails.enabled' (OnPropertyCondition)
+
+   WebMvcAutoConfiguration.ResourceChainCustomizerConfiguration:
+      Did not match:
+         - @ConditionalOnEnabledResourceChain did not find class org.webjars.WebJarVersionLocator (OnEnabledResourceChainCondition)
+
+   WebMvcAutoConfiguration.WebMvcAutoConfigurationAdapter#beanNameViewResolver:
+      Did not match:
+         - @ConditionalOnMissingBean (types: org.springframework.web.servlet.view.BeanNameViewResolver; SearchStrategy: all) found beans of type 'org.springframework.web.servlet.view.BeanNameViewResolver' beanNameViewResolver (OnBeanCondition)
+
+   WebMvcHealthEndpointExtensionAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.boot.health.actuate.endpoint.HealthEndpoint' (OnClassCondition)
+
+   WebMvcMappingsAutoConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint' (OnClassCondition)
+
+   WebMvcObservationAutoConfiguration:
+      Did not match:
+         - @ConditionalOnBean (types: io.micrometer.observation.ObservationRegistry; SearchStrategy: all) did not find any beans of type io.micrometer.observation.ObservationRegistry (OnBeanCondition)
+      Matched:
+         - @ConditionalOnClass found required classes 'org.springframework.web.servlet.DispatcherServlet', 'io.micrometer.observation.Observation' (OnClassCondition)
+         - found 'session' scope (OnWebApplicationCondition)
+
+   WebMvcObservationAutoConfiguration.MeterFilterConfiguration:
+      Did not match:
+         - @ConditionalOnClass did not find required class 'io.micrometer.core.instrument.MeterRegistry' (OnClassCondition)
+         - Ancestor org.springframework.boot.webmvc.autoconfigure.WebMvcObservationAutoConfiguration did not match (ConditionEvaluationReport.AncestorsMatchedCondition)
+
+
+Exclusions:
+-----------
+
+    None
+
+
+Unconditional classes:
+----------------------
+
+    org.springframework.boot.autoconfigure.context.ConfigurationPropertiesAutoConfiguration
+
+    org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
+
+    org.springframework.boot.autoconfigure.context.LifecycleAutoConfiguration
+
+    org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration
+
+    org.springframework.boot.autoconfigure.availability.ApplicationAvailabilityAutoConfiguration
+
+    org.springframework.boot.autoconfigure.info.ProjectInfoAutoConfiguration
+
+
+
+2026-03-29T19:22:23.738+08:00  INFO 20640 --- [back-end] [           main] c.wing.glassdetect.BackEndApplication    : Started BackEndApplication in 1.969 seconds (process running for 2.391)
+2026-03-29T19:22:23.739+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state LivenessState changed to CORRECT
+2026-03-29T19:22:23.741+08:00 DEBUG 20640 --- [back-end] [           main] o.s.b.a.ApplicationAvailabilityBean      : Application availability state ReadinessState changed to ACCEPTING_TRAFFIC
+2026-03-29T19:23:21.870+08:00  INFO 20640 --- [back-end] [nio-8080-exec-3] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-29T19:23:21.871+08:00  INFO 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-03-29T19:23:21.871+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Detected StandardServletMultipartResolver
+2026-03-29T19:23:21.872+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Detected AcceptHeaderLocaleResolver
+2026-03-29T19:23:21.873+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator@157f77ed
+2026-03-29T19:23:21.874+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Detected org.springframework.web.servlet.support.SessionFlashMapManager@38b1f9ea
+2026-03-29T19:23:21.875+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : enableLoggingRequestDetails='false': request parameters and headers will be masked to prevent unsafe logging of potentially sensitive data
+2026-03-29T19:23:21.875+08:00  INFO 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms
+2026-03-29T19:23:21.884+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : POST "/api/detect/glass-crack", parameters={multipart}
+2026-03-29T19:23:21.903+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Failed to complete request: org.springframework.web.multipart.MultipartException: Failed to parse multipart servlet request
+2026-03-29T19:23:21.904+08:00 ERROR 20640 --- [back-end] [nio-8080-exec-3] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed: org.springframework.web.multipart.MultipartException: Failed to parse multipart servlet request] with root cause
+
+org.apache.tomcat.util.http.fileupload.FileUploadException: the request was rejected because no multipart boundary was found
+	at org.apache.tomcat.util.http.fileupload.impl.FileItemIteratorImpl.init(FileItemIteratorImpl.java:189) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.http.fileupload.impl.FileItemIteratorImpl.getMultiPartStream(FileItemIteratorImpl.java:206) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.http.fileupload.impl.FileItemIteratorImpl.findNextItem(FileItemIteratorImpl.java:225) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.http.fileupload.impl.FileItemIteratorImpl.<init>(FileItemIteratorImpl.java:142) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.http.fileupload.FileUploadBase.getItemIterator(FileUploadBase.java:303) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.http.fileupload.FileUploadBase.parseRequest(FileUploadBase.java:452) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.connector.Request.parseParts(Request.java:2576) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.connector.Request.getParts(Request.java:2439) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.connector.RequestFacade.getParts(RequestFacade.java:540) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.springframework.web.multipart.support.StandardMultipartHttpServletRequest.parseRequest(StandardMultipartHttpServletRequest.java:95) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.springframework.web.multipart.support.StandardMultipartHttpServletRequest.<init>(StandardMultipartHttpServletRequest.java:88) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.springframework.web.multipart.support.StandardServletMultipartResolver.resolveMultipart(StandardServletMultipartResolver.java:112) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.springframework.web.servlet.DispatcherServlet.checkMultipart(DispatcherServlet.java:1102) ~[spring-webmvc-7.0.1.jar:7.0.1]
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:947) ~[spring-webmvc-7.0.1.jar:7.0.1]
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866) ~[spring-webmvc-7.0.1.jar:7.0.1]
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1003) ~[spring-webmvc-7.0.1.jar:7.0.1]
+	at org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:903) ~[spring-webmvc-7.0.1.jar:7.0.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:649) ~[tomcat-embed-core-11.0.14.jar:6.1]
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874) ~[spring-webmvc-7.0.1.jar:7.0.1]
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710) ~[tomcat-embed-core-11.0.14.jar:6.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:128) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53) ~[tomcat-embed-websocket-11.0.14.jar:11.0.14]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116) ~[spring-web-7.0.1.jar:7.0.1]
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:107) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:165) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:77) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:482) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:113) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:83) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:72) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:341) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:397) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:63) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:903) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1778) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:52) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:946) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.threads.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:480) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:57) ~[tomcat-embed-core-11.0.14.jar:11.0.14]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2026-03-29T19:23:21.915+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : "ERROR" dispatch for GET "/error", parameters={multipart}
+2026-03-29T19:23:21.916+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Multipart resolution previously failed for current request - skipping re-resolution for undisturbed error rendering
+2026-03-29T19:23:21.924+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.boot.webmvc.autoconfigure.error.BasicErrorController#error(HttpServletRequest)
+2026-03-29T19:23:21.947+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [*/*] and supported [application/json, application/*+json]
+2026-03-29T19:23:21.949+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [{timestamp=Sun Mar 29 19:23:21 CST 2026, status=500, error=Internal Server Error, path=/api/detect/g (truncated)...]
+2026-03-29T19:23:21.991+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-3] o.s.web.servlet.DispatcherServlet        : Exiting from "ERROR" dispatch, status 500
+2026-03-29T19:23:39.942+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : OPTIONS "/api/detect/glass-crack", parameters={}
+2026-03-29T19:23:39.946+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-9] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMapping$HttpOptionsHandler#handle()
+2026-03-29T19:23:39.948+08:00 DEBUG 20640 --- [back-end] [nio-8080-exec-9] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:31 h
+[INFO] Finished at: 2026-03-29T20:53:24+08:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.springframework.boot:spring-boot-maven-plugin:4.0.0-SNAPSHOT:run (default-cli) on project back-end: Process terminated with exit code: -1 -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoExecutionException
