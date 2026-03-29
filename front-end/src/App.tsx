@@ -1,27 +1,21 @@
-import { useState } from "react";
-import { HomePage } from "./components/HomePage";
-import { GlassCrackDetection } from "./components/GlassCrackDetection";
-import { GlassFlatnessDetection } from "./components/GlassFlatnessDetection";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "./components/ui/button";
-
-type Page = "home" | "crack" | "flatness";
+import { useEffect } from "react";
+import { ArrowLeft, LogOut } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<Page>("home");
+  const { isAuthed, isDevAuthBypass, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case "home":
-        return <HomePage onNavigate={setCurrentPage} />;
-      case "crack":
-        return <GlassCrackDetection />;
-      case "flatness":
-        return <GlassFlatnessDetection />;
-      default:
-        return <HomePage onNavigate={setCurrentPage} />;
+  useEffect(() => {
+    if (!isAuthed && !isDevAuthBypass) {
+      navigate("/login");
     }
-  };
+  }, [isAuthed, isDevAuthBypass, navigate]);
+
+  const isHomePage = location.pathname === "/";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
@@ -44,10 +38,10 @@ export default function App() {
       </div>
 
       {/* Back Button */}
-      {currentPage !== "home" && (
+      {!isHomePage && (
         <div className="absolute top-6 left-6 z-50">
           <Button
-            onClick={() => setCurrentPage("home")}
+            onClick={() => navigate("/")}
             variant="outline"
             className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
           >
@@ -57,9 +51,25 @@ export default function App() {
         </div>
       )}
 
+      {/* Logout Button */}
+      {isAuthed && isHomePage && !isDevAuthBypass && (
+        <div className="absolute top-6 left-6 z-50">
+          <Button
+            onClick={() => {
+              logout();
+            }}
+            variant="outline"
+            className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            退出登录
+          </Button>
+        </div>
+      )}
+
       {/* Content */}
       <div className="relative z-10">
-        {renderPage()}
+        <Outlet />
       </div>
     </div>
   );

@@ -13,7 +13,6 @@ from algorithms.flatness_detection.detect import main as run_flatness_detection
 
 ACCEPTED_EXTS = {".jpg", ".jpeg", ".png", ".bmp"}
 
-
 class FlatnessService:
     """封装平整度流程：保存输入、调用管道、返回前端所需结构。
     
@@ -28,12 +27,9 @@ class FlatnessService:
         # 使用系统临时目录，不在项目目录下，更安全
         self.temp_base = Path(tempfile.gettempdir()) / "glass_detection"
         self.temp_base.mkdir(parents=True, exist_ok=True)
-        # 设置目录权限（仅所有者可访问）
-        if hasattr(self.temp_base, 'chmod'):
-            try:
-                self.temp_base.chmod(0o700)
-            except Exception:
-                pass  # Windows 可能不支持 chmod
+
+        self.result_base = Path("/data/result")
+        self.result_base.mkdir(parents=True, exist_ok=True)
 
     @contextmanager
     def _create_session_dirs(self):
@@ -41,32 +37,17 @@ class FlatnessService:
         session_id = str(uuid.uuid4())
         session_dir = self.temp_base / session_id
         data_dir = session_dir / "data"
-        result_dir = session_dir / "result"
+
+        result_dir = self.result_base / session_id
         
         try:
             data_dir.mkdir(parents=True, exist_ok=True)
             result_dir.mkdir(parents=True, exist_ok=True)
-            # 设置目录权限
-            if hasattr(data_dir, 'chmod'):
-                try:
-                    data_dir.chmod(0o700)
-                    result_dir.chmod(0o700)
-                except Exception:
-                    pass
-            
             yield data_dir, result_dir
         finally:
             # 自动清理整个会话目录
             if session_dir.exists():
-                try:
-                    shutil.rmtree(session_dir, ignore_errors=True)
-                except Exception as e:
-                    print(f"清理临时目录失败: {e}")
-
-    def _ensure_dirs(self, data_dir: Path, result_dir: Path):
-        """确保数据目录和结果目录存在"""
-        data_dir.mkdir(parents=True, exist_ok=True)
-        result_dir.mkdir(parents=True, exist_ok=True)
+                shutil.rmtree(session_dir, ignore_errors=True)
 
     async def _save_upload(self, file: UploadFile, target_stem: str, data_dir: Path) -> Path:
         """保存上传的文件到数据目录"""
@@ -227,9 +208,9 @@ class FlatnessService:
             try:
                 flatness_image_path = result_dir / "flatness.png"
                 if flatness_image_path.exists():
-                    img_bytes = flatness_image_path.read_bytes()
-                    b64 = base64.b64encode(img_bytes).decode("utf-8")
-                    response["image"] = f"data:image/png;base64,{b64}"
+                    response["image"] = str(flatness_image_path.absolute())
+                else:
+                    response["image"] = None
             except Exception:
                 # 附加失败不影响主流程
                 pass

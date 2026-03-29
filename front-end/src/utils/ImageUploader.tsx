@@ -1,78 +1,54 @@
-import { useState, useRef } from "react";
-import { Button } from "../components/ui/button";
-import { Card } from "../components/ui/card";
+import { useMemo, useRef, useState, type ChangeEvent, type DragEvent, type MouseEvent } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import { Upload, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ImageUploaderProps {
-  maxCount?: number; // 最大上传数量
   files: (File | null)[];
   previewUrls: (string | null)[];
-  currentIndex?: number; // 可选，当前聚焦槽位
+  currentIndex?: number;
+  onCurrentIndexChange?: (index: number) => void;
   disabled?: boolean;
-  onImagesChange: (newFiles: (File | null)[], newPreviews: (string | null)[]) => void;
+  slotTips?: string[];
+  accept?: string;
+  onSelectFile: (index: number, file: File) => void;
+  onRemove: (index: number) => void;
 }
 
 export function ImageUploader({
-  maxCount = 1,
-  onImagesChange,
-  disabled = false
+  files,
+  previewUrls,
+  currentIndex: currentIndexProp,
+  onCurrentIndexChange,
+  disabled = false,
+  slotTips,
+  accept = "image/*",
+  onSelectFile,
+  onRemove,
 }: ImageUploaderProps) {
-  const [files, setFiles] = useState<(File | null)[]>(Array(maxCount).fill(null));
-  const [previewUrls, setPreviewUrls] = useState<(string | null)[]>(Array(maxCount).fill(null));
-  const [currentIndex, setCurrentIndex] = useState(0); // 当前聚焦槽位
+  const maxCount = files.length;
+
+  const [uncontrolledIndex, setUncontrolledIndex] = useState(0);
+  const currentIndex = currentIndexProp ?? uncontrolledIndex;
+  const setCurrentIndex = onCurrentIndexChange ?? setUncontrolledIndex;
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 选择文件
+  const filledCount = useMemo(() => files.filter(Boolean).length, [files]);
+
+  // 选择文件（真正的数据写入由外部完成）
   const handleFileSelect = (file: File) => {
     if (!file.type.startsWith("image/")) return;
+    onSelectFile(currentIndex, file);
 
-    const newFiles = [...files];
-    const newPreviews = [...previewUrls];
-
-    newFiles[currentIndex] = file;
-    if (newPreviews[currentIndex]) URL.revokeObjectURL(newPreviews[currentIndex]);
-    newPreviews[currentIndex] = URL.createObjectURL(file);
-
-    setFiles(newFiles);
-    setPreviewUrls(newPreviews);
-
-    // 回调父组件
-    onImagesChange(newFiles, newPreviews);
-
-    // 自动切换到下一个空槽位
-    const nextEmpty = newFiles.findIndex(f => !f);
+    // 自动切换到下一个空槽位（不改变顺序）
+    const nextEmpty = files.findIndex((f) => !f);
     if (nextEmpty >= 0) setCurrentIndex(nextEmpty);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) handleFileSelect(file);
-  };
-
-  // 删除图片
-  const handleRemove = (index: number) => {
-    const newFiles: (File | null)[] = [];
-    const newPreviews: (string | null)[] = [];
-
-    // 遍历原数组，把非空的图片都先加入
-    for (let i = 0; i < files.length; i++) {
-      if (i !== index && files[i]) {
-        newFiles.push(files[i]);
-        newPreviews.push(previewUrls[i]);
-      }
-    }
-
-    // 填充剩余槽位为空
-    while (newFiles.length < maxCount) newFiles.push(null);
-    while (newPreviews.length < maxCount) newPreviews.push(null);
-
-    setFiles(newFiles);
-    setPreviewUrls(newPreviews);
-    onImagesChange(newFiles, newPreviews);
-
-    // 聚焦第一个空槽位
-    const firstEmptyIndex = newFiles.findIndex(f => f === null);
-    setCurrentIndex(firstEmptyIndex >= 0 ? firstEmptyIndex : 0);
   };
 
   // 左右切换槽位
@@ -84,10 +60,10 @@ export function ImageUploader({
   };
 
   // 拖拽上传
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault();
   };
-  const handleDrop = (e: React.DragEvent) => {
+  const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     if (disabled) return;
 
@@ -95,11 +71,11 @@ export function ImageUploader({
     if (file) handleFileSelect(file);
   };
 
-  const slotTips = [
+  const tips = slotTips ?? [
     "请上传左侧环境图",
     "请上传左侧投影图",
     "请上传右侧环境图",
-    "请上传右侧投影图"
+    "请上传右侧投影图",
   ];
 
   return (
@@ -123,9 +99,9 @@ export function ImageUploader({
               variant="destructive"
               size="icon"
               className="absolute top-2 right-2 z-20 shadow-lg"
-              onClick={(e: any) => {
+              onClick={(e: MouseEvent) => {
                 e.stopPropagation();
-                handleRemove(currentIndex);
+                onRemove(currentIndex);
               }}
               disabled={disabled}
             >
@@ -144,7 +120,7 @@ export function ImageUploader({
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept={accept}
           onChange={handleFileChange}
           className="hidden"
           disabled={disabled}
@@ -156,7 +132,7 @@ export function ImageUploader({
       {maxCount > 1 && (
         <div>
           <p className="text-red-400 text-sm mt-2">
-            {files[currentIndex] ? "" : slotTips[currentIndex]}
+            {files[currentIndex] ? "" : (tips[currentIndex] ?? "")}
           </p>
 
           <div className="text-white mt-2 text-sm text-center">
@@ -180,6 +156,13 @@ export function ImageUploader({
           >
             <ChevronRight className="w-10 h-10 text-white" />
           </Button>
+        </div>
+      )}
+
+      {/* 辅助信息 */}
+      {maxCount > 1 && (
+        <div className="mt-4 text-center text-xs text-slate-400">
+          已上传 {filledCount}/{maxCount}
         </div>
       )}
     </Card>

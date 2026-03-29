@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: back-end
+  mvc:
+    async:
+      request-timeout: 600000
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+
+  # ===== MySQL =====
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://139.196.151.22:3306/glassdetect
+    username: remote_user
+    password: "Software007@"
+
+server:
+  tomcat:
+    connection-timeout: 600000
+
+# 前端地址
+frontend:
+  url: "http://localhost:3000"
+
+# 算法服务地址，和后端在同一本地地址
+algorithm:
+  url: "http://127.0.0.1:8000"
+
+# 图片存储路径
+image:
+  storage:
+    path: ./runtime/images
+
+app:
+  persistence:
+    enabled: false
+
+mybatis-plus:
+  # Mapper XML 位置（可选，BaseMapper 不需要，但你后续写自定义 SQL 会用到）
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true

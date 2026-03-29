@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <!-- 下划线转驼峰：password_hash -> passwordHash -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!-- 让 JDBC 返回的 null 也映射到对象字段（可按需调整） -->
+        <setting name="callSettersOnNulls" value="true"/>
+    </settings>
+</configuration>
+
+

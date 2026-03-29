@@ -187,3 +187,14 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Hide the default password reveal icon in Edge */
+input[type="password"]::-ms-reveal {
+  display: none;
+}
+
+/* Hide the default password reveal icon in WebKit browsers (Chrome, Safari) */
+input[type="password"]::-webkit-password-reveal-button {
+  display: none;
+  -webkit-appearance: none;
+}
