@@ -1,9 +1,0 @@
-Error: The following dependencies are imported but could not be resolved:
-
-  [36mreact-router-dom[39m [37m[2m(imported by D:/Homework/SE/GlassCurtainWallDetection/front-end/src/App.tsx)[22m[39m
-
-Are they installed?
-    at file:///D:/Homework/SE/GlassCurtainWallDetection/front-end/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:14849:15
-    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
-    at async file:///D:/Homework/SE/GlassCurtainWallDetection/front-end/node_modules/vite/dist/node/chunks/dep-DBxKXgDP.js:46985:28
-[33mThe CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.[39m
