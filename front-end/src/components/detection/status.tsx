@@ -7,27 +7,27 @@ export function getStatusConfig(status: DetectionStatus) {
       return {
         icon: CheckCircle,
         badgeVariant: "default" as const,
-        bgColor: "bg-green-500/10 backdrop-blur-md",
+        bgColor: "result-card--success",
         textColor: "text-green-400",
-        borderColor: "border-green-500/30",
+        borderColor: "",
         label: "正常",
       };
     case "warning":
       return {
         icon: Info,
         badgeVariant: "secondary" as const,
-        bgColor: "bg-yellow-500/10 backdrop-blur-md",
+        bgColor: "result-card--warning",
         textColor: "text-yellow-400",
-        borderColor: "border-yellow-500/30",
+        borderColor: "",
         label: "警告",
       };
     case "error":
       return {
         icon: AlertCircle,
         badgeVariant: "destructive" as const,
-        bgColor: "bg-red-500/10 backdrop-blur-md",
+        bgColor: "result-card--error",
         textColor: "text-red-400",
-        borderColor: "border-red-500/30",
+        borderColor: "",
         label: "异常",
       };
   }

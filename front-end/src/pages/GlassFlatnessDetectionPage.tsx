@@ -53,21 +53,22 @@ export function GlassFlatnessDetectionPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 md:p-12">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Page Header */}
+    <div className="lab-page">
+      <div className="lab-container">
         <PageHeader
           icon={<Ruler className="w-8 h-8 text-white" />}
           title="玻璃幕墙平整度检测"
-          description="上传幕墙图片，系统将分析玻璃表面的平整度"
+          description="按左右环境图与投影图完成平整度分析，保留结果图与 3D 点云地图用于复核。"
           iconBgClassName="bg-gradient-to-br from-blue-500 to-indigo-600 shadow-blue-500/30"
         />
 
-        {/* Main Card */}
-        <Card className="border-0 bg-white/10 backdrop-blur-xl p-8 shadow-2xl">
-          <div className="grid md:grid-cols-2 gap-8">
+        <Card className="workbench-panel">
+          <div className="workbench-grid">
             <div>
-              <h3 className="text-white mb-4">上传图片</h3>
+              <div className="panel-title">
+                <h3>上传四组图像</h3>
+                <span>{filledCount}/{maxCount} 已就绪</span>
+              </div>
               <ImageUploader
                 files={files}
                 previewUrls={previewUrls}
@@ -87,11 +88,14 @@ export function GlassFlatnessDetectionPage() {
             </div>
 
             <div>
-              <h3 className="text-white mb-4">操作面板</h3>
-              <Card className="p-6 bg-slate-900/50 backdrop-blur-md border-white/10">
+              <div className="panel-title">
+                <h3>检测作业面板</h3>
+                <span>FLATNESS MAP</span>
+              </div>
+              <Card className="glass-panel action-panel">
                 <div className="space-y-6">
                   <div>
-                    <p className="text-white mb-3">检测说明</p>
+                    <p className="panel-title">现场拍摄要求</p>
                     <InstructionList
                       colorClassName="text-blue-400"
                       items={[
@@ -104,7 +108,7 @@ export function GlassFlatnessDetectionPage() {
                   </div>
 
                   {filledCount < maxCount && (
-                    <p className="text-red-400 text-sm mt-2">
+                    <p className="upload-warning">
                       请上传 {maxCount} 张图片后才能开始检测
                     </p>
                   )}
@@ -112,7 +116,7 @@ export function GlassFlatnessDetectionPage() {
                   <Button
                     onClick={handleDetect}
                     disabled={!isComplete || isUploading}
-                    className="w-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white border-0 shadow-lg shadow-blue-500/30"
+                    className="lab-primary-button"
                     size="lg"
                   >
                     {isUploading ? (
@@ -135,7 +139,12 @@ export function GlassFlatnessDetectionPage() {
 
         {result && (
           <div>
-            <h3 className="text-white mb-4">检测结果</h3>
+            <div className="section-head">
+              <div>
+                <h2>检测结果</h2>
+                <p>平整度结果支持结果图与点云交互复核。</p>
+              </div>
+            </div>
             <DetectionResult result={result} />
           </div>
         )}

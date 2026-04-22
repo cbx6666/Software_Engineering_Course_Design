@@ -7,16 +7,16 @@ export function StatusHeader({ result }: { result: Pick<DetectionResultData, "st
   const Icon = config.icon;
 
   return (
-    <div className="flex items-start gap-4">
-      <div className={config.textColor}>
+    <div className="status-header">
+      <div className={`status-icon ${config.textColor}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <div className="flex-1">
-        <div className="flex items-center gap-3 mb-2">
-          <h3 className="text-white">{result.title}</h3>
-          <Badge variant={config.badgeVariant}>{config.label}</Badge>
+      <div>
+        <div className="status-title-row">
+          <h3>{result.title}</h3>
+          <Badge variant={config.badgeVariant} className="status-badge">{config.label}</Badge>
         </div>
-        <p className="text-slate-300 mb-4">{result.description}</p>
+        <p>{result.description}</p>
       </div>
     </div>
   );

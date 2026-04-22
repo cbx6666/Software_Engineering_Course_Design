@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { ROUTE_PATHS, isHomeRoute } from "@/routes";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 export default function App() {
@@ -11,39 +12,22 @@ export default function App() {
 
   useEffect(() => {
     if (!isAuthed && !isDevAuthBypass) {
-      navigate("/login");
+      navigate(ROUTE_PATHS.LOGIN);
     }
   }, [isAuthed, isDevAuthBypass, navigate]);
 
-  const isHomePage = location.pathname === "/";
+  const isHomePage = isHomeRoute(location.pathname);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 relative overflow-hidden">
-      {/* Glass Pattern Background */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `
-            linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px),
-            linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px'
-        }}></div>
-      </div>
+    <div className="glass-app">
+      <div className="shell-scanline" />
 
-      {/* Animated Glass Shards */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-      </div>
-
-      {/* Back Button */}
       {!isHomePage && (
-        <div className="absolute top-6 left-6 z-50">
+        <div className="shell-action">
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => navigate(ROUTE_PATHS.HOME)}
             variant="outline"
-            className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
+            className="shell-button"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             返回主页
@@ -51,15 +35,14 @@ export default function App() {
         </div>
       )}
 
-      {/* Logout Button */}
       {isAuthed && isHomePage && !isDevAuthBypass && (
-        <div className="absolute top-6 left-6 z-50">
+        <div className="shell-action">
           <Button
             onClick={() => {
               logout();
             }}
             variant="outline"
-            className="bg-white/10 backdrop-blur-md border-white/20 text-white hover:bg-white/20"
+            className="shell-button"
           >
             <LogOut className="w-4 h-4 mr-2" />
             退出登录
@@ -67,8 +50,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 min-h-screen">
         <Outlet />
       </div>
     </div>
