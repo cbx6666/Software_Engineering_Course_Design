@@ -6,6 +6,7 @@ import { getHistory, type HistoryItem } from "@/services/historyApi";
 import { useAuth } from "@/hooks/useAuth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/CustomTabs";
 import { History as HistoryIcon, Loader2 } from "lucide-react";
+import { buildRoutePath } from "@/routes";
 
 export function HistoryPage() {
   const navigate = useNavigate();
@@ -36,7 +37,7 @@ export function HistoryPage() {
   }, [auth]);
 
   const handleItemClick = (id: string) => {
-    navigate(`/history/${id}`);
+    navigate(buildRoutePath.historyDetail(id));
   };
 
   // Hardcode detection types for simplicity and stability
@@ -44,21 +45,22 @@ export function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
+      <div className="lab-page flex justify-center items-center">
         <Loader2 className="w-8 h-8 text-white animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 md:p-6 lg:p-8">
+    <div className="lab-page">
+      <div className="lab-container">
       <PageHeader
         title="检测历史"
-        description="查看过去的所有检测记录"
+        description="查看过往玻璃检测任务，按检测类型筛选并进入详情复核原始图、结果图和指标。"
         icon={<HistoryIcon className="w-8 h-8 text-white" />}
         iconBgClassName="bg-indigo-500"
       />
-      <Tabs defaultValue="all" className="w-full mt-6">
+      <Tabs defaultValue="all" className="w-full">
         <TabsList>
           {detectionTypes.map(type => (
             <TabsTrigger key={type} value={type}>
@@ -68,7 +70,7 @@ export function HistoryPage() {
         </TabsList>
         {detectionTypes.map(type => (
           <TabsContent key={type} value={type}>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 mt-4">
+            <div className="history-grid">
               {historyItems
                 .filter(item => type === 'all' || item.type === type)
                 .map((item) => (
@@ -76,13 +78,14 @@ export function HistoryPage() {
                 ))}
             </div>
             {historyItems.filter(item => type === 'all' || item.type === type).length === 0 && (
-              <div className="text-center text-slate-400 py-10">
+              <div className="history-empty">
                 <p>没有找到相关记录。</p>
               </div>
             )}
           </TabsContent>
         ))}
       </Tabs>
+      </div>
     </div>
   );
 }

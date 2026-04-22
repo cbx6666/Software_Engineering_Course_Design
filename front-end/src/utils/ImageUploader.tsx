@@ -79,26 +79,23 @@ export function ImageUploader({
   ];
 
   return (
-    <Card className="p-6 bg-slate-900/30 backdrop-blur-md border-white/10 relative">
-      {/* 上传槽位预览 */}
+    <Card className="glass-panel uploader-card">
       <div
-        className={`border-2 border-dashed rounded-lg p-8 text-center transition-all duration-300 ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-          }`}
+        className={`drop-zone ${disabled ? "drop-zone--disabled" : ""}`}
         onClick={() => !disabled && fileInputRef.current?.click()}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
         {files[currentIndex] && previewUrls[currentIndex] ? (
-          <div className="relative">
+          <div className="drop-zone__preview">
             <img
               src={previewUrls[currentIndex]!}
               alt={`Preview ${currentIndex}`}
-              className="w-full h-64 object-contain rounded-lg"
             />
             <Button
               variant="destructive"
               size="icon"
-              className="absolute top-2 right-2 z-20 shadow-lg"
+              className="uploader-remove"
               onClick={(e: MouseEvent) => {
                 e.stopPropagation();
                 onRemove(currentIndex);
@@ -109,12 +106,12 @@ export function ImageUploader({
             </Button>
           </div>
         ) : (
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-500/20 backdrop-blur-sm flex items-center justify-center border border-cyan-500/30">
-              <Upload className="w-8 h-8 text-cyan-400" />
+          <div className="drop-zone__empty">
+            <div className="drop-zone__icon">
+              <Upload />
             </div>
-            <p className="text-white mb-1">点击上传或拖拽图片到此处</p>
-            <p className="text-slate-400">支持 JPG、PNG、WEBP 格式</p>
+            <strong>点击上传或拖拽图片到此处</strong>
+            <span>支持 JPG、PNG、WEBP 格式，建议使用清晰原图</span>
           </div>
         )}
         <input
@@ -128,41 +125,43 @@ export function ImageUploader({
       </div>
 
 
-      {/* 槽位索引 */}
       {maxCount > 1 && (
-        <div>
-          <p className="text-red-400 text-sm mt-2">
-            {files[currentIndex] ? "" : (tips[currentIndex] ?? "")}
-          </p>
-
-          <div className="text-white mt-2 text-sm text-center">
-            {currentIndex + 1}/{maxCount}
-          </div>
-        </div>
-      )}
-
-      {/* 卡片下方的左右箭头 */}
-      {maxCount > 1 && (
-        <div className="flex justify-center items-center gap-24">
+        <div className="slot-strip">
           <Button
-            className="bg-transparent hover:scale-120 cursor-pointer transition"
+            className="slot-nav"
             onClick={handlePrev}
+            type="button"
           >
-            <ChevronLeft className="w-10 h-10 text-white" />
+            <ChevronLeft className="w-5 h-5" />
           </Button>
+
+          <div className="slot-status">
+            <p className="slot-status__tip">
+              {files[currentIndex] ? "当前槽位已完成" : (tips[currentIndex] ?? "")}
+            </p>
+            <div className="slot-progress">
+              <span style={{ width: `${(filledCount / maxCount) * 100}%` }} />
+            </div>
+            <div className="slot-status__count">
+              槽位 {currentIndex + 1}/{maxCount} · 已上传 {filledCount}/{maxCount}
+            </div>
+          </div>
+
           <Button
-            className="bg-transparent hover:scale-120 cursor-pointer transition"
+            className="slot-nav"
             onClick={handleNext}
+            type="button"
           >
-            <ChevronRight className="w-10 h-10 text-white" />
+            <ChevronRight className="w-5 h-5" />
           </Button>
         </div>
       )}
 
-      {/* 辅助信息 */}
-      {maxCount > 1 && (
-        <div className="mt-4 text-center text-xs text-slate-400">
-          已上传 {filledCount}/{maxCount}
+      {maxCount === 1 && (
+        <div className="slot-status mt-4">
+          <div className="slot-progress">
+            <span style={{ width: filledCount ? "100%" : "0%" }} />
+          </div>
         </div>
       )}
     </Card>

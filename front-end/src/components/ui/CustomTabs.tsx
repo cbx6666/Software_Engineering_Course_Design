@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 
 interface TabsContextProps {
   activeTab: string;
@@ -18,7 +18,7 @@ export function Tabs({ defaultValue, children, className }: { defaultValue: stri
 }
 
 export function TabsList({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={`flex border-b border-slate-700 ${className}`}>{children}</div>;
+  return <div className={`tabs-list ${className ?? ""}`}>{children}</div>;
 }
 
 export function TabsTrigger({ value, children }: { value: string; children: ReactNode }) {
@@ -29,14 +29,10 @@ export function TabsTrigger({ value, children }: { value: string; children: Reac
   const { activeTab, setActiveTab } = context;
   const isActive = activeTab === value;
 
-  const baseClasses = "px-4 py-2 -mb-px font-semibold border-b-2 transition-colors duration-200 cursor-pointer";
-  const activeClasses = "text-cyan-400 border-cyan-400";
-  const inactiveClasses = "text-slate-400 border-transparent hover:text-white";
-
   return (
     <button
       onClick={() => setActiveTab(value)}
-      className={`${baseClasses} ${isActive ? activeClasses : inactiveClasses}`}
+      className={`tabs-trigger ${isActive ? "tabs-trigger--active" : ""}`}
     >
       {children}
     </button>

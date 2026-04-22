@@ -7,30 +7,30 @@ import * as THREE from "three";
 export function CornerGuide({ size }: { size: number }) {
   const divs = 10;
   const half = size / 2;
-  const planeColor = "#ffffff";
+  const planeColor = "#d9fff2";
 
   return (
     <group>
       {/* XY grid at z=0 */}
       <mesh position={[half, half, 0]}>
         <planeGeometry args={[size, size]} />
-        <meshStandardMaterial color={planeColor} side={THREE.DoubleSide} />
+        <meshStandardMaterial color={planeColor} side={THREE.DoubleSide} transparent opacity={0.08} />
       </mesh>
-      <gridHelper args={[size, divs, 0x999999, 0xcccccc]} position={[half, half, 0.1]} rotation={[Math.PI / 2, 0, 0]} />
+      <gridHelper args={[size, divs, 0x54f0b5, 0x2a6f5b]} position={[half, half, 0.1]} rotation={[Math.PI / 2, 0, 0]} />
 
       {/* YZ grid at x=0 */}
       <mesh position={[0, half, half]} rotation={[0, Math.PI / 2, 0]}>
         <planeGeometry args={[size, size]} />
-        <meshStandardMaterial color={planeColor} side={THREE.DoubleSide} />
+        <meshStandardMaterial color={planeColor} side={THREE.DoubleSide} transparent opacity={0.06} />
       </mesh>
-      <gridHelper args={[size, divs, 0x999999, 0xcccccc]} position={[0.1, half, half]} rotation={[0, 0, Math.PI / 2]} />
+      <gridHelper args={[size, divs, 0x42d8ff, 0x234f58]} position={[0.1, half, half]} rotation={[0, 0, Math.PI / 2]} />
 
       {/* XZ grid at y=0 */}
       <mesh position={[half, 0, half]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[size, size]} />
-        <meshStandardMaterial color={planeColor} side={THREE.DoubleSide} />
+        <meshStandardMaterial color={planeColor} side={THREE.DoubleSide} transparent opacity={0.06} />
       </mesh>
-      <gridHelper args={[size, divs, 0x999999, 0xcccccc]} position={[half, 0.1, half]} rotation={[0, 0, 0]} />
+      <gridHelper args={[size, divs, 0xffbf58, 0x554226]} position={[half, 0.1, half]} rotation={[0, 0, 0]} />
     </group>
   );
 }

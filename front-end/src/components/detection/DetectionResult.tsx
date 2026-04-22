@@ -14,7 +14,7 @@ export function DetectionResult({ result }: DetectionResultProps) {
   const config = getStatusConfig(result.status);
 
   return (
-    <Card className={`p-6 border ${config.borderColor} ${config.bgColor}`}>
+    <Card className={`result-card ${config.bgColor} ${config.borderColor}`}>
       <StatusHeader result={result} />
 
       {/* 3D 点云可视化 */}
