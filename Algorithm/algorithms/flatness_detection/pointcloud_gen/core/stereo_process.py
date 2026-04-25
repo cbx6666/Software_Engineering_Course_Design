@@ -5,8 +5,7 @@
 """
 import numpy as np
 
-from ..utils.outliers import mad_mask
-from ..utils.plane_fit import fit_plane_least_squares, point_plane_signed_distance
+from ..utils.plane_fit import fit_plane_robust, point_plane_signed_distance
 from ..utils.camera import depth_from_pixels, backproject_uv_to_xyz
 from ..utils.interp import densify_disparity
 from ..utils.io_utils import save_ply, export_csv, visualize_pointcloud, project_to_plane_normal
@@ -38,17 +37,20 @@ def process_stereo_matches(
     pts_sparse = backproject_uv_to_xyz(uv_left_sparse, Z_sparse, K)
 
     # ------- 平面拟合 -------
-    valid_sparse = ~np.isnan(Z_sparse)
+    valid_sparse = np.isfinite(pts_sparse).all(axis=1)
     pts_valid = pts_sparse[valid_sparse]
 
-    mask = mad_mask(pts_valid[:,2], thresh=mad_thresh)
-    pts_for_fit = pts_valid[mask] if np.sum(mask) >= 3 else pts_valid
-
-    plane, normal = fit_plane_least_squares(pts_for_fit)
+    fit_result = fit_plane_robust(pts_valid, mad_thresh=mad_thresh)
+    plane = fit_result["plane"]
+    normal = fit_result["normal"]
     dists_sparse = point_plane_signed_distance(pts_sparse, plane)
     
     # ------- 平面坐标系投影（用于前后端一致的可视化） -------
-    projected_pts, _ = project_to_plane_normal(pts_sparse)
+    projected_pts, _ = project_to_plane_normal(
+        pts_sparse,
+        normal=normal,
+        origin=fit_result["centroid"],
+    )
     z_proj = projected_pts[:, 2]
 
     result = {
@@ -80,7 +82,7 @@ def process_stereo_matches(
         Z_flat[valid] = f * baseline / disp_flat[valid]
 
         pts_flat = backproject_uv_to_xyz(uv_flat, Z_flat, K)
-        pts_dense = pts_flat[~np.isnan(pts_flat).any(axis=1)]
+        pts_dense = pts_flat[np.isfinite(pts_flat).all(axis=1)]
         dists_dense = point_plane_signed_distance(pts_dense, plane)
 
         result["pts_dense"] = pts_dense
@@ -91,13 +93,18 @@ def process_stereo_matches(
         print("pts_dense shape:", pts_dense.shape)
 
     # ------- 平整度指标 -------
-    use_d = result["dists_dense"] if result["pts_dense"] is not None else dists_sparse
+    # Core flatness metrics should come from measured sparse points. Dense
+    # interpolation is retained for visualization/export to avoid changing
+    # statistics by filling unmeasured pixels.
+    use_d = dists_sparse[np.isfinite(dists_sparse)]
+    if len(use_d) == 0:
+        raise ValueError("no finite point-plane distances available for flatness metrics")
     use_d_mm = use_d * 1000
 
     metrics = {
         "count": len(use_d_mm),
         "flatness_range_mm": float(np.nanmax(use_d_mm) - np.nanmin(use_d_mm)),
-        "flatness_rms_mm": float(np.sqrt(np.nanmean((use_d_mm - np.nanmean(use_d_mm))**2))),
+        "flatness_rms_mm": float(np.sqrt(np.nanmean(use_d_mm**2))),
         "flatness_mean_mm": float(np.nanmean(use_d_mm)),
         "flatness_std_mm": float(np.nanstd(use_d_mm)),
         "max_mm": float(np.nanmax(use_d_mm)),
@@ -138,6 +145,8 @@ def process_stereo_matches(
                 xyz_sparse=pts_sparse,
                 dense_depth=dense_depth,
                 image_shape=image_shape,
+                plane_normal=normal,
+                plane_origin=fit_result["centroid"],
                 save_path=save_fig_path
             )
             if save_fig_path:
