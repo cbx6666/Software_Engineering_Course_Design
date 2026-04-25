@@ -12,12 +12,15 @@ export function PageHeader({
   iconBgClassName: string;
 }) {
   return (
-    <div className="text-center mb-12">
-      <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl ${iconBgClassName} mb-4 shadow-xl`}>
+    <div className="page-header">
+      <div className={`page-header__icon ${iconBgClassName}`}>
         {icon}
       </div>
-      <h1 className="text-white mb-3">{title}</h1>
-      <p className="text-slate-300 max-w-2xl mx-auto">{description}</p>
+      <div className="page-header__text">
+        <div className="eyebrow">INSPECTION TASK</div>
+        <h1>{title}</h1>
+        <p>{description}</p>
+      </div>
     </div>
   );
 }

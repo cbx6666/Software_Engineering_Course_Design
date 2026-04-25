@@ -25,17 +25,25 @@ public class DetectionPersistenceService {
     private final HistoryService historyService;
     private final ObjectMapper objectMapper;
     private final String imageStoragePath;
+    private final boolean persistenceEnabled;
 
     @Autowired
     public DetectionPersistenceService(HistoryService historyService, 
                                        ObjectMapper objectMapper, 
-                                       @Value("${image.storage.path}") String imageStoragePath) {
+                                       @Value("${image.storage.path}") String imageStoragePath,
+                                       @Value("${app.persistence.enabled:true}") boolean persistenceEnabled) {
         this.historyService = historyService;
         this.objectMapper = objectMapper;
         this.imageStoragePath = imageStoragePath;
+        this.persistenceEnabled = persistenceEnabled;
     }
 
     public void persistResult(Long userId, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
+        if (!persistenceEnabled) {
+            System.out.println("Persistence disabled; skip saving detection result for local development.");
+            return;
+        }
+
         History history = new History();
         history.setUserId(userId);
         history.setType(type);

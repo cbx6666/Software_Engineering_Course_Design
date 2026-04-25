@@ -2,6 +2,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { login as loginApi, register as registerApi, type LoginResponse } from "@/services/authApi";
 
 const STORAGE_KEY = "glassdetect.auth";
+const DEV_AUTH_BYPASS = String(import.meta.env.VITE_DEV_AUTH_BYPASS ?? "").toLowerCase() === "true";
+const DEV_USER_ID = String(import.meta.env.VITE_DEV_USER_ID ?? "0");
+const DEV_USER_EMAIL = String(import.meta.env.VITE_DEV_USER_EMAIL ?? "local-dev@example.com");
 
 export interface AuthState {
     user: LoginResponse["user"];
@@ -10,6 +13,7 @@ export interface AuthState {
 interface AuthContextType {
     auth: AuthState | null;
     isAuthed: boolean;
+    isDevAuthBypass: boolean;
     isLoggingIn: boolean;
     login: (params: { email: string; password: string; remember: boolean }) => Promise<AuthState>;
     register: (params: { email: string; password: string; remember: boolean }) => Promise<AuthState>;
@@ -35,6 +39,16 @@ function readStoredAuth(): AuthState | null {
     }
 }
 
+function getDevAuth(): AuthState | null {
+    if (!DEV_AUTH_BYPASS) return null;
+    return {
+        user: {
+            id: DEV_USER_ID,
+            email: DEV_USER_EMAIL,
+        },
+    };
+}
+
 function writeStoredAuth(auth: AuthState, remember: boolean) {
     const raw = JSON.stringify(auth);
     if (remember) {
@@ -52,11 +66,11 @@ function clearStoredAuth() {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [auth, setAuth] = useState<AuthState | null>(() => readStoredAuth());
+    const [auth, setAuth] = useState<AuthState | null>(() => readStoredAuth() ?? getDevAuth());
     const [isLoggingIn, setIsLoggingIn] = useState(false);
 
     useEffect(() => {
-        const onStorage = () => setAuth(readStoredAuth());
+        const onStorage = () => setAuth(readStoredAuth() ?? getDevAuth());
         window.addEventListener("storage", onStorage);
         return () => window.removeEventListener("storage", onStorage);
     }, []);
@@ -64,6 +78,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const isAuthed = !!auth?.user;
 
     const login = useCallback(async (params: { email: string; password: string; remember: boolean }) => {
+        if (DEV_AUTH_BYPASS) {
+            const next = getDevAuth();
+            if (!next) throw new Error("Dev auth bypass is not available");
+            writeStoredAuth(next, params.remember);
+            setAuth(next);
+            return next;
+        }
         setIsLoggingIn(true);
         try {
             const res = await loginApi({ email: params.email, password: params.password });
@@ -78,6 +99,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const register = useCallback(
         async (params: { email: string; password: string; remember: boolean }) => {
+            if (DEV_AUTH_BYPASS) {
+                const next = getDevAuth();
+                if (!next) throw new Error("Dev auth bypass is not available");
+                writeStoredAuth(next, params.remember);
+                setAuth(next);
+                return next;
+            }
             setIsLoggingIn(true);
             try {
                 const res = await registerApi({
@@ -97,13 +125,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = useCallback(() => {
         clearStoredAuth();
-        setAuth(null);
+        setAuth(getDevAuth());
     }, []);
 
     const value = useMemo(
         () => ({
             auth,
             isAuthed,
+            isDevAuthBypass: DEV_AUTH_BYPASS,
             isLoggingIn,
             login,
             register,

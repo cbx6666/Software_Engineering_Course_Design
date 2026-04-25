@@ -48,22 +48,22 @@ export function GlassCrackDetectionPage() {
   };
 
   return (
-    <div className="min-h-screen p-8 md:p-12">
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Page Header */}
+    <div className="lab-page">
+      <div className="lab-container">
         <PageHeader
           icon={<ScanSearch className="w-8 h-8 text-white" />}
           title="玻璃破裂检测"
-          description="上传玻璃图片，系统将自动检测是否存在裂纹或破损"
+          description="上传玻璃图片，系统将检测裂纹、崩边与明显破损，并返回可复核的检测结果。"
           iconBgClassName="bg-gradient-to-br from-cyan-500 to-blue-600 shadow-cyan-500/30"
         />
 
-        {/* Main Card */}
-        <Card className="border-0 bg-white/10 backdrop-blur-xl p-8 shadow-2xl">
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* 图片上传区 */}
+        <Card className="workbench-panel">
+          <div className="workbench-grid">
             <div>
-              <h3 className="text-white mb-4">上传图片</h3>
+              <div className="panel-title">
+                <h3>上传检测图像</h3>
+                <span>{filledCount}/{maxCount} 已就绪</span>
+              </div>
               <ImageUploader
                 currentIndex={currentIndex}
                 disabled={isUploading}
@@ -81,13 +81,15 @@ export function GlassCrackDetectionPage() {
               />
             </div>
 
-            {/* 操作面板 */}
             <div>
-              <h3 className="text-white mb-4">操作面板</h3>
-              <Card className="p-6 bg-slate-900/50 backdrop-blur-md border-white/10">
+              <div className="panel-title">
+                <h3>检测作业面板</h3>
+                <span>CRACK SCAN</span>
+              </div>
+              <Card className="glass-panel action-panel">
                 <div className="space-y-6">
                   <div>
-                    <p className="text-white mb-3">检测说明</p>
+                    <p className="panel-title">图像采集建议</p>
                     <InstructionList
                       colorClassName="text-cyan-400"
                       items={[
@@ -100,7 +102,7 @@ export function GlassCrackDetectionPage() {
                   </div>
 
                   {filledCount < maxCount && (
-                    <p className="text-red-400 text-sm mt-2">
+                    <p className="upload-warning">
                       请上传 {maxCount} 张图片后才能开始检测
                     </p>
                   )}
@@ -108,7 +110,7 @@ export function GlassCrackDetectionPage() {
                   <Button
                     onClick={handleDetect}
                     disabled={!isComplete || isUploading}
-                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 shadow-lg shadow-cyan-500/30"
+                    className="lab-primary-button"
                     size="lg"
                   >
                     {isUploading ? (
@@ -129,10 +131,14 @@ export function GlassCrackDetectionPage() {
           </div>
         </Card>
 
-        {/* 检测结果 */}
         {result && (
           <div>
-            <h3 className="text-white mb-4">检测结果</h3>
+            <div className="section-head">
+              <div>
+                <h2>检测结果</h2>
+                <p>结果来自当前上传图像，可继续替换图片重新检测。</p>
+              </div>
+            </div>
             <DetectionResult result={result} />
           </div>
         )}

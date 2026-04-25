@@ -362,10 +362,9 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
   };
 
   return (
-    <div className="w-full max-w-[800px] mx-auto">
+    <div className="pointcloud-shell">
       <div
-        className="w-full border rounded-lg bg-black overflow-hidden relative"
-        style={{ height: "600px" }}
+        className="pointcloud-canvas-wrap"
       >
         <ControlsPanel onReset={handleReset} />
         <Canvas
@@ -385,28 +384,25 @@ export function PointCloud3D({ data }: PointCloud3DProps) {
           />
         </Canvas>
       </div>
-      {/* 颜色说明 */}
-      <div className="mt-4 px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg">
-        <div className="space-y-3">
-          <div className="text-sm font-semibold text-slate-200 mb-2">颜色映射说明</div>
-          <div className="flex flex-wrap items-center gap-6 text-sm text-slate-300">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded" style={{ backgroundColor: "#0080ff" }}></div>
-              <span>蓝色：负偏差（低于标准平面）</span>
+      <div className="pointcloud-legend">
+        <h4>颜色映射说明</h4>
+        <div className="legend-items">
+            <div className="legend-item">
+              <div className="legend-swatch" style={{ backgroundColor: "#0080ff", color: "#0080ff" }}></div>
+              <span>蓝色：低于标准平面</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded" style={{ backgroundColor: "#00ff00" }}></div>
-              <span>绿色：标准（接近理想平面）</span>
+            <div className="legend-item">
+              <div className="legend-swatch" style={{ backgroundColor: "#00ff00", color: "#00ff00" }}></div>
+              <span>绿色：接近理想平面</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 rounded" style={{ backgroundColor: "#ff0000" }}></div>
-              <span>红色：正偏差（高于标准平面）</span>
+            <div className="legend-item">
+              <div className="legend-swatch" style={{ backgroundColor: "#ff0000", color: "#ff0000" }}></div>
+              <span>红色：高于标准平面</span>
             </div>
-          </div>
-          <div className="text-xs text-slate-400 mt-2 leading-relaxed">
-            <p>颜色变化逻辑：点云颜色采用 HSL 色彩空间从蓝色到红色的连续渐变映射。根据各点到拟合平面的距离（偏差值），负偏差显示为蓝色，正偏差显示为红色，中间值按线性插值显示为蓝-绿-红的渐变过渡。</p >
-          </div>
         </div>
+        <p className="legend-note">
+          点云颜色按各点到拟合平面的距离进行连续映射，支持旋转、缩放与一键重置视角。
+        </p>
       </div>
     </div>
   );

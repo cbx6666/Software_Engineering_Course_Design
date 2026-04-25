@@ -6,10 +6,10 @@ export function InstructionList({
   items: string[];
 }) {
   return (
-    <ul className="text-slate-300 space-y-2">
+    <ul className="instruction-list">
       {items.map((text, idx) => (
-        <li key={idx} className="flex items-start gap-2">
-          <span className={`${colorClassName} mt-1`}>•</span>
+        <li key={idx}>
+          <span className={`instruction-list__mark ${colorClassName}`}>{idx + 1}</span>
           <span>{text}</span>
         </li>
       ))}
