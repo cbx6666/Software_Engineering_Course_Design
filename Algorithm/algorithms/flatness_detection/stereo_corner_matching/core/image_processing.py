@@ -5,8 +5,48 @@ from typing import Tuple, Optional
 import cv2
 import numpy as np
 
+try:
+    from ...config import DEFAULT_CONFIG, CornerDetectionConfig
+    from ...logging_utils import get_logger
+except ImportError:
+    from config import DEFAULT_CONFIG, CornerDetectionConfig
+    from logging_utils import get_logger
 
-def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[Tuple[int, int, int, int]]:
+
+logger = get_logger("corners.image")
+
+
+def _local_peak_indices(values: np.ndarray, min_distance: int) -> np.ndarray:
+    """Find local peaks and thin them by distance."""
+    values = np.asarray(values)
+    if values.size < 3:
+        return np.empty(0, dtype=int)
+
+    threshold = float(np.mean(values))
+    peak_mask = (
+        (values[1:-1] > values[:-2])
+        & (values[1:-1] > values[2:])
+        & (values[1:-1] > threshold)
+    )
+    peaks = np.flatnonzero(peak_mask) + 1
+    if peaks.size <= 1 or min_distance <= 1:
+        return peaks.astype(int, copy=False)
+
+    kept = [int(peaks[0])]
+    last = kept[0]
+    for peak in peaks[1:]:
+        peak = int(peak)
+        if peak - last >= min_distance:
+            kept.append(peak)
+            last = peak
+    return np.asarray(kept, dtype=int)
+
+
+def detect_chessboard_mask(
+    mask: np.ndarray,
+    min_area: int = None,
+    config: CornerDetectionConfig = None,
+) -> Optional[Tuple[int, int, int, int]]:
     """
     从混杂的掩码图中准确识别棋盘格区域。
     
@@ -26,6 +66,9 @@ def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[T
     返回：
         如果检测成功，返回 (x, y, w, h)，否则返回 None
     """
+    config = config or DEFAULT_CONFIG.corner_detection
+    min_area = config.crop_min_area if min_area is None else min_area
+
     if mask is None:
         return None
     
@@ -76,32 +119,9 @@ def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[T
         col_distance = max(w // 10, 5)  # 峰值之间的最小距离
         row_distance = max(h // 10, 5)
         
-        # 使用简单的峰值检测方法
-        col_peaks = []
-        row_peaks = []
-        for i in range(1, len(col_sum) - 1):
-            if col_sum[i] > col_sum[i-1] and col_sum[i] > col_sum[i+1] and col_sum[i] > np.mean(col_sum):
-                col_peaks.append(i)
-        for i in range(1, len(row_sum) - 1):
-            if row_sum[i] > row_sum[i-1] and row_sum[i] > row_sum[i+1] and row_sum[i] > np.mean(row_sum):
-                row_peaks.append(i)
-        
-        # 简单的距离过滤
-        if col_distance and len(col_peaks) > 1:
-            filtered = [col_peaks[0]]
-            for p in col_peaks[1:]:
-                if p - filtered[-1] >= col_distance:
-                    filtered.append(p)
-            col_peaks = filtered
-        if row_distance and len(row_peaks) > 1:
-            filtered = [row_peaks[0]]
-            for p in row_peaks[1:]:
-                if p - filtered[-1] >= row_distance:
-                    filtered.append(p)
-            row_peaks = filtered
-        
-        col_peaks = np.array(col_peaks)
-        row_peaks = np.array(row_peaks)
+        # 使用局部峰值检测方法
+        col_peaks = _local_peak_indices(col_sum, col_distance)
+        row_peaks = _local_peak_indices(row_sum, row_distance)
         
         # 棋盘格应该有至少 3-4 个峰值（对应多行/多列）
         if len(col_peaks) >= 3 and len(row_peaks) >= 3:
@@ -119,7 +139,8 @@ def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[T
 
 def crop_image_by_mask(img: np.ndarray,
                        mask: np.ndarray,
-                       padding: int = 50) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int], float]:
+                       padding: int = None,
+                       config: CornerDetectionConfig = None) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int], float]:
     """
     根据掩膜精确裁剪图像到棋盘格区域。
     
@@ -133,20 +154,23 @@ def crop_image_by_mask(img: np.ndarray,
     返回：
         (裁剪后的图像, 裁剪后的掩膜, (x偏移, y偏移), 掩膜覆盖比例)
     """
+    config = config or DEFAULT_CONFIG.corner_detection
+    padding = config.crop_padding if padding is None else padding
+
     if mask is None or img is None:
         return img, mask, (0, 0), 0.0
 
     mask_binary = (mask > 0).astype(np.uint8)
-    ratio = float(np.sum(mask_binary)) / mask_binary.size
+    ratio = float(np.count_nonzero(mask_binary)) / mask_binary.size
     if ratio == 0:
         return img, mask, (0, 0), 0.0
 
     mask_filtered = (mask_binary * 255).astype(np.uint8)
     
     # 使用结构形态 + 几何特征 + 内部模式验证的方法
-    bbox = detect_chessboard_mask(mask)
+    bbox = detect_chessboard_mask(mask, config=config)
     if bbox is None:
-        print(f"  [警告] 无法检测到棋盘格区域，返回原图")
+        logger.warning("无法检测到棋盘格区域，返回原图")
         return img, mask_filtered, (0, 0), ratio
     
     x, y, w, h = bbox
@@ -167,11 +191,11 @@ def crop_image_by_mask(img: np.ndarray,
     
     # 计算裁剪后掩膜覆盖率（用于信息输出）
     cropped_mask_binary = (cropped_mask > 0).astype(np.uint8)
-    cropped_ratio = float(np.sum(cropped_mask_binary)) / cropped_mask_binary.size * 100
+    cropped_ratio = float(np.count_nonzero(cropped_mask_binary)) / cropped_mask_binary.size * 100
     
     # 统一输出最终裁剪信息
-    print(f"  [提示] 通过{detection_method}定位到区域: x[{x1_orig}:{x2_orig}], y[{y1_orig}:{y2_orig}]")
-    print(f"  [提示] 添加padding后裁剪到: x[{x1}:{x2}], y[{y1}:{y2}], 掩膜覆盖率: {cropped_ratio:.1f}%")
+    logger.info("通过%s定位到区域: x[%d:%d], y[%d:%d]", detection_method, x1_orig, x2_orig, y1_orig, y2_orig)
+    logger.info("添加padding后裁剪到: x[%d:%d], y[%d:%d], 掩膜覆盖率: %.1f%%", x1, x2, y1, y2, cropped_ratio)
 
     return cropped_img, cropped_mask, (x1, y1), cropped_ratio / 100.0
 

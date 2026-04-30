@@ -33,8 +33,32 @@ from .core.chessboard_processing import (
     enhance_chessboard_contrast
 )
 
+try:
+    from ..config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from ..logging_utils import get_logger
+except ImportError:
+    from config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from logging_utils import get_logger
 
-def process_projection_diff(env_path: str, mix_path: str, output_dir: str) -> tuple:
+
+logger = get_logger("projection")
+
+
+def _save_debug_image(output_dir: str, config: ProjectionDiffConfig, name: str, image: np.ndarray) -> None:
+    if not config.debug.enabled:
+        return
+    debug_dir = os.path.join(output_dir, config.debug.output_dir_name)
+    os.makedirs(debug_dir, exist_ok=True)
+    safe_imwrite(os.path.join(debug_dir, f"{name}.png"), image)
+
+
+def process_projection_diff(
+    env_path: str,
+    mix_path: str,
+    output_dir: str,
+    config: ProjectionDiffConfig = None,
+    debug_prefix: str = "projection",
+) -> tuple:
     """
     处理投影反射差分，生成棋盘格图和掩码图
     
@@ -46,6 +70,8 @@ def process_projection_diff(env_path: str, mix_path: str, output_dir: str) -> tu
     返回:
         (chessboard_img, mask_img) 棋盘格图和掩码图
     """
+    config = config or DEFAULT_CONFIG.projection
+
     # 读取图片
     img_env = read_image_bgr(env_path)
     img_mix = read_image_bgr(mix_path)
@@ -54,23 +80,46 @@ def process_projection_diff(env_path: str, mix_path: str, output_dir: str) -> tu
     img_env = resize_to_match(img_env, (img_mix.shape[0], img_mix.shape[1]))
     
     # 几何对齐（ECC配准）
-    img_env_aligned = ecc_register(img_env, img_mix, motion_model="homography")
+    img_env_aligned = ecc_register(
+        img_env,
+        img_mix,
+        motion_model="homography",
+        fast_mode=True,
+        max_iterations=config.ecc_max_iterations,
+        eps=config.ecc_eps,
+        config=config,
+    )
+    _save_debug_image(output_dir, config, f"{debug_prefix}_aligned_env", img_env_aligned)
     
     # 构建拟合掩膜
-    mask_fit = build_fit_mask(img_env_aligned, img_mix, diff_thresh=12)
+    mask_fit = build_fit_mask(img_env_aligned, img_mix, config=config)
+    _save_debug_image(output_dir, config, f"{debug_prefix}_mask_fit", mask_fit)
     
     # 提取纯投影反射
-    r_proj_bgr = channelwise_compensated_diff(img_env_aligned, img_mix, mask_fit)
+    r_proj_bgr = channelwise_compensated_diff(img_env_aligned, img_mix, mask_fit, config=config)
+    _save_debug_image(output_dir, config, f"{debug_prefix}_raw_diff", r_proj_bgr)
     r_proj_gray = cv2.cvtColor(r_proj_bgr, cv2.COLOR_BGR2GRAY)
     
     # 构建棋盘格掩膜
-    chess_mask = build_chess_mask_from_proj(r_proj_gray, block_size=31, C=-5, min_area=200)
+    chess_mask = build_chess_mask_from_proj(r_proj_gray, config=config)
+    _save_debug_image(output_dir, config, f"{debug_prefix}_chess_mask", chess_mask)
     
     # 背景抑制
-    r_proj_hf = suppress_background_in_mask(r_proj_gray, chess_mask, ksize=51)
+    r_proj_hf = suppress_background_in_mask(r_proj_gray, chess_mask, ksize=config.background_ksize)
     
     # 对比度增强
-    chessboard_img = enhance_chessboard_contrast(r_proj_hf, chess_mask, clip_limit=2.0, tile_grid_size=(8, 8))
+    chessboard_img = enhance_chessboard_contrast(
+        r_proj_hf,
+        chess_mask,
+        clip_limit=config.contrast_clip_limit,
+        tile_grid_size=config.contrast_tile_grid_size,
+    )
+    _save_debug_image(output_dir, config, f"{debug_prefix}_enhanced_chessboard", chessboard_img)
+    logger.info(
+        "projection diff complete: fit_mask=%.1f%% chess_mask=%.1f%%",
+        np.count_nonzero(mask_fit) / mask_fit.size * 100,
+        np.count_nonzero(chess_mask) / chess_mask.size * 100,
+    )
     
     return chessboard_img, chess_mask
 

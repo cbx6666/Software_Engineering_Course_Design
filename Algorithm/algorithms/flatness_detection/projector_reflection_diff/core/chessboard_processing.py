@@ -5,8 +5,59 @@ from typing import Tuple
 import cv2
 import numpy as np
 
+try:
+    from ...config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from ...logging_utils import get_logger
+except ImportError:
+    from config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from logging_utils import get_logger
 
-def build_chess_mask_from_proj(r_proj_gray: np.ndarray, block_size: int = 31, C: int = -5, min_area: int = 200) -> np.ndarray:
+
+logger = get_logger("projection.chess_mask")
+
+
+def _rect_kernel(size: int) -> np.ndarray:
+    size = max(1, int(size))
+    if size % 2 == 0:
+        size += 1
+    return cv2.getStructuringElement(cv2.MORPH_RECT, (size, size))
+
+
+def _fill_holes(mask: np.ndarray) -> np.ndarray:
+    h, w = mask.shape[:2]
+    flood = mask.copy()
+    flood_mask = np.zeros((h + 2, w + 2), dtype=np.uint8)
+    cv2.floodFill(flood, flood_mask, (0, 0), 255)
+    holes = cv2.bitwise_not(flood)
+    return cv2.bitwise_or(mask, holes)
+
+
+def _keep_largest_components(mask: np.ndarray, min_area: int, keep_regions: int) -> np.ndarray:
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(mask, connectivity=8)
+    if num_labels <= 1:
+        return np.zeros_like(mask)
+
+    areas = stats[:, cv2.CC_STAT_AREA]
+    candidate_labels = [idx for idx in range(1, num_labels) if areas[idx] >= min_area]
+    candidate_labels = sorted(candidate_labels, key=lambda idx: areas[idx], reverse=True)
+    if keep_regions > 0:
+        candidate_labels = candidate_labels[:keep_regions]
+
+    if not candidate_labels:
+        return np.zeros_like(mask)
+
+    keep = np.zeros(num_labels, dtype=bool)
+    keep[candidate_labels] = True
+    return keep[labels].astype(np.uint8) * 255
+
+
+def build_chess_mask_from_proj(
+    r_proj_gray: np.ndarray,
+    block_size: int = None,
+    C: int = None,
+    min_area: int = None,
+    config: ProjectionDiffConfig = None,
+) -> np.ndarray:
     """
     根据"纯投影反射"的灰度图，自动找出棋盘格所在的大致区域。
     
@@ -30,6 +81,11 @@ def build_chess_mask_from_proj(r_proj_gray: np.ndarray, block_size: int = 31, C:
     返回：
         一个二值掩膜（uint8），255 表示"这里是棋盘格区域"，0 表示"不是"。
     """
+    config = config or DEFAULT_CONFIG.projection
+    block_size = config.adaptive_block_size if block_size is None else block_size
+    C = config.adaptive_c if C is None else C
+    min_area = config.chess_min_area if min_area is None else min_area
+
     # 高斯模糊去噪，使图像更平滑
     blur = cv2.GaussianBlur(r_proj_gray, (5, 5), 0)
     
@@ -37,22 +93,20 @@ def build_chess_mask_from_proj(r_proj_gray: np.ndarray, block_size: int = 31, C:
     # block_size 必须是奇数，使用按位或确保为奇数
     bw = cv2.adaptiveThreshold(blur, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, max(3, block_size | 1), C)
     
-    # 形态学闭运算：先膨胀后腐蚀，填补小孔洞，使棋盘格区域更完整
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-    bw = cv2.morphologyEx(bw, cv2.MORPH_CLOSE, kernel, iterations=1)
-    
-    # 连通域分析：找出所有独立的区域
-    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(bw, connectivity=8)
-    
-    # 筛选出面积大于阈值的连通域（去除小噪声）
-    mask = np.zeros_like(bw)
-    for i in range(1, num_labels):  # 跳过背景（标签 0）
-        if stats[i, cv2.CC_STAT_AREA] >= min_area:
-            mask[labels == i] = 255
-    
-    # 适度膨胀掩膜，确保覆盖到方格内部，不会漏掉边缘
-    kernel2 = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
-    mask = cv2.dilate(mask, kernel2, iterations=1)
+    if config.chess_open_kernel > 1:
+        bw = cv2.morphologyEx(bw, cv2.MORPH_OPEN, _rect_kernel(config.chess_open_kernel), iterations=1)
+    if config.chess_close_kernel > 1:
+        bw = cv2.morphologyEx(bw, cv2.MORPH_CLOSE, _rect_kernel(config.chess_close_kernel), iterations=2)
+
+    mask = _fill_holes(bw)
+    mask = _keep_largest_components(mask, min_area=min_area, keep_regions=config.chess_keep_regions)
+
+    if config.chess_dilate_kernel > 1:
+        mask = cv2.dilate(mask, _rect_kernel(config.chess_dilate_kernel), iterations=1)
+
+    mask_ratio = float(np.count_nonzero(mask)) / mask.size
+    if mask_ratio < config.min_chess_mask_ratio:
+        logger.warning("chess mask is very small after filtering: %.4f", mask_ratio)
     
     return mask
 
