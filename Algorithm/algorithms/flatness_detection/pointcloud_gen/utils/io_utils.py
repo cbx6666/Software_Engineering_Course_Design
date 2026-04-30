@@ -48,22 +48,41 @@ def export_csv(points, dists, filename):
     print(f"已输出CSV文件: {filename}")
 
 
-def project_to_plane_normal(points):
+def project_to_plane_normal(points, normal=None, origin=None):
     """
     输入：N×3 稀疏点云
     输出：
         projected_points: 在新的( x', y', z' ) 坐标
         normal: 拟合平面法线 (单位向量)
     """
+    pts = np.asarray(points, dtype=float)
+    if pts.ndim != 2 or pts.shape[1] != 3:
+        raise ValueError("points must be an N x 3 array")
 
-    # 去均值
-    centroid = np.mean(points, axis=0)
-    centered = points - centroid
+    finite = np.isfinite(pts).all(axis=1)
+    pts_valid = pts[finite]
+    if len(pts_valid) < 3:
+        raise ValueError("at least 3 finite points are required for plane projection")
 
-    # 使用 SVD 最小二乘拟合平面
-    _, _, vh = np.linalg.svd(centered)
-    normal = vh[-1]        # 最小奇异值对应法向量
-    normal = normal / np.linalg.norm(normal)
+    if origin is None:
+        origin = np.mean(pts_valid, axis=0)
+    else:
+        origin = np.asarray(origin, dtype=float)
+
+    if normal is None:
+        # 使用 SVD 最小二乘拟合平面
+        centered_for_fit = pts_valid - origin
+        _, _, vh = np.linalg.svd(centered_for_fit, full_matrices=False)
+        normal = vh[-1]        # 最小奇异值对应法向量
+    else:
+        normal = np.asarray(normal, dtype=float)
+
+    normal_norm = np.linalg.norm(normal)
+    if normal_norm < 1e-12:
+        raise ValueError("normal must be non-zero")
+    normal = normal / normal_norm
+    if normal[2] < 0:
+        normal = -normal
 
     # 固定 X' 方向与原始 X（u轴）尽量一致，避免行列互换
     # 取参考方向 ref（原始 X 方向），做正交分解到平面内
@@ -81,7 +100,8 @@ def project_to_plane_normal(points):
     R = np.vstack([x_axis, y_axis, normal]).T   # 3×3
 
     # 投影
-    projected = centered @ R
+    projected = np.full_like(pts, np.nan, dtype=float)
+    projected[finite] = (pts_valid - origin) @ R
 
     return projected, normal
 
@@ -90,6 +110,8 @@ def visualize_pointcloud(
         dense_depth=None,
         save_path=None,
         image_shape=None,
+        plane_normal=None,
+        plane_origin=None,
         cmap='jet'
     ):
     """
@@ -112,12 +134,20 @@ def visualize_pointcloud(
     label_y_prime = "Y' (m)"
 
     # ======== 平面拟合 + 投影 ========
-    projected_pts, plane_normal = project_to_plane_normal(xyz_sparse)
+    projected_pts, plane_normal = project_to_plane_normal(
+        xyz_sparse,
+        normal=plane_normal,
+        origin=plane_origin,
+    )
     z_new = projected_pts[:, 2]
 
-    x = xyz_sparse[:, 0]
-    y = xyz_sparse[:, 1]
-    z = xyz_sparse[:, 2]
+    xyz_sparse = np.asarray(xyz_sparse, dtype=float)
+    valid_xyz = np.isfinite(xyz_sparse).all(axis=1)
+    valid_projected = np.isfinite(projected_pts).all(axis=1) & np.isfinite(z_new)
+
+    x = xyz_sparse[valid_xyz, 0]
+    y = xyz_sparse[valid_xyz, 1]
+    z = xyz_sparse[valid_xyz, 2]
 
     fig = plt.figure(figsize=(13, 6))
     fig.suptitle(title_main, fontsize=14)
@@ -144,10 +174,10 @@ def visualize_pointcloud(
 
     # 散点
     sc2 = ax2.scatter(
-        projected_pts[:, 0],
-        projected_pts[:, 1],
+        projected_pts[valid_projected, 0],
+        projected_pts[valid_projected, 1],
         s=15,
-        c=z_new,
+        c=z_new[valid_projected],
         cmap=cmap
     )
     cbar2 = fig.colorbar(sc2, ax=ax2, shrink=0.5)
@@ -155,8 +185,10 @@ def visualize_pointcloud(
 
     # ===== 添加等高线 =====
     # 计算范围，添加边距以确保包含所有边缘点
-    x_min, x_max = np.min(projected_pts[:,0]), np.max(projected_pts[:,0])
-    y_min, y_max = np.min(projected_pts[:,1]), np.max(projected_pts[:,1])
+    x_min = np.min(projected_pts[valid_projected, 0])
+    x_max = np.max(projected_pts[valid_projected, 0])
+    y_min = np.min(projected_pts[valid_projected, 1])
+    y_max = np.max(projected_pts[valid_projected, 1])
     
     # 计算范围大小
     x_range = x_max - x_min
@@ -180,8 +212,8 @@ def visualize_pointcloud(
     # 用 griddata 基于散点插值得到 Z' 网格
     from scipy.interpolate import griddata
     grid_z = griddata(
-        projected_pts[:, 0:2],
-        z_new,
+        projected_pts[valid_projected, 0:2],
+        z_new[valid_projected],
         (grid_x, grid_y),
         method='cubic'
     )

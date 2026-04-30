@@ -27,11 +27,34 @@
 """
 import os
 import json
+import tempfile
+import uuid
 
 import numpy as np
 
 from .core.stereo_process import process_stereo_matches
 from .utils.io_utils import load_uv_json
+
+
+def _ensure_writable_output_dir(preferred_dir):
+    """Return preferred_dir if writable; otherwise fall back to a temp dir."""
+    os.makedirs(preferred_dir, exist_ok=True)
+    probe_path = os.path.join(preferred_dir, ".write_probe")
+    try:
+        with open(probe_path, "w", encoding="utf-8") as f:
+            f.write("ok")
+        os.remove(probe_path)
+        return preferred_dir
+    except PermissionError as exc:
+        fallback_dir = os.path.join(
+            tempfile.gettempdir(),
+            f"glass_pointcloud_result_{uuid.uuid4().hex}",
+        )
+        os.makedirs(fallback_dir, exist_ok=False)
+        print(f"  [警告] 输出目录不可写: {preferred_dir}")
+        print(f"  [警告] 原因: {exc}")
+        print(f"  [警告] 已切换到临时输出目录: {fallback_dir}")
+        return fallback_dir
 
 
 def main():
@@ -43,8 +66,8 @@ def main():
     # ========== 初始化：设置输入输出目录 ==========
     proj_root = os.path.dirname(os.path.abspath(__file__))
     data_dir = os.path.join(proj_root, "data")
-    out_dir = os.path.join(proj_root, "result")
-    os.makedirs(out_dir, exist_ok=True)
+    preferred_out_dir = os.path.join(proj_root, "result")
+    out_dir = _ensure_writable_output_dir(preferred_out_dir)
     
     print("=== 点云生成和平整度计算流程启动 ===")
     print(f"工作目录: {proj_root}")
