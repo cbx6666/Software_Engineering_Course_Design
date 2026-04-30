@@ -15,14 +15,14 @@ class GlassBreakageAlgorithm:
         self.preprocessor = Preprocessor()
         self.extractor = FeatureExtractor()
         self.classifier = Classifier()
-        #初始化时创建Canny保存文件夹
+        # 初始化时创建Canny保存文件夹
         os.makedirs(Config.CANNY_SAVE_PATH, exist_ok=True)
 
-    def run(self, image_input: str) -> Dict:
+    def run(self, image_input: str, method: str = 'traditional') -> Dict:
         """
         算法主流程
         :param image_input: 图像Base64字符串或本地路径
-        :param glass_id: 玻璃编号（可选，用于定位具体幕墙）
+        :param method: 算法模式 ('traditional', 'yolo', 'combined'暂时空缺)
         :return: 符合前端格式的检测结果
         """
         try:
@@ -31,48 +31,46 @@ class GlassBreakageAlgorithm:
                 # 处理Base64格式（后端传入）
                 base64_str = image_input.split(",")[1]
                 image = self.preprocessor.base64_to_image(base64_str)
-
                 # Base64 上传图片时生成唯一文件名
                 img_name = f"{uuid.uuid4().hex}.png"
             else:
                 # 处理本地路径（测试用）
                 image = cv2.imread(image_input)
-                # 本地图像命名：取原文件名
                 img_name = os.path.basename(image_input)
-            
-            # 检查图像是否加载成功
-            if image is None:
-                raise ValueError(f"无法加载图像，请检查路径：{image_input} 或Base64编码是否有效")
 
             # 2. 预处理
             processed_img = self.preprocessor.preprocess(image)
 
             # 3. 特征提取
-            edges, crack_ratio = self.extractor.extract_edge(processed_img)
-
-            is_break = self.extractor.is_glass_break(edges)
+            features = {}
             
-            canny_save_path = os.path.join(Config.CANNY_SAVE_PATH, img_name)
-            cv2.imwrite(canny_save_path, edges)  # 保存图像到output文件夹
-            print(f"Canny边缘图像已保存至：{canny_save_path}")
-
+            # --- 传统算法提取 ---
+            edges, crack_ratio = self.extractor.extract_edge(processed_img)
+            is_break = self.extractor.is_glass_break(edges)
             glcm_features = self.extractor.extract_glcm_features(processed_img)
-            # 注释YOLO特征提取（暂不使用）
-            # yolo_detections = self.extractor.extract_yolo_features(processed_img)  # 刘长儒2024
+            
+            # 保存 Canny 边缘图到本地
+            canny_save_path = os.path.join(Config.CANNY_SAVE_PATH, img_name)
+            cv2.imwrite(canny_save_path, edges)  
+            if Config.IS_PRINT: print(f"Canny边缘图像已保存至：{canny_save_path}")
 
-            # 4. 整合特征（移除YOLO相关）
+            # --- YOLO 特征提取 (解开注释并传入原图) ---
+            yolo_detections = []
+            if method in ['yolo', 'combined']:
+                yolo_detections = self.extractor.extract_yolo_features(image)
+
+            # 4. 整合特征
             features = {
                 "crack_ratio": crack_ratio,
                 "glcm": glcm_features,
-                "is_break": is_break
-                # 注释YOLO特征（暂不使用）
-                # "yolo": yolo_detections
+                "is_break": is_break,
+                "yolo": yolo_detections
             }
 
             # 5. 分类决策
-            status, description, damage_area = self.classifier.predict_risk(features)
+            status, description, damage_area = self.classifier.predict_risk(features, method=method)
 
-            # 6. 封装结果（匹配前端接口格式）
+            # 6. 封装结果
             return {
                 "status": status,
                 "title": {
@@ -83,15 +81,16 @@ class GlassBreakageAlgorithm:
                 "description": description,
                 "details": [
                     {"label": "损伤面积", "value": f"{damage_area:.2f} mm²"} 
-                    if damage_area > 0 else None
-                ],
+                    if damage_area > 0 else {"label": "检查项", "value": "无明显物理损伤"}
+                ]
             }
 
         except Exception as e:
-            # 异常处理：返回错误信息
+            import traceback
+            traceback.print_exc()
             return {
                 "status": "error",
-                "title": "算法执行失败",
-                "description": f"处理过程出错：{str(e)}",
-                "details": None
+                "title": "系统错误",
+                "description": f"算法执行失败: {str(e)}",
+                "details": []
             }

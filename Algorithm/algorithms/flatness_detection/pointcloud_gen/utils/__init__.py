@@ -6,7 +6,7 @@
 from .camera import depth_from_pixels, backproject_uv_to_xyz
 from .interp import densify_disparity
 from .outliers import mad_mask
-from .plane_fit import fit_plane_least_squares, point_plane_signed_distance
+from .plane_fit import fit_plane_least_squares, fit_plane_robust, point_plane_signed_distance
 from .io_utils import load_uv_json, save_ply, export_csv, visualize_pointcloud
 
 __all__ = [
@@ -15,6 +15,7 @@ __all__ = [
     'densify_disparity',
     'mad_mask',
     'fit_plane_least_squares',
+    'fit_plane_robust',
     'point_plane_signed_distance',
     'load_uv_json',
     'save_ply',
