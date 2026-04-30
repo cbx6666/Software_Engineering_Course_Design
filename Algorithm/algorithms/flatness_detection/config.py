@@ -37,10 +37,21 @@ class ProjectionDiffConfig:
     adaptive_c: int = -5
     chess_min_area: int = 200
     chess_keep_regions: int = 3
+    chess_mask_max_ratio: float = 0.35
+    chess_candidate_expand_kernel: int = 11
     chess_open_kernel: int = 3
     chess_close_kernel: int = 7
     chess_dilate_kernel: int = 7
     min_chess_mask_ratio: float = 0.001
+    texture_blur_kernel: int = 9
+    texture_window_size: int = 41
+    texture_percentile: float = 92.0
+    texture_open_kernel: int = 5
+    texture_close_kernel: int = 9
+    texture_min_score: float = 8.0
+    geometry_min_gradient_balance: float = 0.18
+    geometry_min_periodicity: float = 1.15
+    geometry_min_axis_contrast: float = 2.0
     background_ksize: int = 51
     contrast_clip_limit: float = 2.0
     contrast_tile_grid_size: Tuple[int, int] = (8, 8)
@@ -69,6 +80,8 @@ class CornerDetectionConfig:
     subpix_eps: float = 0.001
     crop_padding: int = 50
     crop_min_area: int = 5000
+    crop_component_min_fill_ratio: float = 0.08
+    crop_aspect_ratio_range: Tuple[float, float] = (0.2, 5.0)
     debug: DebugOutputConfig = field(default_factory=DebugOutputConfig)
 
 

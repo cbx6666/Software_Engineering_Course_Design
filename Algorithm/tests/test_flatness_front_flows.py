@@ -41,6 +41,10 @@ from algorithms.flatness_detection.stereo_corner_matching.core.corner_detection 
     refine_corners,
     validate_corner_quality,
 )
+from algorithms.flatness_detection.stereo_corner_matching.core.image_processing import (  # noqa: E402
+    crop_image_by_mask,
+    detect_chessboard_mask,
+)
 from algorithms.flatness_detection.stereo_corner_matching.core.corner_matching import (  # noqa: E402
     match_by_relative_coordinates,
 )
@@ -127,8 +131,47 @@ class ProjectionDiffTests(unittest.TestCase):
             self.assertEqual(detect_img.shape, mask.shape)
             self.assertEqual(detect_img.shape, mix.shape[:2])
 
+    def test_chess_mask_prefers_compact_texture_region_for_small_target(self):
+        img = np.full((180, 240), 20, dtype=np.uint8)
+        board = make_checkerboard(pattern_size=(7, 10), square=6, margin=0, contrast=220)
+        board = cv2.resize(board, (72, 54), interpolation=cv2.INTER_NEAREST)
+        img[70:124, 90:162] = board
+        config = ProjectionDiffConfig(chess_min_area=50, chess_mask_max_ratio=0.35)
+        mask = build_chess_mask_from_proj(img, config=config)
+        ratio = np.count_nonzero(mask) / mask.size
+        self.assertLess(ratio, 0.35)
+        self.assertGreater(np.count_nonzero(mask[70:124, 90:162]), 0)
+
+    def test_chess_mask_rejects_large_smooth_region_and_keeps_checkerboard_candidate(self):
+        img = np.full((220, 280), 25, dtype=np.uint8)
+        cv2.rectangle(img, (15, 20), (150, 200), 210, -1)
+        board = make_checkerboard(pattern_size=(7, 10), square=7, margin=0, contrast=220)
+        board = cv2.resize(board, (84, 63), interpolation=cv2.INTER_NEAREST)
+        img[110:173, 170:254] = board
+        config = ProjectionDiffConfig(chess_min_area=80, chess_mask_max_ratio=0.4)
+        mask = build_chess_mask_from_proj(img, config=config)
+        board_pixels = np.count_nonzero(mask[110:173, 170:254])
+        smooth_pixels = np.count_nonzero(mask[20:200, 15:150])
+        self.assertGreater(board_pixels, 0)
+        self.assertLess(smooth_pixels, board_pixels)
+
 
 class CornerDetectionTests(unittest.TestCase):
+    def test_crop_image_by_filled_mask_uses_component_bbox(self):
+        img = np.zeros((200, 300), dtype=np.uint8)
+        mask = np.zeros_like(img, dtype=np.uint8)
+        cv2.rectangle(mask, (120, 60), (180, 120), 255, -1)
+        bbox = detect_chessboard_mask(mask, config=CornerDetectionConfig(crop_min_area=200))
+        self.assertEqual(bbox, (120, 60, 61, 61))
+        cropped_img, cropped_mask, offset, ratio = crop_image_by_mask(
+            img,
+            mask,
+            config=CornerDetectionConfig(crop_padding=10, crop_min_area=200),
+        )
+        self.assertEqual(offset, (110, 50))
+        self.assertEqual(cropped_img.shape, (81, 81))
+        self.assertGreater(ratio, 0.5)
+
     def test_detects_normal_checkerboard(self):
         img = make_checkerboard()
         config = CornerDetectionConfig(min_corner_ratio=0.5, min_area_coverage=0.005)
