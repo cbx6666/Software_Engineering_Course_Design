@@ -1,17 +1,17 @@
-"""Domain errors for flatness detection."""
+"""平整度检测流程的领域异常定义。"""
 
 
 class FlatnessDetectionError(RuntimeError):
-    """Base class for user-facing flatness detection failures."""
+    """平整度检测对外暴露的基础异常。"""
 
 
 class ProjectionDiffError(FlatnessDetectionError):
-    """Projection reflection difference failed."""
+    """投影反射差分阶段异常。"""
 
 
 class CornerDetectionError(FlatnessDetectionError):
-    """Chessboard corner detection failed."""
+    """棋盘格角点检测阶段异常。"""
 
 
 class CornerMatchingError(FlatnessDetectionError):
-    """Left/right corner matching failed."""
+    """左右角点匹配阶段异常。"""

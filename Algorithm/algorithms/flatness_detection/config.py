@@ -1,16 +1,21 @@
-"""Shared configuration for the flatness detection front-end pipeline."""
+"""平整度检测流程的统一配置。"""
+
 from dataclasses import dataclass, field
 from typing import Tuple
 
 
 @dataclass
 class DebugOutputConfig:
+    """调试中间结果输出配置。"""
+
     enabled: bool = False
     output_dir_name: str = "debug"
 
 
 @dataclass
 class ProjectionDiffConfig:
+    """投影反射差分阶段的配置。"""
+
     alignment_models: Tuple[str, ...] = ("homography", "affine", "translation")
     ecc_downsample_min_size: int = 800
     ecc_max_iterations: int = 50
@@ -60,6 +65,8 @@ class ProjectionDiffConfig:
 
 @dataclass
 class CornerDetectionConfig:
+    """棋盘格角点检测阶段的配置。"""
+
     chessboard_size: Tuple[int, int] = (7, 10)
     allow_partial: bool = True
     min_corner_ratio: float = 0.5
@@ -87,6 +94,8 @@ class CornerDetectionConfig:
 
 @dataclass
 class CornerMatchingConfig:
+    """左右角点匹配阶段的配置。"""
+
     min_match_ratio: float = 0.5
     min_matched_points: int = 8
     require_positive_disparity: bool = False
@@ -102,11 +111,15 @@ class CornerMatchingConfig:
 
 @dataclass
 class LoggingConfig:
+    """日志输出配置。"""
+
     level: str = "INFO"
 
 
 @dataclass
 class FlatnessConfig:
+    """平整度检测总配置。"""
+
     projection: ProjectionDiffConfig = field(default_factory=ProjectionDiffConfig)
     corner_detection: CornerDetectionConfig = field(default_factory=CornerDetectionConfig)
     corner_matching: CornerMatchingConfig = field(default_factory=CornerMatchingConfig)

@@ -1,4 +1,5 @@
-"""Image-region helpers for chessboard localization."""
+"""角点检测前的图像区域定位工具。"""
+
 from typing import Optional, Tuple
 
 import cv2
@@ -16,6 +17,7 @@ logger = get_logger("corners.image")
 
 
 def _binary_mask(mask: np.ndarray) -> np.ndarray:
+    """将输入掩膜统一转换为二值图。"""
     if mask is None:
         return None
     if mask.ndim == 3:
@@ -25,6 +27,7 @@ def _binary_mask(mask: np.ndarray) -> np.ndarray:
 
 
 def _nonzero_bbox(mask: np.ndarray) -> Optional[Tuple[int, int, int, int]]:
+    """返回掩膜非零区域的最小包围框。"""
     ys, xs = np.nonzero(mask > 0)
     if xs.size == 0 or ys.size == 0:
         return None
@@ -38,13 +41,7 @@ def detect_chessboard_mask(
     min_area: int = None,
     config: CornerDetectionConfig = None,
 ) -> Optional[Tuple[int, int, int, int]]:
-    """
-    Locate the chessboard ROI from a filled binary mask.
-
-    The mask produced by projection-diff is already a solid foreground region,
-    so here we score connected components by area, fill ratio, and aspect ratio
-    instead of looking for internal checkerboard periodicity.
-    """
+    """从实心掩膜中定位棋盘格候选框。"""
     config = config or DEFAULT_CONFIG.corner_detection
     min_area = config.crop_min_area if min_area is None else min_area
     mask_binary = _binary_mask(mask)
@@ -85,7 +82,7 @@ def crop_image_by_mask(
     padding: int = None,
     config: CornerDetectionConfig = None,
 ) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int], float]:
-    """Crop around the detected chessboard region with a fallback to the mask bbox."""
+    """按掩膜定位结果裁剪图像，并返回偏移量和覆盖率。"""
     config = config or DEFAULT_CONFIG.corner_detection
     padding = config.crop_padding if padding is None else padding
 
@@ -99,16 +96,15 @@ def crop_image_by_mask(
 
     mask_filtered = (mask_binary * 255).astype(np.uint8)
     bbox = detect_chessboard_mask(mask_filtered, config=config)
-    detection_method = "连通域定位"
     if bbox is None:
-        logger.warning("无法检测到棋盘格区域，返回原图")
+        logger.warning("无法定位到棋盘格区域，返回原图")
         return img, mask_filtered, (0, 0), ratio
 
     x, y, w, h = bbox
     x1, y1 = x, y
     x2, y2 = x + w, y + h
 
-    y1_orig, y2_orig, x1_orig, x2_orig = y1, y2, x1, x2
+    x1_orig, x2_orig, y1_orig, y2_orig = x1, x2, y1, y2
     y1 = max(y1 - padding, 0)
     y2 = min(y2 + padding, img.shape[0])
     x1 = max(x1 - padding, 0)
@@ -120,6 +116,6 @@ def crop_image_by_mask(
     cropped_mask_binary = (cropped_mask > 0).astype(np.uint8)
     cropped_ratio = float(np.count_nonzero(cropped_mask_binary)) / cropped_mask_binary.size * 100
 
-    logger.info("通过%s定位到区域: x[%d:%d], y[%d:%d]", detection_method, x1_orig, x2_orig, y1_orig, y2_orig)
-    logger.info("添加padding后裁剪到: x[%d:%d], y[%d:%d], 掩膜覆盖率: %.1f%%", x1, x2, y1, y2, cropped_ratio)
+    logger.info("通过连通域定位到区域: x[%d:%d], y[%d:%d]", x1_orig, x2_orig, y1_orig, y2_orig)
+    logger.info("添加 padding 后裁剪到: x[%d:%d], y[%d:%d], 掩膜覆盖率: %.1f%%", x1, x2, y1, y2, cropped_ratio)
     return cropped_img, cropped_mask, (x1, y1), cropped_ratio / 100.0

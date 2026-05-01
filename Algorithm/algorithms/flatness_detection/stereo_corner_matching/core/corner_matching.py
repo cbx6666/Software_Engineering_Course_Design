@@ -1,4 +1,5 @@
-"""Left/right chessboard corner matching."""
+"""左右棋盘格角点匹配。"""
+
 from typing import Dict, Optional, Tuple
 
 import numpy as np
@@ -17,6 +18,7 @@ logger = get_logger("corners.matching")
 
 
 def _empty_grid(pattern_size: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
+    """创建带 NaN 的空网格和有效性标记。"""
     rows, cols = pattern_size
     total_expected = rows * cols
     return (
@@ -26,6 +28,7 @@ def _empty_grid(pattern_size: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def _estimate_grid_axes(pts: np.ndarray, pattern_size: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
+    """根据点集整体分布估计棋盘格的行列方向。"""
     centered = pts - np.mean(pts, axis=0)
     if len(pts) < 2 or np.linalg.norm(centered) < 1e-6:
         return np.array([1.0, 0.0], dtype=np.float32), np.array([0.0, 1.0], dtype=np.float32)
@@ -52,6 +55,7 @@ def _estimate_grid_axes(pts: np.ndarray, pattern_size: Tuple[int, int]) -> Tuple
 
 
 def _cluster_axis(values: np.ndarray, n_clusters: int) -> np.ndarray:
+    """在一维投影上聚类，估计行或列的中心位置。"""
     values = values.astype(np.float32, copy=False)
     if n_clusters <= 1 or np.max(values) - np.min(values) < 1e-6:
         return np.full(n_clusters, float(np.mean(values)) if values.size else 0.0, dtype=np.float32)
@@ -72,12 +76,7 @@ def _cluster_axis(values: np.ndarray, n_clusters: int) -> np.ndarray:
 
 
 def sort_corners_to_grid(corners: np.ndarray, pattern_size: Tuple[int, int]) -> Tuple[np.ndarray, np.ndarray]:
-    """
-    Assign corners to a fixed row/column grid using estimated chessboard axes.
-
-    Missing grid cells remain NaN. Duplicate assignments keep the point closest
-    to the estimated row/column center.
-    """
+    """将角点分配到固定的行列网格位置，缺失格点保留 NaN。"""
     rows, cols = pattern_size
     total_expected = rows * cols
     pts = np.asarray(corners, dtype=np.float32).reshape(-1, 2)
@@ -109,6 +108,7 @@ def sort_corners_to_grid(corners: np.ndarray, pattern_size: Tuple[int, int]) -> 
 
 
 def _median_spacing(points: np.ndarray) -> float:
+    """估计点集的典型最近邻间距。"""
     pts = points.reshape(-1, 2)
     pts = pts[~np.isnan(pts).any(axis=1)]
     if len(pts) < 2:
@@ -121,6 +121,7 @@ def _median_spacing(points: np.ndarray) -> float:
 
 
 def _mad_outliers(values: np.ndarray, thresh: float) -> np.ndarray:
+    """基于 MAD 规则识别离群值。"""
     if values.size == 0:
         return np.zeros(0, dtype=bool)
     med = float(np.median(values))
@@ -138,6 +139,7 @@ def _build_quality(
     initial_count: int,
     outlier_count: int,
 ) -> Dict[str, float]:
+    """构建匹配质量统计信息。"""
     disparities = compute_disparities(matched_left, matched_right)
     y_diff = np.abs(matched_left[:, 0, 1] - matched_right[:, 0, 1]) if len(matched_left) else np.array([])
     return {
@@ -161,6 +163,7 @@ def _validate_and_filter_matches(
     expected_count: int,
     config: CornerMatchingConfig,
 ) -> Tuple[np.ndarray, np.ndarray, Dict[str, float]]:
+    """对匹配结果执行视差与几何一致性校验。"""
     initial_count = len(matched_left)
     min_required = max(config.min_matched_points, int(np.ceil(expected_count * config.min_match_ratio)))
     if initial_count < min_required:
@@ -223,12 +226,7 @@ def match_by_relative_coordinates(
     config: Optional[CornerMatchingConfig] = None,
     return_quality: bool = False,
 ):
-    """
-    Match left/right corners by stable row/column grid positions.
-
-    By default this keeps the old two-value return shape. Pass
-    return_quality=True to also receive a match-quality dictionary.
-    """
+    """根据稳定的网格位置对左右角点进行匹配。"""
     config = config or DEFAULT_CONFIG.corner_matching
     expected_count = pattern_size[0] * pattern_size[1]
 
@@ -265,7 +263,7 @@ def match_by_relative_coordinates(
 
 
 def compute_disparities(corners_left: np.ndarray, corners_right: np.ndarray) -> np.ndarray:
-    """计算视差值。"""
+    """计算左右角点的水平视差。"""
     x_left = corners_left[:, 0, 0]
     x_right = corners_right[:, 0, 0]
     return x_left - x_right

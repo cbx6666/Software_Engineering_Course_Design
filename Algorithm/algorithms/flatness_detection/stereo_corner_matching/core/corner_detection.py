@@ -1,4 +1,5 @@
-"""Chessboard corner detection helpers."""
+"""棋盘格角点检测与质量校验。"""
+
 from typing import Dict, List, Optional, Tuple
 
 import cv2
@@ -18,6 +19,7 @@ logger = get_logger("corners.detection")
 
 
 def _as_gray_uint8(img: np.ndarray) -> np.ndarray:
+    """将输入图像统一转换为单通道 uint8 灰度图。"""
     if img.ndim == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     if img.dtype == np.uint8:
@@ -28,7 +30,7 @@ def _as_gray_uint8(img: np.ndarray) -> np.ndarray:
 
 
 def enhance_chessboard_region(img: np.ndarray, config: CornerDetectionConfig = None) -> np.ndarray:
-    """Enhance chessboard contrast with CLAHE."""
+    """使用 CLAHE 增强棋盘格区域对比度。"""
     config = config or DEFAULT_CONFIG.corner_detection
     img = _as_gray_uint8(img)
     clahe = cv2.createCLAHE(
@@ -39,6 +41,7 @@ def enhance_chessboard_region(img: np.ndarray, config: CornerDetectionConfig = N
 
 
 def _preprocess_image(img: np.ndarray, mode: str, config: CornerDetectionConfig) -> np.ndarray:
+    """按指定模式生成角点检测前的预处理图像。"""
     img = _as_gray_uint8(img)
     if mode == "original":
         return img
@@ -64,6 +67,7 @@ def _preprocess_image(img: np.ndarray, mode: str, config: CornerDetectionConfig)
 
 
 def _apply_mask(img: np.ndarray, mask: Optional[np.ndarray]) -> np.ndarray:
+    """将掩膜应用到待检测图像上。"""
     if mask is None:
         return img
     mask = _as_gray_uint8(mask)
@@ -74,6 +78,7 @@ def _apply_mask(img: np.ndarray, mask: Optional[np.ndarray]) -> np.ndarray:
 
 
 def _normalize_corners(corners: np.ndarray) -> Optional[np.ndarray]:
+    """将 OpenCV 不同格式的角点结果统一为 (N, 1, 2)。"""
     if corners is None:
         return None
     corners = np.asarray(corners, dtype=np.float32)
@@ -87,6 +92,7 @@ def _normalize_corners(corners: np.ndarray) -> Optional[np.ndarray]:
 
 
 def _opencv_result(result) -> Tuple[bool, Optional[np.ndarray]]:
+    """兼容不同 OpenCV 接口的返回值格式。"""
     if isinstance(result, tuple):
         if len(result) >= 2:
             return bool(result[0]), _normalize_corners(result[1])
@@ -95,6 +101,7 @@ def _opencv_result(result) -> Tuple[bool, Optional[np.ndarray]]:
 
 
 def _sb_flag_list() -> List[int]:
+    """生成 SB 角点检测的候选 flag 列表。"""
     flags = [cv2.CALIB_CB_NORMALIZE_IMAGE]
     if hasattr(cv2, "CALIB_CB_EXHAUSTIVE"):
         flags.append(cv2.CALIB_CB_EXHAUSTIVE | cv2.CALIB_CB_NORMALIZE_IMAGE)
@@ -104,6 +111,7 @@ def _sb_flag_list() -> List[int]:
 
 
 def _classic_flags(allow_partial: bool) -> int:
+    """生成传统角点检测所需的 flag。"""
     flags = cv2.CALIB_CB_ADAPTIVE_THRESH | cv2.CALIB_CB_NORMALIZE_IMAGE | cv2.CALIB_CB_FILTER_QUADS
     partial_flag = getattr(cv2, "CALIB_CB_PARTIAL_OK", 0)
     if allow_partial and partial_flag:
@@ -112,6 +120,7 @@ def _classic_flags(allow_partial: bool) -> int:
 
 
 def _required_count(pattern_size: Tuple[int, int], allow_partial: bool, config: CornerDetectionConfig) -> int:
+    """计算当前配置下至少需要多少个角点。"""
     expected = pattern_size[0] * pattern_size[1]
     if not allow_partial:
         return expected
@@ -119,6 +128,7 @@ def _required_count(pattern_size: Tuple[int, int], allow_partial: bool, config: 
 
 
 def _nearest_distances(pts: np.ndarray) -> np.ndarray:
+    """计算每个角点到最近邻角点的距离。"""
     if len(pts) < 2:
         return np.array([], dtype=np.float32)
     diff = pts[:, None, :] - pts[None, :, :]
@@ -132,6 +142,7 @@ def _validate_full_grid_orientation(
     grid_shape: Tuple[int, int],
     config: CornerDetectionConfig,
 ) -> Tuple[bool, str, Dict[str, float]]:
+    """对完整棋盘格做行列单调性和间距校验。"""
     rows, cols = grid_shape
     grid = pts.reshape(rows, cols, 2)
     row_steps = np.linalg.norm(np.diff(grid, axis=1), axis=2)
@@ -172,7 +183,7 @@ def validate_corner_quality(
     allow_partial: bool = True,
     config: CornerDetectionConfig = None,
 ) -> Tuple[bool, str, Dict[str, float]]:
-    """Validate corner count, coverage, duplicates, and full-grid monotonicity."""
+    """校验角点数量、覆盖率、重复点和完整网格几何质量。"""
     config = config or DEFAULT_CONFIG.corner_detection
     corners = _normalize_corners(corners)
     if corners is None:
@@ -232,6 +243,7 @@ def validate_corner_quality(
 
 
 def _try_sb(img: np.ndarray, pattern_size: Tuple[int, int], flags: int) -> Tuple[bool, Optional[np.ndarray]]:
+    """尝试使用 SB 接口检测棋盘格角点。"""
     if not hasattr(cv2, "findChessboardCornersSB"):
         return False, None
     try:
@@ -242,6 +254,7 @@ def _try_sb(img: np.ndarray, pattern_size: Tuple[int, int], flags: int) -> Tuple
 
 
 def _try_classic(img: np.ndarray, pattern_size: Tuple[int, int], flags: int) -> Tuple[bool, Optional[np.ndarray]]:
+    """尝试使用传统接口检测棋盘格角点。"""
     try:
         return _opencv_result(cv2.findChessboardCorners(img, pattern_size, flags=flags))
     except cv2.error as exc:
@@ -258,18 +271,12 @@ def find_chessboard_corners(
     config: CornerDetectionConfig = None,
     raise_on_failure: bool = False,
 ) -> Optional[np.ndarray]:
-    """
-    Detect chessboard corners with SB, classic, and preprocessing fallbacks.
-
-    The return shape remains compatible with the old code: (N, 1, 2), or None
-    when detection fails and raise_on_failure is False.
-    """
+    """使用多策略回退机制检测棋盘格角点。"""
     config = config or DEFAULT_CONFIG.corner_detection
     base = enhance_chessboard_region(img, config=config) if enhance else _as_gray_uint8(img)
-    preprocess_modes = config.preprocess_modes
     failures: List[str] = []
 
-    for mode in preprocess_modes:
+    for mode in config.preprocess_modes:
         processed = _apply_mask(_preprocess_image(base, mode, config), mask)
         for scale in config.scales:
             if scale == 1.0:
@@ -279,6 +286,7 @@ def find_chessboard_corners(
 
             attempts: List[Tuple[str, int]] = [("sb", flags) for flags in _sb_flag_list()]
             attempts.append(("classic", _classic_flags(allow_partial)))
+
             for method, flags in attempts:
                 ok, corners = (
                     _try_sb(scaled, pattern_size, flags)
@@ -291,7 +299,7 @@ def find_chessboard_corners(
                 if scale != 1.0:
                     corners = corners / scale
 
-                valid, reason, metrics = validate_corner_quality(
+                valid, reason, _ = validate_corner_quality(
                     corners,
                     processed.shape,
                     pattern_size,
@@ -323,7 +331,7 @@ def refine_corners(
     corners: np.ndarray,
     config: CornerDetectionConfig = None,
 ) -> np.ndarray:
-    """Refine corners with cornerSubPix, falling back to original corners on failure."""
+    """使用 `cornerSubPix` 做亚像素精化，失败时回退原始角点。"""
     config = config or DEFAULT_CONFIG.corner_detection
     corners = _normalize_corners(corners)
     if corners is None or len(corners) == 0:
@@ -350,6 +358,7 @@ def refine_corners(
 
 
 def draw_corners_visualization(img: np.ndarray, corners: np.ndarray) -> np.ndarray:
+    """绘制角点编号可视化图。"""
     vis = cv2.cvtColor(_as_gray_uint8(img), cv2.COLOR_GRAY2BGR)
     corners = _normalize_corners(corners)
     if corners is None:

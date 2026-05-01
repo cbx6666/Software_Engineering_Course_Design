@@ -9,5 +9,3 @@ export function ResultPointCloud({ data }: { data: PointCloudData }) {
     </div>
   );
 }
-
-
