@@ -35,3 +35,4 @@ class Preprocessor:
         if max_val == min_val:
             return np.zeros_like(gray_img)
         return ((gray_img - min_val) / (max_val - min_val) * 255).astype(np.uint8)
+

@@ -1,177 +1,121 @@
-"""
-图像处理相关函数
-"""
-from typing import Tuple, Optional
+"""角点检测前的图像区域定位工具。"""
+
+from typing import Optional, Tuple
+
 import cv2
 import numpy as np
 
+try:
+    from ...config import DEFAULT_CONFIG, CornerDetectionConfig
+    from ...logging_utils import get_logger
+except ImportError:
+    from config import DEFAULT_CONFIG, CornerDetectionConfig
+    from logging_utils import get_logger
 
-def detect_chessboard_mask(mask: np.ndarray, min_area: int = 5000) -> Optional[Tuple[int, int, int, int]]:
-    """
-    从混杂的掩码图中准确识别棋盘格区域。
-    
-    使用结构形态 + 几何特征 + 内部模式验证的方法，从一堆"其他白色区域 + 黑白噪声"掩码里，
-    准确找出棋盘格掩码。棋盘格掩码的特征：白色大矩形 + 规则黑白方格（白底 + 黑色正方形）。
-    
-    过滤策略：
-    1. 面积过滤：面积 > 阈值（排除小噪声）
-    2. 形状过滤：轮廓近似 4 边形（棋盘格是矩形）
-    3. 宽高比过滤：宽高比合理（0.6-2.0）
-    4. 内部模式验证：行/列黑色分布呈周期性（最强特征，几乎无法伪造）
-    
-    参数：
-        mask: 掩码图像（二值图，255=白色区域，0=黑色区域）
-        min_area: 最小面积阈值，默认 5000 像素
-    
-    返回：
-        如果检测成功，返回 (x, y, w, h)，否则返回 None
-    """
+
+logger = get_logger("corners.image")
+
+
+def _binary_mask(mask: np.ndarray) -> np.ndarray:
+    """将输入掩膜统一转换为二值图。"""
     if mask is None:
         return None
-    
-    # 确保是二值图
-    if len(mask.shape) == 3:
-        mask_binary = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-    else:
-        mask_binary = mask.copy()
-    
-    # 二值化：确保是 0 和 255
-    _, mask_binary = cv2.threshold(mask_binary, 127, 255, cv2.THRESH_BINARY)
-    
-    # 查找所有轮廓
-    contours, _ = cv2.findContours(mask_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    
+    if mask.ndim == 3:
+        mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+    _, mask = cv2.threshold(mask.astype(np.uint8, copy=False), 127, 255, cv2.THRESH_BINARY)
+    return mask
+
+
+def _nonzero_bbox(mask: np.ndarray) -> Optional[Tuple[int, int, int, int]]:
+    """返回掩膜非零区域的最小包围框。"""
+    ys, xs = np.nonzero(mask > 0)
+    if xs.size == 0 or ys.size == 0:
+        return None
+    x1, x2 = int(np.min(xs)), int(np.max(xs))
+    y1, y2 = int(np.min(ys)), int(np.max(ys))
+    return x1, y1, x2 - x1 + 1, y2 - y1 + 1
+
+
+def detect_chessboard_mask(
+    mask: np.ndarray,
+    min_area: int = None,
+    config: CornerDetectionConfig = None,
+) -> Optional[Tuple[int, int, int, int]]:
+    """从实心掩膜中定位棋盘格候选框。"""
+    config = config or DEFAULT_CONFIG.corner_detection
+    min_area = config.crop_min_area if min_area is None else min_area
+    mask_binary = _binary_mask(mask)
+    if mask_binary is None:
+        return None
+
+    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(mask_binary, connectivity=8)
     candidates = []
-    
-    for cnt in contours:
-        # 过滤 1：面积 > 阈值
-        area = cv2.contourArea(cnt)
-        if area < min_area:
+    min_ratio, max_ratio = config.crop_aspect_ratio_range
+
+    for idx in range(1, num_labels):
+        x, y, w, h, area = stats[idx]
+        if area < min_area or w <= 0 or h <= 0:
             continue
-        
-        # 过滤 2：形状接近四边形
-        peri = cv2.arcLength(cnt, True)
-        approx = cv2.approxPolyDP(cnt, 0.02 * peri, True)
-        if len(approx) != 4:
+
+        aspect = w / float(h)
+        if aspect < min_ratio or aspect > max_ratio:
             continue
-        
-        # 过滤 3：宽高比合理
-        x, y, w, h = cv2.boundingRect(cnt)
-        ratio = w / h if h > 0 else 0
-        if not (0.6 < ratio < 2.0):
+
+        fill_ratio = area / float(w * h)
+        if fill_ratio < config.crop_component_min_fill_ratio:
             continue
-        
-        # 过滤 4：内部周期验证（最强特征）
-        # 裁剪出区域
-        crop = mask_binary[y:y+h, x:x+w]
-        if crop.size == 0:
-            continue
-        
-        # 统计每列和每行的黑色数量（0值）
-        col_sum = np.sum(crop == 0, axis=0)  # 每列的黑色像素数
-        row_sum = np.sum(crop == 0, axis=1)  # 每行的黑色像素数
-        
-        # 检测周期性峰值
-        # 棋盘格的列方向应该有多个峰值（对应多列黑色方格）
-        col_distance = max(w // 10, 5)  # 峰值之间的最小距离
-        row_distance = max(h // 10, 5)
-        
-        # 使用简单的峰值检测方法
-        col_peaks = []
-        row_peaks = []
-        for i in range(1, len(col_sum) - 1):
-            if col_sum[i] > col_sum[i-1] and col_sum[i] > col_sum[i+1] and col_sum[i] > np.mean(col_sum):
-                col_peaks.append(i)
-        for i in range(1, len(row_sum) - 1):
-            if row_sum[i] > row_sum[i-1] and row_sum[i] > row_sum[i+1] and row_sum[i] > np.mean(row_sum):
-                row_peaks.append(i)
-        
-        # 简单的距离过滤
-        if col_distance and len(col_peaks) > 1:
-            filtered = [col_peaks[0]]
-            for p in col_peaks[1:]:
-                if p - filtered[-1] >= col_distance:
-                    filtered.append(p)
-            col_peaks = filtered
-        if row_distance and len(row_peaks) > 1:
-            filtered = [row_peaks[0]]
-            for p in row_peaks[1:]:
-                if p - filtered[-1] >= row_distance:
-                    filtered.append(p)
-            row_peaks = filtered
-        
-        col_peaks = np.array(col_peaks)
-        row_peaks = np.array(row_peaks)
-        
-        # 棋盘格应该有至少 3-4 个峰值（对应多行/多列）
-        if len(col_peaks) >= 3 and len(row_peaks) >= 3:
-            candidates.append((cnt, x, y, w, h, area))
-    
-    # 返回面积最大的候选区域
+
+        score = float(area) * float(fill_ratio)
+        candidates.append((score, x, y, w, h))
+
     if candidates:
-        # 按面积排序，选择最大的
-        candidates = sorted(candidates, key=lambda c: c[5], reverse=True)
-        _, x, y, w, h, _ = candidates[0]
-        return (x, y, w, h)
-    
-    return None
+        candidates.sort(reverse=True)
+        _, x, y, w, h = candidates[0]
+        return int(x), int(y), int(w), int(h)
+
+    return _nonzero_bbox(mask_binary)
 
 
-def crop_image_by_mask(img: np.ndarray,
-                       mask: np.ndarray,
-                       padding: int = 50) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int], float]:
-    """
-    根据掩膜精确裁剪图像到棋盘格区域。
-    
-    使用结构形态 + 几何特征 + 内部模式验证的方法（detect_chessboard_mask）识别棋盘格区域。
-    
-    参数：
-        img: 输入图像
-        mask: 掩膜图像（棋盘格掩膜，白色区域表示棋盘格位置，内部有黑色矩形）
-        padding: 裁剪边界的额外边距（像素）
-    
-    返回：
-        (裁剪后的图像, 裁剪后的掩膜, (x偏移, y偏移), 掩膜覆盖比例)
-    """
+def crop_image_by_mask(
+    img: np.ndarray,
+    mask: np.ndarray,
+    padding: int = None,
+    config: CornerDetectionConfig = None,
+) -> Tuple[np.ndarray, np.ndarray, Tuple[int, int], float]:
+    """按掩膜定位结果裁剪图像，并返回偏移量和覆盖率。"""
+    config = config or DEFAULT_CONFIG.corner_detection
+    padding = config.crop_padding if padding is None else padding
+
     if mask is None or img is None:
         return img, mask, (0, 0), 0.0
 
-    mask_binary = (mask > 0).astype(np.uint8)
-    ratio = float(np.sum(mask_binary)) / mask_binary.size
+    mask_binary = (_binary_mask(mask) > 0).astype(np.uint8)
+    ratio = float(np.count_nonzero(mask_binary)) / mask_binary.size
     if ratio == 0:
         return img, mask, (0, 0), 0.0
 
     mask_filtered = (mask_binary * 255).astype(np.uint8)
-    
-    # 使用结构形态 + 几何特征 + 内部模式验证的方法
-    bbox = detect_chessboard_mask(mask)
+    bbox = detect_chessboard_mask(mask_filtered, config=config)
     if bbox is None:
-        print(f"  [警告] 无法检测到棋盘格区域，返回原图")
+        logger.warning("无法定位到棋盘格区域，返回原图")
         return img, mask_filtered, (0, 0), ratio
-    
+
     x, y, w, h = bbox
     x1, y1 = x, y
     x2, y2 = x + w, y + h
-    detection_method = "结构特征检测"
 
-    # 添加 padding 并确保不越界
-    y1_orig, y2_orig, x1_orig, x2_orig = y1, y2, x1, x2
+    x1_orig, x2_orig, y1_orig, y2_orig = x1, x2, y1, y2
     y1 = max(y1 - padding, 0)
     y2 = min(y2 + padding, img.shape[0])
     x1 = max(x1 - padding, 0)
     x2 = min(x2 + padding, img.shape[1])
 
-    # 执行裁剪
     cropped_img = img[y1:y2, x1:x2]
     cropped_mask = mask_filtered[y1:y2, x1:x2]
-    
-    # 计算裁剪后掩膜覆盖率（用于信息输出）
+
     cropped_mask_binary = (cropped_mask > 0).astype(np.uint8)
-    cropped_ratio = float(np.sum(cropped_mask_binary)) / cropped_mask_binary.size * 100
-    
-    # 统一输出最终裁剪信息
-    print(f"  [提示] 通过{detection_method}定位到区域: x[{x1_orig}:{x2_orig}], y[{y1_orig}:{y2_orig}]")
-    print(f"  [提示] 添加padding后裁剪到: x[{x1}:{x2}], y[{y1}:{y2}], 掩膜覆盖率: {cropped_ratio:.1f}%")
+    cropped_ratio = float(np.count_nonzero(cropped_mask_binary)) / cropped_mask_binary.size * 100
 
+    logger.info("通过连通域定位到区域: x[%d:%d], y[%d:%d]", x1_orig, x2_orig, y1_orig, y2_orig)
+    logger.info("添加 padding 后裁剪到: x[%d:%d], y[%d:%d], 掩膜覆盖率: %.1f%%", x1, x2, y1, y2, cropped_ratio)
     return cropped_img, cropped_mask, (x1, y1), cropped_ratio / 100.0
-

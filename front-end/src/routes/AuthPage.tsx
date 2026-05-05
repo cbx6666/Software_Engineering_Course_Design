@@ -7,9 +7,9 @@ export function AuthPage() {
   const { login, register, isDevAuthBypass, isLoggingIn } = useAuth();
   const navigate = useNavigate();
 
-  if (isDevAuthBypass) {
-    return <Navigate to={ROUTE_PATHS.HOME} replace />;
-  }
+  // if (isDevAuthBypass) {
+  //   return <Navigate to={ROUTE_PATHS.HOME} replace />;
+  // }
 
   return (
     <LoginPage

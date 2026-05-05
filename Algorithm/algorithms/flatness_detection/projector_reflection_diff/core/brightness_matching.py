@@ -5,8 +5,45 @@ from typing import Tuple
 import cv2
 import numpy as np
 
+try:
+    from ...config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from ...logging_utils import get_logger
+except ImportError:
+    from config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from logging_utils import get_logger
 
-def build_fit_mask(env: np.ndarray, mix: np.ndarray, diff_thresh: int = 12) -> np.ndarray:
+
+logger = get_logger("projection.brightness")
+
+
+def _fit_line_from_samples(x: np.ndarray, y: np.ndarray) -> Tuple[float, float]:
+    """Fit y = beta * x + gamma without building a large design matrix."""
+    x_mean = float(np.mean(x))
+    y_mean = float(np.mean(y))
+    dx = x - x_mean
+    dy = y - y_mean
+    denom = float(np.dot(dx, dx))
+    if denom <= 1e-12:
+        return 1.0, y_mean - x_mean
+
+    beta = float(np.dot(dx, dy) / denom)
+    gamma = y_mean - beta * x_mean
+    return beta, gamma
+
+
+def _odd_kernel(size: int) -> np.ndarray:
+    size = max(1, int(size))
+    if size % 2 == 0:
+        size += 1
+    return cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (size, size))
+
+
+def build_fit_mask(
+    env: np.ndarray,
+    mix: np.ndarray,
+    diff_thresh: int = None,
+    config: ProjectionDiffConfig = None,
+) -> np.ndarray:
     """
     找出两张图片中"变化很小"的区域，这些区域用来做亮度匹配，排除棋盘格区域。
     
@@ -29,25 +66,57 @@ def build_fit_mask(env: np.ndarray, mix: np.ndarray, diff_thresh: int = 12) -> n
     返回：
         一个二值掩膜（uint8），255 表示"可以用这个区域做匹配"，0 表示"不能用"。
     """
+    config = config or DEFAULT_CONFIG.projection
+    base_thresh = config.diff_thresh if diff_thresh is None else diff_thresh
+
     # 计算两张图像的绝对差值
     diff = cv2.absdiff(mix, env)
     diff_gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
-    
+
+    med = float(np.median(diff_gray))
+    mad = float(np.median(np.abs(diff_gray.astype(np.float32) - med)))
+    robust_thresh = med + config.diff_robust_scale * max(mad, 1.0)
+    percentile_thresh = float(np.percentile(diff_gray, config.diff_percentile))
+    adaptive_thresh = min(max(base_thresh, robust_thresh, percentile_thresh), config.max_diff_thresh)
+
     # 找出差值小于阈值的像素（稳定区域，没有投影图案）
-    mask = (diff_gray < diff_thresh).astype(np.uint8) * 255
+    mask = (diff_gray <= adaptive_thresh).astype(np.uint8) * 255
     
     # 排除过亮或过暗的像素（避免高光或阴影影响匹配）
-    sat = (np.max(mix, axis=2) < 250) & (np.max(env, axis=2) < 250)
-    mask[sat == 0] = 0
-    
-    # 形态学开运算：先腐蚀后膨胀，去除小噪声
-    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
-    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel, iterations=1)
+    mix_gray = cv2.cvtColor(mix, cv2.COLOR_BGR2GRAY)
+    env_gray = cv2.cvtColor(env, cv2.COLOR_BGR2GRAY)
+    valid_intensity = (
+        (mix_gray > config.intensity_low)
+        & (env_gray > config.intensity_low)
+        & (mix_gray < config.intensity_high)
+        & (env_gray < config.intensity_high)
+        & (np.max(mix, axis=2) < config.intensity_high)
+        & (np.max(env, axis=2) < config.intensity_high)
+    )
+    mask[~valid_intensity] = 0
+
+    if config.fit_mask_open_kernel > 1:
+        mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, _odd_kernel(config.fit_mask_open_kernel), iterations=1)
+    if config.fit_mask_close_kernel > 1:
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, _odd_kernel(config.fit_mask_close_kernel), iterations=1)
+
+    fit_ratio = float(np.count_nonzero(mask)) / mask.size
+    if fit_ratio < config.min_fit_ratio:
+        logger.warning(
+            "fit mask is too small (%.3f), falling back to valid-intensity mask",
+            fit_ratio,
+        )
+        mask = valid_intensity.astype(np.uint8) * 255
     
     return mask
 
 
-def robust_fit_beta_gamma(env_ch: np.ndarray, mix_ch: np.ndarray, mask: np.ndarray) -> Tuple[float, float]:
+def robust_fit_beta_gamma(
+    env_ch: np.ndarray,
+    mix_ch: np.ndarray,
+    mask: np.ndarray,
+    config: ProjectionDiffConfig = None,
+) -> Tuple[float, float]:
     """
     对单个颜色通道做亮度匹配，找到让"关灯图×比例 + 偏移 ≈ 开灯图"的两个参数。
     
@@ -74,46 +143,48 @@ def robust_fit_beta_gamma(env_ch: np.ndarray, mix_ch: np.ndarray, mask: np.ndarr
         - beta: 比例系数，通常在 0.7-1.3 之间（如果两张图亮度差不多，beta 接近 1.0）
         - gamma: 偏移量，通常在 -30 到 30 之间（如果两张图亮度一样，gamma 接近 0）
     """
+    config = config or DEFAULT_CONFIG.projection
+
     # 从掩膜区域提取有效像素值
     m = mask.astype(bool)
-    x = env_ch[m].astype(np.float32).reshape(-1, 1)  # 关灯图通道值
-    y = mix_ch[m].astype(np.float32).reshape(-1, 1)  # 开灯图通道值
+    x = env_ch[m].astype(np.float32, copy=False).ravel()  # 关灯图通道值
+    y = mix_ch[m].astype(np.float32, copy=False).ravel()  # 开灯图通道值
     
     # 如果有效样本太少，返回默认值（不做匹配）
-    if x.size < 100:
+    if x.size < config.min_fit_samples:
+        if x.size > 0:
+            gamma = float(np.median(y - x))
+            gamma = float(np.clip(gamma, *config.gamma_range))
+            return 1.0, gamma
         return 1.0, 0.0
     
-    # 构建线性方程组：y = beta * x + gamma
-    # X = [x, 1]，用于最小二乘拟合
-    X = np.hstack([x, np.ones_like(x)])
-    theta, _, _, _ = np.linalg.lstsq(X, y, rcond=None)
-    beta = float(theta[0, 0])  # 比例系数（提取标量值）
-    gamma = float(theta[1, 0])  # 偏移量（提取标量值）
+    beta, gamma = _fit_line_from_samples(x, y)
     
     # 计算拟合残差，用于识别异常点
-    residuals = (y - (beta * x + gamma)).ravel()
+    residuals = y - (beta * x + gamma)
     abs_res = np.abs(residuals)
     
     # 使用 80 分位数作为阈值，筛选内点
-    thr = np.percentile(abs_res, 80)
+    thr = np.percentile(abs_res, config.residual_percentile)
     inliers = abs_res <= thr
     
     # 仅使用内点重新拟合，提高鲁棒性
-    Xin = X[inliers]
-    yin = y[inliers]
-    if Xin.shape[0] >= 50:
-        theta2, _, _, _ = np.linalg.lstsq(Xin, yin, rcond=None)
-        beta = float(theta2[0, 0])  # 提取标量值
-        gamma = float(theta2[1, 0])  # 提取标量值
+    if np.count_nonzero(inliers) >= config.min_refit_samples:
+        beta, gamma = _fit_line_from_samples(x[inliers], y[inliers])
     
     # 限制参数在合理范围内，避免极端值
-    beta = float(np.clip(beta, 0.7, 1.3))
-    gamma = float(np.clip(gamma, -30.0, 30.0))
+    beta = float(np.clip(beta, *config.beta_range))
+    gamma = float(np.clip(gamma, *config.gamma_range))
     
     return beta, gamma
 
 
-def channelwise_compensated_diff(env: np.ndarray, mix: np.ndarray, mask: np.ndarray) -> np.ndarray:
+def channelwise_compensated_diff(
+    env: np.ndarray,
+    mix: np.ndarray,
+    mask: np.ndarray,
+    config: ProjectionDiffConfig = None,
+) -> np.ndarray:
     """
     对三个颜色通道（蓝、绿、红）分别做亮度匹配后相减，得到"纯投影反射"。
     
@@ -135,16 +206,20 @@ def channelwise_compensated_diff(env: np.ndarray, mix: np.ndarray, mask: np.ndar
     返回：
         一张彩色图（BGR），表示"纯投影反射"。像素值被限制在 0-255 之间。
     """
+    config = config or DEFAULT_CONFIG.projection
+    env_f = env.astype(np.float32, copy=False)
+    mix_f = mix.astype(np.float32, copy=False)
+
     # 初始化输出数组（三通道）
-    diff = np.zeros_like(mix, dtype=np.float32)
+    diff = np.empty_like(mix_f)
     
     # 对每个颜色通道（B、G、R）分别处理
     for c in range(3):
         # 计算该通道的亮度匹配参数
-        beta, gamma = robust_fit_beta_gamma(env[:, :, c], mix[:, :, c], mask)
+        beta, gamma = robust_fit_beta_gamma(env_f[:, :, c], mix_f[:, :, c], mask, config=config)
         
         # 补偿相减：纯投影反射 = 开灯图 - (beta × 关灯图 + gamma)
-        ch = mix[:, :, c].astype(np.float32) - (beta * env[:, :, c].astype(np.float32) + gamma)
+        ch = mix_f[:, :, c] - (beta * env_f[:, :, c] + gamma)
         diff[:, :, c] = ch
     
     # 限制像素值在 [0, 255] 范围内，并转换为 uint8

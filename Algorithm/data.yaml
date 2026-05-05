@@ -1,0 +1,12 @@
+path: C:/Users/elain/Desktop/玻璃幕墙/Software_Engineering_Course_Design/Algorithm/datasets/datasets
+
+train: train/images
+val: val/images
+test: test/images
+
+names:
+  0: crack
+
+#Train: 2160
+#Val:   617
+#Test:  310

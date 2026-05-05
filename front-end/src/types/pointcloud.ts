@@ -1,15 +1,14 @@
 export interface PointCloudData {
-  /** N×3 array [x, y, z] (meters) */
+  /** 原始三维点坐标，单位为米 */
   points: number[][];
-  /** N array, distance to plane (meters) */
+  /** 原始点到拟合平面的距离，单位为米 */
   dists: number[];
-  /** [a, b, c] for z = a x + b y + c */
+  /** 原始平面方程参数，格式为 z = a x + b y + c */
   plane: number[];
-  /** [nx, ny, nz] */
+  /** 平面法向量 */
   normal?: number[];
-  /** Optional: already projected by backend */
+  /** 后端已经投影到拟合平面坐标系下的点，前端优先使用 */
   projected_points?: number[][];
+  /** 投影坐标系下的高度偏差，通常与 projected_points 的第三列一致 */
   projected_dists?: number[];
 }
-
-

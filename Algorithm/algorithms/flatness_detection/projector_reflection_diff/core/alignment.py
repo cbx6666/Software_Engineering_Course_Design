@@ -5,6 +5,16 @@ from typing import Tuple
 import cv2
 import numpy as np
 
+try:
+    from ...config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from ...logging_utils import get_logger
+except ImportError:  # Compatible with detect.py adding flatness_detection to sys.path.
+    from config import DEFAULT_CONFIG, ProjectionDiffConfig
+    from logging_utils import get_logger
+
+
+logger = get_logger("projection.alignment")
+
 
 def resize_to_match(src: np.ndarray, target_shape: Tuple[int, int]) -> np.ndarray:
     """
@@ -30,8 +40,137 @@ def resize_to_match(src: np.ndarray, target_shape: Tuple[int, int]) -> np.ndarra
     return cv2.resize(src, (w, h), interpolation=cv2.INTER_LINEAR)
 
 
-def ecc_register(moving: np.ndarray, fixed: np.ndarray, motion_model: str = "homography",
-                 fast_mode: bool = True, max_iterations: int = 50, eps: float = 1e-4) -> np.ndarray:
+def _warp_mode_and_matrix(motion_model: str) -> Tuple[int, np.ndarray]:
+    if motion_model == "homography":
+        return cv2.MOTION_HOMOGRAPHY, np.eye(3, 3, dtype=np.float32)
+    if motion_model == "translation":
+        return cv2.MOTION_TRANSLATION, np.eye(2, 3, dtype=np.float32)
+    return cv2.MOTION_AFFINE, np.eye(2, 3, dtype=np.float32)
+
+
+def _prepare_ecc_gray(img: np.ndarray, blur_kernel: int) -> np.ndarray:
+    if img.ndim == 3:
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = img
+
+    if blur_kernel > 1:
+        blur_kernel = max(3, blur_kernel | 1)
+        gray = cv2.GaussianBlur(gray, (blur_kernel, blur_kernel), 0)
+
+    gray = gray.astype(np.float32, copy=False)
+    cv2.normalize(gray, gray, 0.0, 1.0, cv2.NORM_MINMAX)
+    return gray
+
+
+def _scale_warp_to_full(warp_matrix: np.ndarray, warp_mode: int, scale_x: float, scale_y: float) -> np.ndarray:
+    if warp_mode == cv2.MOTION_HOMOGRAPHY:
+        scale = np.array([[scale_x, 0, 0], [0, scale_y, 0], [0, 0, 1]], dtype=np.float32)
+        scale_inv = np.array([[1 / scale_x, 0, 0], [0, 1 / scale_y, 0], [0, 0, 1]], dtype=np.float32)
+        return scale_inv @ warp_matrix @ scale
+
+    warp_matrix = warp_matrix.copy()
+    warp_matrix[0, 2] *= scale_x
+    warp_matrix[1, 2] *= scale_y
+    return warp_matrix
+
+
+def _run_ecc(
+    moving: np.ndarray,
+    fixed: np.ndarray,
+    motion_model: str,
+    config: ProjectionDiffConfig,
+    fast_mode: bool,
+    max_iterations: int,
+    eps: float,
+) -> Tuple[int, np.ndarray]:
+    h, w = fixed.shape[:2]
+    warp_mode, warp_matrix = _warp_mode_and_matrix(motion_model)
+    criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, max_iterations, eps)
+
+    if fast_mode and min(h, w) > config.ecc_downsample_min_size:
+        scale = config.ecc_downsample_min_size / float(min(h, w))
+        h_small = max(2, int(round(h * scale)))
+        w_small = max(2, int(round(w * scale)))
+        fixed_small = cv2.resize(fixed, (w_small, h_small), interpolation=cv2.INTER_AREA)
+        moving_small = cv2.resize(moving, (w_small, h_small), interpolation=cv2.INTER_AREA)
+
+        fixed_gray = _prepare_ecc_gray(fixed_small, config.ecc_blur_kernel)
+        moving_gray = _prepare_ecc_gray(moving_small, config.ecc_blur_kernel)
+        _, warp_matrix = cv2.findTransformECC(
+            fixed_gray,
+            moving_gray,
+            warp_matrix,
+            warp_mode,
+            criteria,
+            inputMask=None,
+            gaussFiltSize=config.ecc_gauss_filter_size,
+        )
+
+        warp_matrix = _scale_warp_to_full(warp_matrix, warp_mode, w / w_small, h / h_small)
+
+        if config.ecc_refine_iterations > 0:
+            refine_criteria = (
+                cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT,
+                config.ecc_refine_iterations,
+                config.ecc_refine_eps,
+            )
+            fixed_gray_full = _prepare_ecc_gray(fixed, config.ecc_blur_kernel)
+            moving_gray_full = _prepare_ecc_gray(moving, config.ecc_blur_kernel)
+            _, warp_matrix = cv2.findTransformECC(
+                fixed_gray_full,
+                moving_gray_full,
+                warp_matrix,
+                warp_mode,
+                refine_criteria,
+                inputMask=None,
+                gaussFiltSize=config.ecc_gauss_filter_size,
+            )
+    else:
+        fixed_gray = _prepare_ecc_gray(fixed, config.ecc_blur_kernel)
+        moving_gray = _prepare_ecc_gray(moving, config.ecc_blur_kernel)
+        _, warp_matrix = cv2.findTransformECC(
+            fixed_gray,
+            moving_gray,
+            warp_matrix,
+            warp_mode,
+            criteria,
+            inputMask=None,
+            gaussFiltSize=config.ecc_gauss_filter_size,
+        )
+
+    return warp_mode, warp_matrix
+
+
+def _apply_warp(moving: np.ndarray, fixed_shape: Tuple[int, int], warp_mode: int, warp_matrix: np.ndarray) -> np.ndarray:
+    h, w = fixed_shape
+    if warp_mode == cv2.MOTION_HOMOGRAPHY:
+        return cv2.warpPerspective(
+            moving,
+            warp_matrix,
+            (w, h),
+            flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP,
+            borderMode=cv2.BORDER_REPLICATE,
+        )
+
+    return cv2.warpAffine(
+        moving,
+        warp_matrix,
+        (w, h),
+        flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP,
+        borderMode=cv2.BORDER_REPLICATE,
+    )
+
+
+def ecc_register(
+    moving: np.ndarray,
+    fixed: np.ndarray,
+    motion_model: str = "homography",
+    fast_mode: bool = True,
+    max_iterations: int = 50,
+    eps: float = 1e-4,
+    config: ProjectionDiffConfig = None,
+) -> np.ndarray:
     """
     把关灯图的位置"对齐"到开灯图，消除相机轻微移动造成的错位。
     
@@ -63,114 +202,32 @@ def ecc_register(moving: np.ndarray, fixed: np.ndarray, motion_model: str = "hom
     返回：
         对齐后的关灯图，尺寸和 fixed 一样。
     """
+    config = config or DEFAULT_CONFIG.projection
     h, w = fixed.shape[:2]
-    
-    # 快速模式：多级优化策略
-    if fast_mode and min(h, w) > 800:
-        # 第一级：在下采样图像上快速计算
-        # 计算下采样比例（目标尺寸约800像素）
-        scale = 800.0 / min(h, w)
-        h_small = int(h * scale)
-        w_small = int(w * scale)
-        
-        # 下采样（使用 AREA 插值，适合缩小）
-        fixed_small = cv2.resize(fixed, (w_small, h_small), interpolation=cv2.INTER_AREA)
-        moving_small = cv2.resize(moving, (w_small, h_small), interpolation=cv2.INTER_AREA)
-        
-        # 在小尺寸上计算变换矩阵
-        fixed_gray = cv2.cvtColor(fixed_small, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-        moving_gray = cv2.cvtColor(moving_small, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-        
-        if motion_model == "homography":
-            warp_mode = cv2.MOTION_HOMOGRAPHY
-            warp_matrix = np.eye(3, 3, dtype=np.float32)
-        else:
-            warp_mode = cv2.MOTION_AFFINE
-            warp_matrix = np.eye(2, 3, dtype=np.float32)
-        
-        # 快速模式：降低迭代次数和精度要求
-        criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, max_iterations, eps)
-        
-        try:
-            _, warp_matrix = cv2.findTransformECC(
-                templateImage=fixed_gray,
-                inputImage=moving_gray,
-                warpMatrix=warp_matrix,
-                motionType=warp_mode,
-                criteria=criteria,
-                inputMask=None,
-                gaussFiltSize=5,
-            )
-        except cv2.error:
-            # 如果 ECC 失败，返回原图（不做变换）
-            return moving
-        
-        # 将变换矩阵正确缩放到原图尺寸
-        if warp_mode == cv2.MOTION_HOMOGRAPHY:
-            # 单应矩阵缩放：需要正确缩放所有元素
-            # 变换：H_original = S_inv * H_small * S
-            sx = w / w_small
-            sy = h / h_small
-            S_inv = np.array([[1/sx, 0, 0], [0, 1/sy, 0], [0, 0, 1]], dtype=np.float32)
-            S = np.array([[sx, 0, 0], [0, sy, 0], [0, 0, 1]], dtype=np.float32)
-            warp_matrix = S_inv @ warp_matrix @ S
-        else:
-            # 仿射矩阵缩放：缩放平移部分
-            sx = w / w_small
-            sy = h / h_small
-            warp_matrix[0, 2] *= sx  # tx
-            warp_matrix[1, 2] *= sy  # ty
-        
-        # 第二级：在原图上进行精细优化（提高精度）
-        fixed_gray_full = cv2.cvtColor(fixed, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-        moving_gray_full = cv2.cvtColor(moving, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-        
-        # 精细优化：使用更严格的精度，但迭代次数较少（因为初始值已经很好）
-        criteria_refine = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 20, 1e-5)
-        try:
-            _, warp_matrix = cv2.findTransformECC(
-                templateImage=fixed_gray_full,
-                inputImage=moving_gray_full,
-                warpMatrix=warp_matrix,
-                motionType=warp_mode,
-                criteria=criteria_refine,
-                inputMask=None,
-                gaussFiltSize=5,
-            )
-        except cv2.error:
-            # 如果精细优化失败，使用下采样得到的矩阵
-            pass
-    else:
-        # 标准模式：在原图上直接计算
-        fixed_gray = cv2.cvtColor(fixed, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
-        moving_gray = cv2.cvtColor(moving, cv2.COLOR_BGR2GRAY).astype(np.float32) / 255.0
+    models = []
+    if motion_model:
+        models.append(motion_model)
+    models.extend(model for model in config.alignment_models if model not in models)
 
-        if motion_model == "homography":
-            warp_mode = cv2.MOTION_HOMOGRAPHY
-            warp_matrix = np.eye(3, 3, dtype=np.float32)
-        else:
-            warp_mode = cv2.MOTION_AFFINE
-            warp_matrix = np.eye(2, 3, dtype=np.float32)
-
-        criteria = (cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, max_iterations, eps)
-        
+    for model in models:
+        if model == "identity":
+            break
         try:
-            _, warp_matrix = cv2.findTransformECC(
-                templateImage=fixed_gray,
-                inputImage=moving_gray,
-                warpMatrix=warp_matrix,
-                motionType=warp_mode,
-                criteria=criteria,
-                inputMask=None,
-                gaussFiltSize=5,
+            warp_mode, warp_matrix = _run_ecc(
+                moving,
+                fixed,
+                model,
+                config,
+                fast_mode=fast_mode,
+                max_iterations=max_iterations or config.ecc_max_iterations,
+                eps=eps or config.ecc_eps,
             )
-        except cv2.error:
-            return moving
+            logger.info("ECC alignment succeeded with %s model", model)
+            return _apply_warp(moving, (h, w), warp_mode, warp_matrix)
+        except cv2.error as exc:
+            logger.warning("ECC alignment failed with %s model: %s", model, exc)
+        except Exception as exc:
+            logger.warning("ECC alignment failed with %s model: %s", model, exc)
 
-    # 应用变换矩阵，将 moving 图像对齐到 fixed 图像的坐标系
-    if warp_mode == cv2.MOTION_HOMOGRAPHY:
-        registered = cv2.warpPerspective(moving, warp_matrix, (w, h), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP)
-    else:
-        registered = cv2.warpAffine(moving, warp_matrix, (w, h), flags=cv2.INTER_LINEAR + cv2.WARP_INVERSE_MAP)
-    
-    return registered
+    logger.warning("ECC alignment fell back to identity transform")
+    return resize_to_match(moving, (h, w))

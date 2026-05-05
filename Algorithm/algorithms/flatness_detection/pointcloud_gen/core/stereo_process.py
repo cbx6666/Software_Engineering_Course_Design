@@ -88,9 +88,17 @@ def process_stereo_matches(
         pts_flat = backproject_uv_to_xyz(uv_flat, Z_flat, K)
         pts_dense = pts_flat[np.isfinite(pts_flat).all(axis=1)]
         dists_dense = point_plane_signed_distance(pts_dense, plane)
+        projected_pts_dense, _ = project_to_plane_normal(
+            pts_dense,
+            normal=normal,
+            origin=fit_result["centroid"],
+        )
+        projected_z_dense = projected_pts_dense[:, 2]
 
         result["pts_dense"] = pts_dense
         result["dists_dense"] = dists_dense
+        result["projected_pts_dense"] = projected_pts_dense
+        result["projected_z_dense"] = projected_z_dense
 
         print("disp_map: nan ratio =", np.mean(np.isnan(disp_map)))
         print("num valid disp pixels:", np.sum(~np.isnan(disp_map)))

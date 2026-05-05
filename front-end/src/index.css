@@ -3769,6 +3769,9 @@ button {
   left: 14px;
   top: 14px;
   z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .pointcloud-reset {
@@ -3799,6 +3802,18 @@ button {
   color: var(--lab-text);
   font-size: 14px;
   font-weight: 760;
+}
+
+.legend-note {
+  margin-top: 10px;
+  color: var(--lab-muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.legend-note code {
+  color: var(--lab-text);
+  font-family: var(--lab-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
 }
 
 .legend-items {
