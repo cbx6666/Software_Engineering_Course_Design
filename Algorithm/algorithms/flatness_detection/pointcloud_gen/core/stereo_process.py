@@ -44,6 +44,8 @@ def process_stereo_matches(
     plane = fit_result["plane"]
     normal = fit_result["normal"]
     dists_sparse = point_plane_signed_distance(pts_sparse, plane)
+    fit_mask_sparse = np.zeros(len(pts_sparse), dtype=bool)
+    fit_mask_sparse[valid_sparse] = fit_result.get("fit_mask", fit_result["inlier_mask"])
     
     # ------- 平面坐标系投影（用于前后端一致的可视化） -------
     projected_pts, _ = project_to_plane_normal(
@@ -62,8 +64,8 @@ def process_stereo_matches(
         "dists_dense": None,
         "projected_pts": projected_pts,
         "projected_z": z_proj,
-        "projected_pts_dense": None,
-        "projected_z_dense": None,
+        "fit_height_range": fit_result.get("fit_height_range"),
+        "fit_mask": fit_mask_sparse,
         "flatness_metrics": {}
     }
 
@@ -157,6 +159,8 @@ def process_stereo_matches(
                 image_shape=image_shape,
                 plane_normal=normal,
                 plane_origin=fit_result["centroid"],
+                fit_height_range=fit_result.get("fit_height_range"),
+                fit_mask=fit_mask_sparse,
                 save_path=save_fig_path
             )
             if save_fig_path:

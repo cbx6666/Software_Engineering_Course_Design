@@ -74,14 +74,37 @@ def 保存点云数据(result_dir: str, result: Dict[str, Any]) -> str:
     """保存前端展示所需的点云数据。"""
     pointcloud_data_path = os.path.join(result_dir, "pointcloud_data.json")
 
-    def 转列表(value):
-        return value.tolist() if hasattr(value, "tolist") else list(value)
+    def 构建有限点云载荷(points_value, dists_value):
+        try:
+            points = np.asarray(points_value, dtype=float)
+        except (TypeError, ValueError):
+            return [], []
+
+        if points.ndim != 2 or points.shape[1] < 3:
+            return [], []
+
+        points = points[:, :3]
+        try:
+            dists = np.asarray(dists_value, dtype=float).reshape(-1)
+        except (TypeError, ValueError):
+            dists = np.array([], dtype=float)
+
+        if dists.shape[0] != points.shape[0]:
+            dists = points[:, 2]
+
+        finite_mask = np.isfinite(points).all(axis=1) & np.isfinite(dists)
+        return points[finite_mask].tolist(), dists[finite_mask].tolist()
+
+    projected_points, projected_dists = 构建有限点云载荷(
+        result.get("projected_pts", []),
+        result.get("projected_z", []),
+    )
 
     pc_data = {
-        "projected_points": 转列表(result.get("projected_pts", [])),
-        "projected_dists": 转列表(result.get("projected_z", [])),
+        "projected_points": projected_points,
+        "projected_dists": projected_dists,
     }
 
     with open(pointcloud_data_path, "w", encoding="utf-8") as f:
-        json.dump(pc_data, f, ensure_ascii=False)
+        json.dump(pc_data, f, ensure_ascii=False, allow_nan=False)
     return pointcloud_data_path

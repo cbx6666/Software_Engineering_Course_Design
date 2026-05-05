@@ -48,6 +48,27 @@ def export_csv(points, dists, filename):
     print(f"已输出CSV文件: {filename}")
 
 
+def _plane_basis(normal):
+    normal = np.asarray(normal, dtype=float)
+    normal_norm = np.linalg.norm(normal)
+    if normal_norm < 1e-12:
+        raise ValueError("normal must be non-zero")
+    normal = normal / normal_norm
+    if normal[2] < 0:
+        normal = -normal
+
+    ref = np.array([1.0, 0.0, 0.0], dtype=float)
+    x_axis = ref - np.dot(ref, normal) * normal
+    if np.linalg.norm(x_axis) < 1e-8:
+        ref = np.array([0.0, 1.0, 0.0], dtype=float)
+        x_axis = ref - np.dot(ref, normal) * normal
+    x_axis /= np.linalg.norm(x_axis)
+
+    y_axis = np.cross(normal, x_axis)
+    y_axis /= np.linalg.norm(y_axis)
+    return x_axis, y_axis, normal
+
+
 def project_to_plane_normal(points, normal=None, origin=None):
     """
     输入：N×3 稀疏点云
@@ -77,24 +98,8 @@ def project_to_plane_normal(points, normal=None, origin=None):
     else:
         normal = np.asarray(normal, dtype=float)
 
-    normal_norm = np.linalg.norm(normal)
-    if normal_norm < 1e-12:
-        raise ValueError("normal must be non-zero")
-    normal = normal / normal_norm
-    if normal[2] < 0:
-        normal = -normal
-
     # 固定 X' 方向与原始 X（u轴）尽量一致，避免行列互换
-    # 取参考方向 ref（原始 X 方向），做正交分解到平面内
-    ref = np.array([1.0, 0.0, 0.0], dtype=float)
-    x_axis = ref - np.dot(ref, normal) * normal
-    if np.linalg.norm(x_axis) < 1e-8:
-        ref = np.array([0.0, 1.0, 0.0], dtype=float)
-        x_axis = ref - np.dot(ref, normal) * normal
-    x_axis /= np.linalg.norm(x_axis)
-
-    y_axis = np.cross(normal, x_axis)
-    y_axis /= np.linalg.norm(y_axis)
+    x_axis, y_axis, normal = _plane_basis(normal)
 
     # 构造旋转矩阵
     R = np.vstack([x_axis, y_axis, normal]).T   # 3×3
@@ -112,6 +117,8 @@ def visualize_pointcloud(
         image_shape=None,
         plane_normal=None,
         plane_origin=None,
+        fit_height_range=None,
+        fit_mask=None,
         cmap='jet'
     ):
     """
@@ -133,17 +140,33 @@ def visualize_pointcloud(
     label_x_prime = "X' (m)"
     label_y_prime = "Y' (m)"
 
+    xyz_sparse = np.asarray(xyz_sparse, dtype=float)
+    valid_xyz = np.isfinite(xyz_sparse).all(axis=1)
+    projection_origin = (
+        np.asarray(plane_origin, dtype=float)
+        if plane_origin is not None
+        else np.mean(xyz_sparse[valid_xyz], axis=0)
+    )
+
     # ======== 平面拟合 + 投影 ========
     projected_pts, plane_normal = project_to_plane_normal(
         xyz_sparse,
         normal=plane_normal,
-        origin=plane_origin,
+        origin=projection_origin,
     )
     z_new = projected_pts[:, 2]
 
-    xyz_sparse = np.asarray(xyz_sparse, dtype=float)
-    valid_xyz = np.isfinite(xyz_sparse).all(axis=1)
     valid_projected = np.isfinite(projected_pts).all(axis=1) & np.isfinite(z_new)
+    in_range = valid_projected.copy()
+    height_range_text = None
+    if fit_height_range is not None:
+        low, high = sorted([float(fit_height_range[0]), float(fit_height_range[1])])
+        in_range &= (z_new >= low) & (z_new <= high)
+        height_range_text = f"Fit height band: {low * 1000:.2f} to {high * 1000:.2f} mm"
+    elif fit_mask is not None and len(fit_mask) == len(z_new):
+        in_range &= np.asarray(fit_mask, dtype=bool)
+
+    out_range = valid_projected & ~in_range
 
     x = xyz_sparse[valid_xyz, 0]
     y = xyz_sparse[valid_xyz, 1]
@@ -157,7 +180,52 @@ def visualize_pointcloud(
     # 1. 原始 3D 稀疏点云
     # =====================================================
     ax1 = fig.add_subplot(1, 2, 1, projection='3d')
-    sc1 = ax1.scatter(x, y, z, s=10, c=z, cmap=cmap)
+    if np.any(out_range):
+        ax1.scatter(
+            xyz_sparse[out_range, 0],
+            xyz_sparse[out_range, 1],
+            xyz_sparse[out_range, 2],
+            s=8,
+            c="#9ca3af",
+            alpha=0.18,
+            depthshade=False,
+            label="Out of fit band",
+        )
+    sc1 = ax1.scatter(
+        xyz_sparse[in_range, 0],
+        xyz_sparse[in_range, 1],
+        xyz_sparse[in_range, 2],
+        s=12,
+        c=xyz_sparse[in_range, 2],
+        cmap=cmap,
+        label="Used fit band",
+    )
+
+    if fit_height_range is not None:
+        x_axis, y_axis, normal = _plane_basis(plane_normal)
+        px = projected_pts[valid_projected, 0]
+        py = projected_pts[valid_projected, 1]
+        gx, gy = np.meshgrid(
+            np.linspace(np.min(px), np.max(px), 8),
+            np.linspace(np.min(py), np.max(py), 8),
+        )
+        for h in sorted([float(fit_height_range[0]), float(fit_height_range[1])]):
+            surface = (
+                projection_origin
+                + gx[..., None] * x_axis
+                + gy[..., None] * y_axis
+                + h * normal
+            )
+            ax1.plot_surface(
+                surface[..., 0],
+                surface[..., 1],
+                surface[..., 2],
+                color="#6b7280",
+                alpha=0.18,
+                linewidth=0,
+                shade=False,
+            )
+
     cbar1 = fig.colorbar(sc1, ax=ax1, shrink=0.5)
     cbar1.set_label(label_z)
     ax1.set_title(title_3d)
@@ -173,12 +241,23 @@ def visualize_pointcloud(
     ax2 = fig.add_subplot(1, 2, 2)
 
     # 散点
+    if np.any(out_range):
+        ax2.scatter(
+            projected_pts[out_range, 0],
+            projected_pts[out_range, 1],
+            s=10,
+            c="#9ca3af",
+            alpha=0.18,
+            label="Out of fit band",
+        )
+    plot_mask = in_range if np.any(in_range) else valid_projected
     sc2 = ax2.scatter(
-        projected_pts[valid_projected, 0],
-        projected_pts[valid_projected, 1],
-        s=15,
-        c=z_new[valid_projected],
-        cmap=cmap
+        projected_pts[plot_mask, 0],
+        projected_pts[plot_mask, 1],
+        s=16,
+        c=z_new[plot_mask],
+        cmap=cmap,
+        label="Used fit band",
     )
     cbar2 = fig.colorbar(sc2, ax=ax2, shrink=0.5)
     cbar2.set_label(label_z_prime)
@@ -212,8 +291,8 @@ def visualize_pointcloud(
     # 用 griddata 基于散点插值得到 Z' 网格
     from scipy.interpolate import griddata
     grid_z = griddata(
-        projected_pts[valid_projected, 0:2],
-        z_new[valid_projected],
+        projected_pts[plot_mask, 0:2],
+        z_new[plot_mask],
         (grid_x, grid_y),
         method='cubic'
     )
@@ -234,6 +313,18 @@ def visualize_pointcloud(
     ax2.set_xlabel(label_x_prime)
     ax2.set_ylabel(label_y_prime)
     ax2.set_aspect("equal", "box")
+    if height_range_text:
+        ax2.text(
+            0.02,
+            0.98,
+            height_range_text + "\nDimmed points are excluded from fit band",
+            transform=ax2.transAxes,
+            ha="left",
+            va="top",
+            fontsize=8,
+            color="#374151",
+            bbox=dict(facecolor="white", edgecolor="#9ca3af", alpha=0.72),
+        )
     
     # 设置坐标轴范围，确保显示所有点（包括边距）
     ax2.set_xlim(x_min_padded, x_max_padded)
