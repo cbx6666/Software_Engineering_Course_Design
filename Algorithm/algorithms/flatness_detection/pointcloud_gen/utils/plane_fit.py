@@ -68,6 +68,38 @@ def _robust_threshold(residuals, mad_thresh):
     return med, threshold
 
 
+def _height_range_from_mask(residuals, mask):
+    selected = residuals[mask & np.isfinite(residuals)]
+    if selected.size == 0:
+        return None
+    return (float(np.min(selected)), float(np.max(selected)))
+
+
+def _select_sinking_fit_band(residuals, threshold, min_ratio=0.35):
+    """Select an upper stable band when a lower-side sinking trend is obvious."""
+    finite = residuals[np.isfinite(residuals)]
+    if finite.size < 6:
+        return None, None
+
+    p5, p50, p95 = np.percentile(finite, [5, 50, 95])
+    lower_spread = float(p50 - p5)
+    upper_spread = float(p95 - p50)
+    min_gap = max(float(threshold) * 0.25, 1e-4)
+
+    # Only switch strategy when the low side is clearly more dispersed. This
+    # avoids changing stable samples just because of a few normal outliers.
+    if lower_spread <= upper_spread * 1.4 or (lower_spread - upper_spread) <= min_gap:
+        return None, None
+
+    lower = float(p50 - upper_spread)
+    upper = float(p95)
+    mask = np.isfinite(residuals) & (residuals >= lower) & (residuals <= upper)
+    if np.count_nonzero(mask) < max(3, int(len(finite) * min_ratio)):
+        return None, None
+
+    return mask, (lower, upper)
+
+
 def signed_distance_to_plane_model(points, normal, offset):
     """Signed orthogonal distance to n*x + offset = 0."""
     pts = _as_point_array(points)
@@ -104,12 +136,32 @@ def fit_plane_robust(points, mad_thresh=3.5):
     final_residuals = signed_distance_to_plane_model(pts, normal, offset)
     final_med, final_threshold = _robust_threshold(final_residuals, mad_thresh)
     final_inliers = np.abs(final_residuals - final_med) <= final_threshold
+    fit_mask = final_inliers.copy()
+    fit_height_range = _height_range_from_mask(final_residuals, fit_mask)
+    height_range_applied = False
+
+    band_mask, band_range = _select_sinking_fit_band(final_residuals, final_threshold)
+    if band_mask is not None:
+        normal, offset, centroid, singular_values = _fit_plane_svd(pts[band_mask])
+        method = "svd_mad_height_band_refit"
+        fit_mask = band_mask
+        height_range_applied = True
+
+        final_residuals = signed_distance_to_plane_model(pts, normal, offset)
+        final_med, final_threshold = _robust_threshold(final_residuals, mad_thresh)
+        final_inliers = np.abs(final_residuals - final_med) <= final_threshold
+        fit_height_range = _height_range_from_mask(final_residuals, fit_mask)
+        if fit_height_range is None:
+            fit_height_range = band_range
 
     residuals_all = np.full(pts_all.shape[0], np.nan, dtype=float)
     residuals_all[valid] = final_residuals
 
     inlier_mask_all = np.zeros(pts_all.shape[0], dtype=bool)
     inlier_mask_all[valid] = final_inliers
+
+    fit_mask_all = np.zeros(pts_all.shape[0], dtype=bool)
+    fit_mask_all[valid] = fit_mask
 
     return {
         "plane": _plane_to_abc(normal, offset),
@@ -118,6 +170,9 @@ def fit_plane_robust(points, mad_thresh=3.5):
         "centroid": centroid,
         "residuals": residuals_all,
         "inlier_mask": inlier_mask_all,
+        "fit_mask": fit_mask_all,
+        "fit_height_range": fit_height_range,
+        "height_range_applied": height_range_applied,
         "threshold": final_threshold,
         "singular_values": singular_values,
         "method": method,
