@@ -91,7 +91,7 @@ class FeatureExtractor:
             
             # === 3. [L型/U型大色块补丁]：真实厚度 + 顶点数 ===
             real_thickness = min(hull_rect[1][0], hull_rect[1][1]) 
-            epsilon = 0.01 * perimeter
+            epsilon = min(0.01 * perimeter, 5.0)
             approx = cv2.approxPolyDP(contour, epsilon, True)
             vertex_count = len(approx)
             
@@ -104,23 +104,34 @@ class FeatureExtractor:
                 print(f"  真实厚度: {real_thickness:.2f} | 顶点数: {vertex_count} (厚度>{Config.L_FRAME_THICKNESS_MIN}且顶点<{Config.L_FRAME_VERTEX_MAX}为L型窗框)")
             
             # === 条件判断 ===
-            if (shape_factor < Config.SHAPE_FACTOR_THRESHOLD and 
-                Config.ASPECT_RATIO_LOW < aspect_ratio < Config.ASPECT_RATIO_HIGH and 
-                Config.SOLIDITY_LOW < solidity < Config.SOLIDITY_HIGH):
-                
-                # 凸包矩形度判断
-                if hull_boxiness > Config.BOXINESS_THRESHOLD:
-                    continue
-                
-                # L型/U型 窗框拐角判断
-                if real_thickness > Config.L_FRAME_THICKNESS_MIN and vertex_count < Config.L_FRAME_VERTEX_MAX:
-                    continue
-                
-                if Config.IS_PRINT: print(f" 🚨 轮廓 {contour_idx}：符合裂纹特征")
-                return True
-                
-            else:
+            is_valid_shape = shape_factor < Config.SHAPE_FACTOR_THRESHOLD
+            is_valid_aspect = Config.ASPECT_RATIO_LOW < aspect_ratio < Config.ASPECT_RATIO_HIGH
+            is_valid_solidity = Config.SOLIDITY_LOW < solidity < Config.SOLIDITY_HIGH
+
+            if not (is_valid_shape and is_valid_aspect and is_valid_solidity):
                 if Config.IS_PRINT: print(f" 🚫 轮廓 {contour_idx}：不符合自爆特征")
+                continue
+                
+            is_perfect_grid = hull_boxiness > Config.BOXINESS_THRESHOLD
+            
+            # 凸包矩形度判断
+            if Config.ENABLE_BOXINESS_FILTER and is_perfect_grid:
+                if Config.IS_PRINT: print(f" 🚫 轮廓 {contour_idx}：不符合自爆特征")
+                continue
+                
+            is_window_frame = (
+                real_thickness > Config.L_FRAME_THICKNESS_MIN and 
+                vertex_count < Config.L_FRAME_VERTEX_MAX and 
+                hull_boxiness > Config.L_FRAME_BOXINESS_MIN
+            )
+            
+            # L型/U型 窗框拐角判断
+            if Config.ENABLE_FRAME_FILTER and is_window_frame:
+                if Config.IS_PRINT: print(f" 🚫 轮廓 {contour_idx}：不符合自爆特征")
+                continue
+                
+            if Config.IS_PRINT: print(f" 🚨 轮廓 {contour_idx}：符合裂纹特征")
+            return True
         
         if Config.IS_PRINT:print("\n✅ 所有轮廓均不符合自爆特征")
         return False

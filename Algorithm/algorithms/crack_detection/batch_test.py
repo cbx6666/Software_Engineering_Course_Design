@@ -6,8 +6,8 @@ from .config import Config
 
 # ================= 配置区域 =================
 # 测试数据集路径配置（YOLO格式）
-YOLO_IMAGES_DIR = "./datasets/etest/images"
-YOLO_LABELS_DIR = "./datasets/etest/labels"
+YOLO_IMAGES_DIR = "./datasets/test_cases/images"
+YOLO_LABELS_DIR = "./datasets/test_cases/labels"
 
 # 定义YOLO标签
 # 数据集 ID=0 代表裂纹

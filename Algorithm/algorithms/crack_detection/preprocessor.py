@@ -16,7 +16,7 @@ class Preprocessor:
 
     @staticmethod
     def preprocess(image: np.ndarray) -> np.ndarray:
-        """图像预处理： resize + 降噪 + 灰度化（赵珂2022文献步骤）"""
+        """图像预处理： resize + 降噪 + 灰度化"""
         # 1. 统一尺寸
         resized = cv2.resize(image, Config.RESIZE_SIZE)
         # 2. 中值滤波降噪（优化中值滤波）
@@ -29,7 +29,7 @@ class Preprocessor:
 
     @staticmethod
     def gray_stretch(gray_img: np.ndarray) -> np.ndarray:
-        """灰度拉伸（优化版，赵珂2022）"""
+        """灰度拉伸"""
         min_val = np.min(gray_img)
         max_val = np.max(gray_img)
         if max_val == min_val:

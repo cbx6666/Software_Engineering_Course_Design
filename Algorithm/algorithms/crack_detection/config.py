@@ -17,6 +17,10 @@ class Config:
     CRACK_AREA_THRESHOLD = 50
     WARNING_THRESHOLD = 10
 
+    # 条件判断是否启用
+    ENABLE_BOXINESS_FILTER = True  # 凸包矩形度
+    ENABLE_FRAME_FILTER = True     # L型/U型窗框
+
     # 轮廓分析阈值
     MIN_CONTOUR_AREA = 100
     SHAPE_FACTOR_THRESHOLD = 0.3
@@ -29,6 +33,7 @@ class Config:
     BOXINESS_THRESHOLD = 0.88
     L_FRAME_THICKNESS_MIN = 15.0
     L_FRAME_VERTEX_MAX = 22
+    L_FRAME_BOXINESS_MIN = 0.7
 
     # YOLO 模型路径
     YOLO_MODEL_PATH = "./models/yolo_crack.pt"
@@ -45,5 +50,5 @@ class Config:
 
     # 是否移动误报/漏报样本
     IS_MOVE_ERROR_SAMPLES = False
-    REMOVE_IMAGE_DIR = "./datasets/images_remove"
-    REMOVE_LABEL_DIR = "./datasets/labels_remove"
+    REMOVE_IMAGE_DIR = "./datasets/remove/images_remove"
+    REMOVE_LABEL_DIR = "./datasets/remove/labels_remove"
