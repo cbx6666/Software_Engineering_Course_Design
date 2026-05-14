@@ -43,6 +43,5 @@ public class History {
     private List<Map<String, String>> details;
 
     // Foreign key to user table
-    @JsonSerialize(using = ToStringSerializer.class)
-    private Long userId;
+    private String email;
 }

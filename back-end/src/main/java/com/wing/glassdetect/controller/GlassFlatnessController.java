@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/detect/glass-flatness")
@@ -29,36 +29,43 @@ public class GlassFlatnessController {
     private String algorithmUrl;
 
     @PostMapping
-    public ResponseEntity<DetectionResult> detectGlassFlatness(@RequestParam("userId") Long userId,
-                                                               @RequestParam("left_env") MultipartFile leftEnv,
-                                                               @RequestParam("left_mix") MultipartFile leftMix,
-                                                               @RequestParam("right_env") MultipartFile rightEnv,
-                                                               @RequestParam("right_mix") MultipartFile rightMix) {
+    public DeferredResult<ResponseEntity<DetectionResult>> detectGlassFlatness(
+            @RequestParam("email") String email,
+            @RequestParam("left_env") MultipartFile leftEnv,
+            @RequestParam("left_mix") MultipartFile leftMix,
+            @RequestParam("right_env") MultipartFile rightEnv,
+            @RequestParam("right_mix") MultipartFile rightMix) {
+
+        DeferredResult<ResponseEntity<DetectionResult>> deferred = new DeferredResult<>(600000L);
+
+        deferred.onTimeout(() -> deferred.setErrorResult(
+                ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
+                        .body(new DetectionResult("error", "检测超时", "处理超时，请稍后重试", null))));
 
         MultipartFile[] images = new MultipartFile[]{leftEnv, leftMix, rightEnv, rightMix};
         String[] fieldNames = {"left_env", "left_mix", "right_env", "right_mix"};
         String url = algorithmUrl + "/api/detect/glass-flatness";
 
-        CompletableFuture<DetectionTaskResultDto> future = glassFlatnessService.detect(userId, images, fieldNames, url);
-        Path tempImageDir = null;
+        glassFlatnessService.detect(images, fieldNames, url)
+                .thenAccept(taskResult -> {
+                    DetectionResult result = taskResult.getDetectionResult();
+                    Path tempDir = taskResult.getTempDirectory();
+                    Path[] tempFiles = taskResult.getTempFiles();
+                    try {
+                        persistenceService.persistResult(email, "flatness", result, tempFiles);
+                    } catch (Exception ignored) {}
+                    if (tempDir != null) {
+                        FileUtils.deleteTempDir(tempDir);
+                    }
+                    deferred.setResult(ResponseEntity.ok(result));
+                })
+                .exceptionally(ex -> {
+                    Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
+                    deferred.setResult(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new DetectionResult("error", "检测失败", cause.getMessage(), null)));
+                    return null;
+                });
 
-        try {
-            DetectionTaskResultDto taskResult = future.get(); // 等待异步任务完成
-            DetectionResult result = taskResult.getDetectionResult();
-            tempImageDir = taskResult.getTempDirectory();
-            Path[] tempFiles = taskResult.getTempFiles();
-
-            // 调用服务进行持久化
-            persistenceService.persistResult(userId, "flatness", result, tempFiles);
-
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            DetectionResult errorResult = new DetectionResult("error", "检测或保存失败", e.getMessage(), null);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResult);
-        } finally {
-            if (tempImageDir != null) {
-                FileUtils.deleteTempDir(tempImageDir);
-            }
-        }
+        return deferred;
     }
 }

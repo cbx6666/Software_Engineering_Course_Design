@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wing.glassdetect.model.DetectionResult;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -13,28 +14,26 @@ import java.util.Map;
 
 public class ApiUtils {
 
-    private static final RestTemplate restTemplate = new RestTemplate();
+    private static final RestTemplate restTemplate = createRestTemplate();
+
+    private static RestTemplate createRestTemplate() {
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(10_000);
+        factory.setReadTimeout(300_000);
+        return new RestTemplate(factory);
+    }
 
     /**
-     * 通用方法：发送 MultipartFile 到 FastAPI，并返回 DetectionResult
+     * 发送单张图片到算法（Crack 检测用）
      */
-    public static DetectionResult postImage(Path[] tempFiles, String url) {
+    public static DetectionResult postImage(Path tempFile, String url) {
         try {
-            // 构建请求体
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-            for (Path file : tempFiles) {
-                body.add("image", new FileSystemResource(file.toFile()));
-            }
+            body.add("image", new FileSystemResource(tempFile.toFile()));
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // 发送请求
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body);
             ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
 
-            // 解析返回结果
             Map<String, Object> resultMap = response.getBody();
             return new ObjectMapper().convertValue(resultMap, DetectionResult.class);
 
@@ -56,12 +55,7 @@ public class ApiUtils {
                 body.add(fieldNames[i], new FileSystemResource(tempFiles[i].toFile()));
             }
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-            // 发送请求
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body);
             ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
 
             // 解析返回结果

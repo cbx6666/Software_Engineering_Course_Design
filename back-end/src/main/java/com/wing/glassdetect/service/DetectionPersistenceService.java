@@ -38,14 +38,14 @@ public class DetectionPersistenceService {
         this.persistenceEnabled = persistenceEnabled;
     }
 
-    public void persistResult(Long userId, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
+    public void persistResult(String email, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
         if (!persistenceEnabled) {
             System.out.println("Persistence disabled; skip saving detection result for local development.");
             return;
         }
 
         History history = new History();
-        history.setUserId(userId);
+        history.setEmail(email);
         history.setType(type);
         history.setDate(LocalDateTime.now());
         history.setStatus(result.getStatus());

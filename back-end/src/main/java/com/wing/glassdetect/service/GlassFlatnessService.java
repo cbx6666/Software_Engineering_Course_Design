@@ -16,19 +16,15 @@ import java.util.concurrent.CompletableFuture;
 public class GlassFlatnessService {
 
     @Async("asyncExecutor")
-    public CompletableFuture<DetectionTaskResultDto> detect(Long userId, MultipartFile[] imageFiles, String[] fieldNames, String url) {
+    public CompletableFuture<DetectionTaskResultDto> detect(MultipartFile[] imageFiles, String[] fieldNames, String url) {
         Path[] tempFiles = null;
         Path tempDir = null;
-        DetectionResult result = null;
+        DetectionResult result;
         try {
-            // 保存到独立子目录
             tempFiles = FileUtils.saveTempFile(imageFiles);
-            tempDir = tempFiles[0].getParent(); // 获取当前请求的临时目录
-
+            tempDir = tempFiles[0].getParent();
             result = ApiUtils.postImageWithFieldNames(tempFiles, fieldNames, url);
-
             return CompletableFuture.completedFuture(new DetectionTaskResultDto(result, tempDir, tempFiles));
-
         } catch (IOException e) {
             result = new DetectionResult("error", "上传图片失败", e.getMessage(), null);
             return CompletableFuture.completedFuture(new DetectionTaskResultDto(result, tempDir, tempFiles));

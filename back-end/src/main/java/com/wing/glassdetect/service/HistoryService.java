@@ -23,17 +23,15 @@ public class HistoryService {
     }
 
     /**
-     * 根据用户ID获取历史记录列表
-     * @param userId 用户ID
-     * @return 历史记录列表
+     * 根据用户邮箱获取历史记录列表
      */
-    public List<History> getHistoryByUserId(Long userId) {
+    public List<History> getHistoryByEmail(String email) {
         if (!persistenceEnabled) {
             return Collections.emptyList();
         }
         LambdaQueryWrapper<History> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(History::getUserId, userId)
-                    .orderByDesc(History::getDate); // 按日期降序排序
+        queryWrapper.eq(History::getEmail, email)
+                    .orderByDesc(History::getDate);
         return historyMapper.selectList(queryWrapper);
     }
 

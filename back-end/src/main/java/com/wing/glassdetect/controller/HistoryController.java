@@ -17,8 +17,8 @@ public class HistoryController {
     }
 
     @GetMapping
-    public List<History> getHistory(@RequestParam("userId") Long userId) {
-        return historyService.getHistoryByUserId(userId);
+    public List<History> getHistory(@RequestParam("email") String email) {
+        return historyService.getHistoryByEmail(email);
     }
 
     @GetMapping("/{id}")

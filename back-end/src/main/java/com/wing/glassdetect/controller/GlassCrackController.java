@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/detect/glass-crack")
@@ -29,30 +29,44 @@ public class GlassCrackController {
     private String algorithmUrl;
 
     @PostMapping
-    public ResponseEntity<DetectionResult> detectGlassCrack(@RequestParam("userId") Long userId, @RequestParam("images") MultipartFile[] images) {
-        String url = algorithmUrl + "/api/detect/glass-crack";
-        CompletableFuture<DetectionTaskResultDto> future = glassCrackService.detect(userId, images, url);
+    public DeferredResult<ResponseEntity<DetectionResult>> detectGlassCrack(
+            @RequestParam("email") String email,
+            @RequestParam("images") MultipartFile[] images) {
 
-        Path tempImageDir = null;
-        try {
-            DetectionTaskResultDto taskResult = future.get(); // 等待异步任务完成
-            DetectionResult result = taskResult.getDetectionResult();
-            tempImageDir = taskResult.getTempDirectory();
-            Path[] tempFiles = taskResult.getTempFiles();
+        DeferredResult<ResponseEntity<DetectionResult>> deferred = new DeferredResult<>(600000L);
 
-            // 调用服务进行持久化
-            persistenceService.persistResult(userId, "crack", result, tempFiles);
+        deferred.onTimeout(() -> deferred.setErrorResult(
+                ResponseEntity.status(HttpStatus.REQUEST_TIMEOUT)
+                        .body(new DetectionResult("error", "检测超时", "处理超时，请稍后重试", null))));
 
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            // 处理异常
-            DetectionResult errorResult = new DetectionResult("error", "检测或保存失败", e.getMessage(), null);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResult);
-        } finally {
-            // 清理临时文件
-            if (tempImageDir != null) {
-                FileUtils.deleteTempDir(tempImageDir);
-            }
+        if (images == null || images.length == 0 || images[0].isEmpty()) {
+            deferred.setResult(ResponseEntity.badRequest()
+                    .body(new DetectionResult("error", "缺少图片", "请上传至少一张检测图片", null)));
+            return deferred;
         }
+
+        String url = algorithmUrl + "/api/detect/glass-crack";
+
+        glassCrackService.detect(images[0], url)
+                .thenAccept(taskResult -> {
+                    DetectionResult result = taskResult.getDetectionResult();
+                    Path tempDir = taskResult.getTempDirectory();
+                    Path[] tempFiles = taskResult.getTempFiles();
+                    try {
+                        persistenceService.persistResult(email, "crack", result, tempFiles);
+                    } catch (Exception ignored) {}
+                    if (tempDir != null) {
+                        FileUtils.deleteTempDir(tempDir);
+                    }
+                    deferred.setResult(ResponseEntity.ok(result));
+                })
+                .exceptionally(ex -> {
+                    Throwable cause = ex.getCause() != null ? ex.getCause() : ex;
+                    deferred.setResult(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                            .body(new DetectionResult("error", "检测失败", cause.getMessage(), null)));
+                    return null;
+                });
+
+        return deferred;
     }
 }
