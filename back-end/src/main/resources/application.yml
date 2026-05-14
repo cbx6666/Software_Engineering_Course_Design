@@ -17,6 +17,7 @@ spring:
     password: "Software007@"
 
 server:
+  port: 9000
   tomcat:
     connection-timeout: 600000
 
