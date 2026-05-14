@@ -1,0 +1,19 @@
+services:
+  algorithm:
+    build: ./Algorithm
+    container_name: glass-algorithm
+    restart: unless-stopped
+
+  backend:
+    build: ./back-end
+    container_name: glass-backend
+    ports:
+      - "18003:9000"
+    environment:
+      - ALGORITHM_URL=http://algorithm:8000
+      - SPRING_DATASOURCE_URL=jdbc:mysql://139.196.151.22:3306/glassdetect
+      - SPRING_DATASOURCE_USERNAME=remote_user
+      - SPRING_DATASOURCE_PASSWORD=Software007@
+    depends_on:
+      - algorithm
+    restart: unless-stopped
