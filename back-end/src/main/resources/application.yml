@@ -12,27 +12,27 @@ spring:
   # ===== MySQL =====
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://139.196.151.22:3306/glassdetect
-    username: remote_user
-    password: "Software007@"
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://139.196.151.22:3306/glassdetect}
+    username: ${SPRING_DATASOURCE_USERNAME:remote_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:Software007@}
 
 server:
-  port: 9000
+  port: ${SERVER_PORT:9000}
   tomcat:
     connection-timeout: 600000
 
 # 前端地址
 frontend:
-  url: "http://localhost:3000"
+  url: ${FRONTEND_URL:http://localhost:3000}
 
-# 算法服务地址，和后端在同一本地地址
+# 算法服务地址
 algorithm:
-  url: "http://127.0.0.1:8000"
+  url: ${ALGORITHM_URL:http://127.0.0.1:8000}
 
 # 图片存储路径
 image:
   storage:
-    path: ./runtime/images
+    path: ${IMAGE_STORAGE_PATH:./runtime/images}
 
 app:
   persistence:
