@@ -7,6 +7,9 @@ services:
   backend:
     build: ./back-end
     container_name: glass-backend
+    hostname: glass-backend
+    extra_hosts:
+      - "glass-backend:127.0.0.1"
     ports:
       - "8003:9000"
     environment:
