@@ -34,9 +34,13 @@ image:
   storage:
     path: ${IMAGE_STORAGE_PATH:./runtime/images}
 
+result:
+  storage:
+    path: ${RESULT_STORAGE_PATH:./runtime/results}
+
 app:
   persistence:
-    enabled: false
+    enabled: ${APP_PERSISTENCE_ENABLED:false}
 
 mybatis-plus:
   # Mapper XML 位置（可选，BaseMapper 不需要，但你后续写自定义 SQL 会用到）

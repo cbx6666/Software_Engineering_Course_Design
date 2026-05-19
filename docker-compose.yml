@@ -2,6 +2,10 @@ services:
   algorithm:
     build: ./Algorithm
     container_name: glass-algorithm
+    environment:
+      - FLATNESS_RESULT_PATH=/data/result
+    volumes:
+      - /data/result:/data/result
     restart: unless-stopped
 
   backend:
@@ -15,9 +19,15 @@ services:
     environment:
       - FRONTEND_URL=http://8.159.143.133
       - ALGORITHM_URL=http://algorithm:8000
+      - IMAGE_STORAGE_PATH=/data/images
+      - RESULT_STORAGE_PATH=/data/result
+      - APP_PERSISTENCE_ENABLED=true
       - SPRING_DATASOURCE_URL=jdbc:mysql://139.196.151.22:3306/glassdetect
       - SPRING_DATASOURCE_USERNAME=remote_user
       - SPRING_DATASOURCE_PASSWORD=Software007@
+    volumes:
+      - /data/images:/data/images
+      - /data/result:/data/result
     depends_on:
       - algorithm
     restart: unless-stopped

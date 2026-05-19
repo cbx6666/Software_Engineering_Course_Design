@@ -1,5 +1,6 @@
 import json
 import base64
+import os
 import tempfile
 import shutil
 import uuid
@@ -28,7 +29,7 @@ class FlatnessService:
         self.temp_base = Path(tempfile.gettempdir()) / "glass_detection"
         self.temp_base.mkdir(parents=True, exist_ok=True)
 
-        self.result_base = Path("/data/result")
+        self.result_base = Path(os.getenv("FLATNESS_RESULT_PATH", "/data/result"))
         self.result_base.mkdir(parents=True, exist_ok=True)
 
     @contextmanager

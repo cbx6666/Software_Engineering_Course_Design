@@ -10,6 +10,6 @@ RUN mvn package -DskipTests -B -q
 FROM eclipse-temurin:21-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-RUN mkdir -p /app/runtime/images
+RUN mkdir -p /data/images /data/result
 EXPOSE 9000
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -28,8 +28,8 @@ public class DetectionPersistenceService {
     private final boolean persistenceEnabled;
 
     @Autowired
-    public DetectionPersistenceService(HistoryService historyService, 
-                                       ObjectMapper objectMapper, 
+    public DetectionPersistenceService(HistoryService historyService,
+                                       ObjectMapper objectMapper,
                                        @Value("${image.storage.path}") String imageStoragePath,
                                        @Value("${app.persistence.enabled:true}") boolean persistenceEnabled) {
         this.historyService = historyService;
@@ -39,6 +39,8 @@ public class DetectionPersistenceService {
     }
 
     public void persistResult(String email, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
+        String webImagePath = normalizeResultImagePath(result);
+
         if (!persistenceEnabled) {
             System.out.println("Persistence disabled; skip saving detection result for local development.");
             return;
@@ -52,18 +54,15 @@ public class DetectionPersistenceService {
         history.setTitle(result.getTitle());
         history.setDescription(result.getDescription());
 
-        // 为本次检测创建一个唯一的子目录
         String taskFolderName = UUID.randomUUID().toString();
         Path taskStoragePath = Paths.get(imageStoragePath, taskFolderName);
         Files.createDirectories(taskStoragePath);
 
-        // 1. 保存上传的原图到子目录
         if (tempOriginalFiles != null && tempOriginalFiles.length > 0) {
             List<String> originalImagePaths = saveOriginalImages(tempOriginalFiles, taskStoragePath, taskFolderName);
             history.setOriginalImages(originalImagePaths);
         }
 
-        // 2. 根据类型处理不同的数据
         if ("flatness".equals(type) && result.getPointcloud() != null) {
             Map<String, Object> pointcloudMap = objectMapper.convertValue(result.getPointcloud(), new TypeReference<>() {});
             history.setPointcloud(pointcloudMap);
@@ -74,14 +73,36 @@ public class DetectionPersistenceService {
             history.setDetails(detailsList);
         }
 
-        // 3. 保存算法生成的结果图到子目录
-        if (result.getImage() != null && !result.getImage().isEmpty()) {
-            String webImagePath = result.getImage().replace("/data/result", "/results");
+        if (webImagePath != null) {
             history.setImage(webImagePath);
-            result.setImage(webImagePath); // 更新返回给前端的路径
         }
 
         historyService.saveHistory(history);
+    }
+
+    private String normalizeResultImagePath(DetectionResult result) {
+        if (result == null || result.getImage() == null || result.getImage().isEmpty()) {
+            return null;
+        }
+
+        String image = result.getImage().replace('\\', '/');
+        int resultRootIndex = image.toLowerCase().indexOf("/data/result/");
+        if (resultRootIndex >= 0) {
+            String webImagePath = "/results/" + image.substring(resultRootIndex + "/data/result/".length());
+            result.setImage(webImagePath);
+            return webImagePath;
+        }
+
+        if (image.startsWith("results/")) {
+            image = "/" + image;
+        }
+
+        if (image.startsWith("/results/")) {
+            result.setImage(image);
+            return image;
+        }
+
+        return image;
     }
 
     private List<String> saveOriginalImages(Path[] tempFiles, Path taskStoragePath, String taskFolderName) throws IOException {
@@ -98,8 +119,7 @@ public class DetectionPersistenceService {
             String newFileName = UUID.randomUUID() + fileExtension;
             Path destinationPath = taskStoragePath.resolve(newFileName);
             Files.copy(tempFile, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-            
-            // 生成Web可访问路径
+
             savedImagePaths.add("/images/" + taskFolderName + "/" + newFileName);
         }
         return savedImagePaths;

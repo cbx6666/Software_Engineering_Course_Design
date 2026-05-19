@@ -9,11 +9,19 @@ import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Value("${image.storage.path}")
     private String imageStoragePath;
+
+    @Value("${result.storage.path}")
+    private String resultStoragePath;
 
     @Value("${frontend.url}")
     private String frontendUrl;
@@ -23,11 +31,11 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowCredentials(true); // 允许 Cookie
-        config.addAllowedOrigin(frontendUrl); // 允许配置文件中的前端地址
-        config.addAllowedOrigin("http://localhost:3000"); // 允许本地开发调试
-        config.addAllowedHeader("*"); // 允许所有 Header
-        config.addAllowedMethod("*"); // 允许所有请求方式 (GET/POST/OPTIONS等)
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin(frontendUrl);
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
 
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
@@ -35,15 +43,22 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        System.out.println("DEBUG: 注册静态映射 /results/** -> file:///data/result/");
-
-        // 映射原图存放目录
-        String location = imageStoragePath.endsWith("/") ? imageStoragePath : imageStoragePath + "/";
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:" + location);
+                .addResourceLocations(toFileResourceLocation(imageStoragePath));
 
-        // 映射算法结果目录
         registry.addResourceHandler("/results/**")
-                .addResourceLocations("file:///data/result/");
+                .addResourceLocations(toFileResourceLocation(resultStoragePath));
+    }
+
+    private String toFileResourceLocation(String configuredPath) {
+        Path path = Paths.get(configuredPath).toAbsolutePath().normalize();
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            System.err.println("Failed to create static resource directory: " + path + ", " + e.getMessage());
+        }
+
+        String location = path.toUri().toString();
+        return location.endsWith("/") ? location : location + "/";
     }
 }
