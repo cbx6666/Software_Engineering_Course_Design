@@ -5,6 +5,7 @@ import com.wing.glassdetect.dto.auth.LoginResponse;
 import com.wing.glassdetect.dto.auth.RegisterRequest;
 import com.wing.glassdetect.mapper.UserMapper;
 import com.wing.glassdetect.model.User;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,15 +17,22 @@ public class AuthService {
 
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final boolean databaseEnabled;
 
-    public AuthService(UserMapper userMapper) {
+    public AuthService(UserMapper userMapper,
+                       @Value("${app.database.enabled:true}") boolean databaseEnabled) {
         this.userMapper = userMapper;
+        this.databaseEnabled = databaseEnabled;
     }
 
     public LoginResponse register(RegisterRequest req) {
         String email = normalizeEmail(req.getEmail());
         if (email.isBlank()) {
             throw new IllegalArgumentException("email 不能为空");
+        }
+
+        if (!databaseEnabled) {
+            return offlineLogin(email);
         }
 
         Long cnt = userMapper.selectCount(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
@@ -50,6 +58,10 @@ public class AuthService {
             throw new IllegalArgumentException("email 不能为空");
         }
 
+        if (!databaseEnabled) {
+            return offlineLogin(email);
+        }
+
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getEmail, email));
         if (user == null || user.getPasswordHash() == null || user.getPasswordHash().isBlank()) {
             throw new IllegalArgumentException("用户不存在或未设置密码");
@@ -64,6 +76,10 @@ public class AuthService {
 
     private static String normalizeEmail(String raw) {
         return raw == null ? "" : raw.trim().toLowerCase();
+    }
+
+    private static LoginResponse offlineLogin(String email) {
+        return new LoginResponse(new LoginResponse.User("offline", email));
     }
 
 }

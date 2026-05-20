@@ -12,9 +12,12 @@ spring:
   # ===== MySQL =====
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://139.196.151.22:3306/glassdetect}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://139.196.151.22:3306/glassdetect?connectTimeout=5000&socketTimeout=30000&useUnicode=true&characterEncoding=utf8}
     username: ${SPRING_DATASOURCE_USERNAME:remote_user}
     password: ${SPRING_DATASOURCE_PASSWORD:Software007@}
+    hikari:
+      connection-timeout: ${SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT:5000}
+      validation-timeout: ${SPRING_DATASOURCE_HIKARI_VALIDATION_TIMEOUT:3000}
 
 server:
   port: ${SERVER_PORT:9000}
@@ -39,6 +42,8 @@ result:
     path: ${RESULT_STORAGE_PATH:./runtime/results}
 
 app:
+  database:
+    enabled: false
   persistence:
     enabled: ${APP_PERSISTENCE_ENABLED:false}
 

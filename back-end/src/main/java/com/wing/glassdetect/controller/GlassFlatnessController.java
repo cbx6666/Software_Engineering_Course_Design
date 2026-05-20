@@ -51,13 +51,14 @@ public class GlassFlatnessController {
                     DetectionResult result = taskResult.getDetectionResult();
                     Path tempDir = taskResult.getTempDirectory();
                     Path[] tempFiles = taskResult.getTempFiles();
+                    persistenceService.normalizeResultImagePath(result);
+                    deferred.setResult(ResponseEntity.ok(result));
                     try {
                         persistenceService.persistResult(email, "flatness", result, tempFiles);
                     } catch (Exception ignored) {}
                     if (tempDir != null) {
                         FileUtils.deleteTempDir(tempDir);
                     }
-                    deferred.setResult(ResponseEntity.ok(result));
                 })
                 .exceptionally(ex -> {
                     Throwable cause = ex.getCause() != null ? ex.getCause() : ex;

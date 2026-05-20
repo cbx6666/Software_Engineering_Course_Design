@@ -17,9 +17,10 @@ public class HistoryService {
     private final boolean persistenceEnabled;
 
     public HistoryService(HistoryMapper historyMapper,
-                          @Value("${app.persistence.enabled:true}") boolean persistenceEnabled) {
+                          @Value("${app.persistence.enabled:true}") boolean persistenceEnabled,
+                          @Value("${app.database.enabled:true}") boolean databaseEnabled) {
         this.historyMapper = historyMapper;
-        this.persistenceEnabled = persistenceEnabled;
+        this.persistenceEnabled = databaseEnabled && persistenceEnabled;
     }
 
     /**
