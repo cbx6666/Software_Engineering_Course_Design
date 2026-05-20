@@ -31,11 +31,12 @@ public class DetectionPersistenceService {
     public DetectionPersistenceService(HistoryService historyService,
                                        ObjectMapper objectMapper,
                                        @Value("${image.storage.path}") String imageStoragePath,
-                                       @Value("${app.persistence.enabled:true}") boolean persistenceEnabled) {
+                                       @Value("${app.persistence.enabled:true}") boolean persistenceEnabled,
+                                       @Value("${app.database.enabled:true}") boolean databaseEnabled) {
         this.historyService = historyService;
         this.objectMapper = objectMapper;
         this.imageStoragePath = imageStoragePath;
-        this.persistenceEnabled = persistenceEnabled;
+        this.persistenceEnabled = databaseEnabled && persistenceEnabled;
     }
 
     public void persistResult(String email, String type, DetectionResult result, Path[] tempOriginalFiles) throws IOException {
@@ -80,7 +81,7 @@ public class DetectionPersistenceService {
         historyService.saveHistory(history);
     }
 
-    private String normalizeResultImagePath(DetectionResult result) {
+    public String normalizeResultImagePath(DetectionResult result) {
         if (result == null || result.getImage() == null || result.getImage().isEmpty()) {
             return null;
         }

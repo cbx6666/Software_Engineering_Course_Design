@@ -21,8 +21,9 @@ services:
       - ALGORITHM_URL=http://algorithm:8000
       - IMAGE_STORAGE_PATH=/data/images
       - RESULT_STORAGE_PATH=/data/result
-      - APP_PERSISTENCE_ENABLED=true
-      - SPRING_DATASOURCE_URL=jdbc:mysql://139.196.151.22:3306/glassdetect
+      - APP_DATABASE_ENABLED=false
+      - APP_PERSISTENCE_ENABLED=false
+      - SPRING_DATASOURCE_URL=jdbc:mysql://139.196.151.22:3306/glassdetect?connectTimeout=5000&socketTimeout=30000&useUnicode=true&characterEncoding=utf8
       - SPRING_DATASOURCE_USERNAME=remote_user
       - SPRING_DATASOURCE_PASSWORD=Software007@
     volumes:

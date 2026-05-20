@@ -43,7 +43,7 @@ result:
 
 app:
   database:
-    enabled: false
+    enabled: ${APP_DATABASE_ENABLED:false}
   persistence:
     enabled: ${APP_PERSISTENCE_ENABLED:false}
 
