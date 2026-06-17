@@ -54,11 +54,11 @@ class Classifier:
             
             if is_break:
                 status = "error"
-                description = "[传统 模式]检测到玻璃裂纹特征"
+                description = "[传统模式]检测到玻璃裂纹特征"
                 damage_area = 100.0  # 示意值，如果你有真实的面积计算可以替换
             else:
                 status = "success"
-                description = "[传统 模式]未发现明显裂纹"
+                description = "[传统模式]未发现明显裂纹"
 
         # ==========================================
         # 通道 2：纯粹的 YOLO 深度学习逻辑
@@ -70,7 +70,7 @@ class Classifier:
                 status = "error"
                 # 提取最高置信度
                 best_conf = max([d['confidence'] for d in yolo_detections])
-                description = f"[YOLO 模式]检测到玻璃裂纹特征 (置信度: {best_conf:.2f})"
+                description = f"[YOLO模式]检测到玻璃裂纹特征 (置信度: {best_conf:.2f})"
                 
                 # 简单估算损伤面积 (把所有框的面积加起来作为示意)
                 for det in yolo_detections:
@@ -79,7 +79,7 @@ class Classifier:
                     damage_area += area 
             else:
                 status = "success"
-                description = "[YOLO 模式]未发现明显裂纹"
+                description = "[YOLO模式]未发现明显裂纹"
 
         # ==========================================
         # 防御性编程：未知的 method

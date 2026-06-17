@@ -66,9 +66,9 @@ class GlassBreakageAlgorithm:
                 }[status],
                 "description": description,
                 "details": [
-                    {"label": "损伤面积", "value": f"{damage_area:.2f} mm²"}
+                    {"label": "损伤情况", "value": "有明显物理损伤"}
                     if damage_area > 0
-                    else {"label": "检查项", "value": "无明显物理损伤"}
+                    else {"label": "损伤情况", "value": "无明显物理损伤"}
                 ],
             }
 

@@ -52,3 +52,8 @@ class Config:
     IS_MOVE_ERROR_SAMPLES = False
     REMOVE_IMAGE_DIR = "./datasets/remove/images_remove"
     REMOVE_LABEL_DIR = "./datasets/remove/labels_remove"
+
+    # 是否复制预测为自爆（包含TP和FP）的样本
+    IS_COPY_POSITIVE_SAMPLES = True
+    POSITIVE_IMAGE_DIR = "./datasets/positive_samples/images"
+    POSITIVE_LABEL_DIR = "./datasets/positive_samples/labels"

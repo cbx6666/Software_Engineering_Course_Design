@@ -57,6 +57,27 @@ def move_error_sample(img_path, label_path):
         else:
             shutil.move(label_path, dst_label_path)
 
+def copy_positive_sample(img_path, label_path):
+    """
+    将预测结果为【自爆】的样本【复制】到指定文件夹
+    """
+    filename = os.path.basename(img_path)
+    dst_img_path = os.path.join(Config.POSITIVE_IMAGE_DIR, filename)
+    
+    # 1. 复制图片
+    if not os.path.exists(dst_img_path):
+        shutil.copy(img_path, dst_img_path)
+        if Config.IS_PRINT:
+            print(f"  └── 📁 疑似自爆图片已复制: {filename}")
+    
+    # 2. 复制标签
+    if os.path.exists(label_path):
+        label_filename = os.path.basename(label_path)
+        dst_label_path = os.path.join(Config.POSITIVE_LABEL_DIR, label_filename)
+        
+        if not os.path.exists(dst_label_path):
+            shutil.copy(label_path, dst_label_path)
+
 def batch_test_yolo():
     """针对YOLO数据集的批量测试"""
     # 仅当开启移动功能时，才创建目标文件夹
@@ -66,6 +87,12 @@ def batch_test_yolo():
         print(f"📂 错误样本将被【移动】至: \n  - {Config.REMOVE_IMAGE_DIR}\n  - {Config.REMOVE_LABEL_DIR}")
     else:
         print("🔒 错误样本移动功能已关闭 (IS_MOVE_ERROR_SAMPLES=False)")
+
+    # 仅当开启了复制正样本功能，则创建目标文件夹
+    if Config.IS_COPY_POSITIVE_SAMPLES:
+        os.makedirs(Config.POSITIVE_IMAGE_DIR, exist_ok=True)
+        os.makedirs(Config.POSITIVE_LABEL_DIR, exist_ok=True)
+        print(f"📂 预测为【自爆】的样本将被【复制】至: \n  - {Config.POSITIVE_IMAGE_DIR}\n  - {Config.POSITIVE_LABEL_DIR}")
 
     algorithm = GlassBreakageAlgorithm()
     
@@ -123,6 +150,10 @@ def batch_test_yolo():
             # 仅当出错 且 开关打开时，才移动文件
             if is_error and Config.IS_MOVE_ERROR_SAMPLES:
                 move_error_sample(img_path, label_path)
+
+            # 仅当预测为自爆 且 开关打开时，才复制文件
+            if is_predicted_abnormal and Config.IS_COPY_POSITIVE_SAMPLES:
+                copy_positive_sample(img_path, label_path)
 
         except Exception as e:
             print(f"[{i+1}/{total}] {filename} 运行出错: {e}")
